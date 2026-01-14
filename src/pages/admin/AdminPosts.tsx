@@ -209,11 +209,11 @@ const AdminPosts = () => {
               Novo Post
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto p-4 sm:p-6">
             <DialogHeader>
-              <DialogTitle>Criar Novo Post</DialogTitle>
+              <DialogTitle className="text-lg sm:text-xl">Criar Novo Post</DialogTitle>
             </DialogHeader>
-            <form onSubmit={handleCreatePost} className="space-y-4 mt-4">
+            <form onSubmit={handleCreatePost} className="space-y-3 sm:space-y-4 mt-4">
               <div className="space-y-2">
                 <Label htmlFor="title">Título</Label>
                 <Input 
@@ -390,8 +390,8 @@ const AdminPosts = () => {
 
       {/* Posts Table */}
       <Card>
-        <CardHeader>
-          <CardTitle>
+        <CardHeader className="pb-3">
+          <CardTitle className="text-base sm:text-lg">
             Posts ({isLoadingPosts ? "..." : filteredPosts.length})
           </CardTitle>
         </CardHeader>
@@ -403,29 +403,29 @@ const AdminPosts = () => {
               ))}
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full">
+            <div className="overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0">
+              <table className="w-full min-w-[800px]">
                 <thead>
                   <tr className="border-b border-border">
-                    <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">
+                    <th className="text-left py-2 sm:py-3 px-2 sm:px-4 text-xs sm:text-sm font-medium text-muted-foreground">
                       Título
                     </th>
-                    <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">
+                    <th className="text-left py-2 sm:py-3 px-2 sm:px-4 text-xs sm:text-sm font-medium text-muted-foreground hidden sm:table-cell">
                       Categoria
                     </th>
-                    <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">
+                    <th className="text-left py-2 sm:py-3 px-2 sm:px-4 text-xs sm:text-sm font-medium text-muted-foreground hidden md:table-cell">
                       Autor
                     </th>
-                    <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">
+                    <th className="text-left py-2 sm:py-3 px-2 sm:px-4 text-xs sm:text-sm font-medium text-muted-foreground hidden lg:table-cell">
                       Data
                     </th>
-                    <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">
+                    <th className="text-left py-2 sm:py-3 px-2 sm:px-4 text-xs sm:text-sm font-medium text-muted-foreground">
                       Views
                     </th>
-                    <th className="text-center py-3 px-4 text-sm font-medium text-muted-foreground">
+                    <th className="text-center py-2 sm:py-3 px-2 sm:px-4 text-xs sm:text-sm font-medium text-muted-foreground">
                       Destaque
                     </th>
-                    <th className="text-right py-3 px-4 text-sm font-medium text-muted-foreground">
+                    <th className="text-right py-2 sm:py-3 px-2 sm:px-4 text-xs sm:text-sm font-medium text-muted-foreground">
                       Ações
                     </th>
                   </tr>
@@ -433,7 +433,7 @@ const AdminPosts = () => {
                 <tbody>
                   {filteredPosts.length === 0 ? (
                     <tr>
-                      <td colSpan={7} className="py-8 text-center text-muted-foreground">
+                      <td colSpan={7} className="py-8 text-center text-xs sm:text-sm text-muted-foreground">
                         Nenhum post encontrado
                       </td>
                     </tr>
@@ -443,50 +443,60 @@ const AdminPosts = () => {
                         key={post.id}
                         className="border-b border-border last:border-0 hover:bg-muted/50"
                       >
-                        <td className="py-3 px-4">
-                          <div className="flex items-center gap-3">
+                        <td className="py-2 sm:py-3 px-2 sm:px-4">
+                          <div className="flex items-center gap-2 sm:gap-3">
                             {post.image_url ? (
                               <img
                                 src={post.image_url}
                                 alt=""
-                                className="h-10 w-16 object-cover rounded"
+                                className="h-8 w-12 sm:h-10 sm:w-16 object-cover rounded flex-shrink-0"
                               />
                             ) : (
-                              <div className="h-10 w-16 bg-muted rounded flex items-center justify-center text-xs text-muted-foreground">
+                              <div className="h-8 w-12 sm:h-10 sm:w-16 bg-muted rounded flex items-center justify-center text-[10px] sm:text-xs text-muted-foreground flex-shrink-0">
                                 Sem img
                               </div>
                             )}
-                            <div>
-                              <p className="font-medium line-clamp-1 max-w-xs">
+                            <div className="min-w-0 flex-1">
+                              <p className="font-medium text-xs sm:text-sm line-clamp-2">
                                 {post.title}
                               </p>
+                              <div className="flex items-center gap-2 mt-1 sm:hidden">
+                                <span className="news-category-badge text-[10px]">
+                                  {post.categories?.name || "Sem categoria"}
+                                </span>
+                                {post.is_breaking && (
+                                  <span className="text-[10px] text-accent font-medium">
+                                    Urgente
+                                  </span>
+                                )}
+                              </div>
                               {post.is_breaking && (
-                                <span className="text-xs text-accent font-medium">
+                                <span className="text-[10px] sm:text-xs text-accent font-medium hidden sm:inline-block mt-0.5">
                                   Urgente
                                 </span>
                               )}
                             </div>
                           </div>
                         </td>
-                        <td className="py-3 px-4">
-                          <span className="news-category-badge">
+                        <td className="py-2 sm:py-3 px-2 sm:px-4 hidden sm:table-cell">
+                          <span className="news-category-badge text-xs">
                             {post.categories?.name || "Sem categoria"}
                           </span>
                         </td>
-                        <td className="py-3 px-4 text-sm">
+                        <td className="py-2 sm:py-3 px-2 sm:px-4 text-xs sm:text-sm hidden md:table-cell">
                           {post.profiles?.name || "Desconhecido"}
                         </td>
-                        <td className="py-3 px-4 text-sm text-muted-foreground">
+                        <td className="py-2 sm:py-3 px-2 sm:px-4 text-xs sm:text-sm text-muted-foreground hidden lg:table-cell">
                           {post.published_at
                             ? format(new Date(post.published_at), "dd/MM/yyyy", {
                                 locale: ptBR,
                               })
                             : "-"}
                         </td>
-                        <td className="py-3 px-4 text-sm">
+                        <td className="py-2 sm:py-3 px-2 sm:px-4 text-xs sm:text-sm">
                           {post.views.toLocaleString("pt-BR")}
                         </td>
-                        <td className="py-3 px-4">
+                        <td className="py-2 sm:py-3 px-2 sm:px-4">
                           <div className="flex items-center justify-center">
                             <button
                               onClick={() => handleToggleFeatured(post)}
@@ -498,7 +508,7 @@ const AdminPosts = () => {
                               title={post.is_featured ? "Remover dos destaques" : "Adicionar aos destaques"}
                             >
                               <Star 
-                                className={`h-5 w-5 transition-all ${
+                                className={`h-4 w-4 sm:h-5 sm:w-5 transition-all ${
                                   post.is_featured 
                                     ? "fill-current" 
                                     : "group-hover:fill-yellow-500"
@@ -507,18 +517,18 @@ const AdminPosts = () => {
                             </button>
                           </div>
                         </td>
-                        <td className="py-3 px-4">
-                          <div className="flex items-center justify-end gap-2">
-                            <Button variant="ghost" size="icon">
-                              <Pencil className="h-4 w-4" />
+                        <td className="py-2 sm:py-3 px-2 sm:px-4">
+                          <div className="flex items-center justify-end gap-1 sm:gap-2">
+                            <Button variant="ghost" size="icon" className="h-8 w-8 sm:h-10 sm:w-10">
+                              <Pencil className="h-3 w-3 sm:h-4 sm:w-4" />
                             </Button>
                             <Button
                               variant="ghost"
                               size="icon"
-                              className="text-destructive hover:text-destructive"
+                              className="text-destructive hover:text-destructive h-8 w-8 sm:h-10 sm:w-10"
                               onClick={() => handleDelete(post.id)}
                             >
-                              <Trash2 className="h-4 w-4" />
+                              <Trash2 className="h-3 w-3 sm:h-4 sm:w-4" />
                             </Button>
                           </div>
                         </td>

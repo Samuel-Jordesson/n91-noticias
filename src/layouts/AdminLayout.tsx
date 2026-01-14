@@ -1,6 +1,6 @@
-import { ReactNode, useEffect } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import AdminSidebar from "@/components/admin/AdminSidebar";
-import { Bell, Search } from "lucide-react";
+import { Bell, Search, Menu, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useProfile } from "@/hooks/useAuth";
@@ -15,6 +15,7 @@ interface AdminLayoutProps {
 const AdminLayout = ({ children, title }: AdminLayoutProps) => {
   const { data: profile, isLoading, error } = useProfile();
   const queryClient = useQueryClient();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // Forçar atualização do perfil quando o componente montar
   useEffect(() => {
@@ -52,24 +53,47 @@ const AdminLayout = ({ children, title }: AdminLayoutProps) => {
 
   return (
     <div className="flex min-h-screen">
-      <AdminSidebar />
+      {/* Mobile Sidebar Overlay */}
+      {sidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
+      {/* Sidebar */}
+      <div className={`fixed lg:static inset-y-0 left-0 z-50 transition-transform duration-300 ${
+        sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+      }`}>
+        <AdminSidebar onClose={() => setSidebarOpen(false)} />
+      </div>
       
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col lg:ml-0">
         {/* Top bar */}
-        <header className="bg-card border-b border-border px-6 py-4 flex items-center justify-between">
-          <h1 className="text-xl font-serif font-bold">{title}</h1>
+        <header className="bg-card border-b border-border px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between gap-2">
+          <div className="flex items-center gap-3">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="lg:hidden"
+              onClick={() => setSidebarOpen(!sidebarOpen)}
+            >
+              {sidebarOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            </Button>
+            <h1 className="text-lg sm:text-xl font-serif font-bold truncate">{title}</h1>
+          </div>
           
-          <div className="flex items-center gap-4">
-            <div className="relative hidden md:block">
+          <div className="flex items-center gap-2 sm:gap-4">
+            <div className="relative hidden sm:block">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 type="search"
                 placeholder="Buscar..."
-                className="pl-10 w-64"
+                className="pl-10 w-40 md:w-64"
               />
             </div>
             
-            <Button variant="ghost" size="icon" className="relative">
+            <Button variant="ghost" size="icon" className="relative hidden sm:flex">
               <Bell className="h-5 w-5" />
               <span className="absolute top-1 right-1 h-2 w-2 bg-accent rounded-full" />
             </Button>
@@ -82,10 +106,10 @@ const AdminLayout = ({ children, title }: AdminLayoutProps) => {
                 </>
               ) : (
                 <>
-                  <div className="h-8 w-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-semibold">
+                  <div className="h-8 w-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-semibold text-sm">
                     {userInitial}
                   </div>
-                  <span className="hidden md:block text-sm font-medium">{userName}</span>
+                  <span className="hidden md:block text-sm font-medium truncate max-w-[120px]">{userName}</span>
                 </>
               )}
             </div>
@@ -93,7 +117,7 @@ const AdminLayout = ({ children, title }: AdminLayoutProps) => {
         </header>
 
         {/* Content */}
-        <main className="flex-1 p-6 bg-muted/50 overflow-auto">
+        <main className="flex-1 p-4 sm:p-6 bg-muted/50 overflow-auto">
           {children}
         </main>
       </div>

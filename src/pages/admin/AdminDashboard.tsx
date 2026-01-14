@@ -121,22 +121,22 @@ const AdminDashboard = () => {
   return (
     <AdminLayout title="Dashboard">
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6 mb-6 sm:mb-8">
         {stats.map((stat) => (
           <Card key={stat.title} className="animate-fade-in">
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
+            <CardHeader className="flex flex-row items-center justify-between pb-2 p-3 sm:p-6">
+              <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground truncate pr-2">
                 {stat.title}
               </CardTitle>
-              <stat.icon className="h-5 w-5 text-muted-foreground" />
+              <stat.icon className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground flex-shrink-0" />
             </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stat.value}</div>
-              <p className="text-xs text-muted-foreground mt-1">
+            <CardContent className="p-3 sm:p-6 pt-0">
+              <div className="text-lg sm:text-2xl font-bold">{stat.value}</div>
+              <p className="text-[10px] sm:text-xs text-muted-foreground mt-1">
                 {stat.change}
               </p>
               {stat.subtitle && (
-                <p className="text-xs text-muted-foreground mt-0.5">
+                <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5">
                   {stat.subtitle}
                 </p>
               )}
@@ -146,13 +146,13 @@ const AdminDashboard = () => {
       </div>
 
       {/* Charts */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
         <Card className="lg:col-span-2">
-          <CardHeader>
-            <CardTitle>Visualizações por Dia</CardTitle>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base sm:text-lg">Visualizações por Dia</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="h-[300px]">
+            <div className="h-[250px] sm:h-[300px]">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={chartData}>
                   <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
@@ -173,13 +173,13 @@ const AdminDashboard = () => {
 
         {/* Recent Activity */}
         <Card>
-          <CardHeader>
-            <CardTitle>Atividade Recente</CardTitle>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base sm:text-lg">Atividade Recente</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
+            <div className="space-y-3 sm:space-y-4">
               {recentPosts.length === 0 ? (
-                <p className="text-sm text-muted-foreground text-center py-4">
+                <p className="text-xs sm:text-sm text-muted-foreground text-center py-4">
                   Nenhum post ainda
                 </p>
               ) : (
@@ -187,19 +187,19 @@ const AdminDashboard = () => {
                   <Link
                     key={post.id}
                     to={`/noticia/${generateSlug(post.title)}`}
-                    className="flex items-start gap-3 hover:bg-muted/50 p-2 rounded-lg transition-colors"
+                    className="flex items-start gap-2 sm:gap-3 hover:bg-muted/50 p-2 rounded-lg transition-colors"
                   >
-                    <div className="h-10 w-10 rounded bg-muted flex items-center justify-center flex-shrink-0">
-                      <FileText className="h-5 w-5 text-muted-foreground" />
+                    <div className="h-8 w-8 sm:h-10 sm:w-10 rounded bg-muted flex items-center justify-center flex-shrink-0">
+                      <FileText className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium line-clamp-1">
+                      <p className="text-xs sm:text-sm font-medium line-clamp-2">
                         {post.title}
                       </p>
-                      <p className="text-xs text-muted-foreground">
+                      <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5 line-clamp-1">
                         {post.categories?.name || "Sem categoria"} • {post.profiles?.name || "Desconhecido"}
                       </p>
-                      <p className="text-xs text-muted-foreground mt-0.5">
+                      <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5">
                         {post.published_at
                           ? format(new Date(post.published_at), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })
                           : "Não publicado"}
@@ -215,27 +215,27 @@ const AdminDashboard = () => {
 
       {/* Recent Posts Table */}
       <Card>
-        <CardHeader>
-          <CardTitle>Posts Recentes</CardTitle>
+        <CardHeader className="pb-3">
+          <CardTitle className="text-base sm:text-lg">Posts Recentes</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="overflow-x-auto">
-            <table className="w-full">
+          <div className="overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0">
+            <table className="w-full min-w-[600px]">
               <thead>
                 <tr className="border-b border-border">
-                  <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">
+                  <th className="text-left py-2 sm:py-3 px-2 sm:px-4 text-xs sm:text-sm font-medium text-muted-foreground">
                     Título
                   </th>
-                  <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">
+                  <th className="text-left py-2 sm:py-3 px-2 sm:px-4 text-xs sm:text-sm font-medium text-muted-foreground hidden sm:table-cell">
                     Categoria
                   </th>
-                  <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">
+                  <th className="text-left py-2 sm:py-3 px-2 sm:px-4 text-xs sm:text-sm font-medium text-muted-foreground hidden md:table-cell">
                     Autor
                   </th>
-                  <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">
+                  <th className="text-left py-2 sm:py-3 px-2 sm:px-4 text-xs sm:text-sm font-medium text-muted-foreground">
                     Views
                   </th>
-                  <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">
+                  <th className="text-left py-2 sm:py-3 px-2 sm:px-4 text-xs sm:text-sm font-medium text-muted-foreground">
                     Status
                   </th>
                 </tr>
@@ -243,39 +243,44 @@ const AdminDashboard = () => {
               <tbody>
                 {recentPosts.length === 0 ? (
                   <tr>
-                    <td colSpan={5} className="py-8 text-center text-muted-foreground">
+                    <td colSpan={5} className="py-8 text-center text-xs sm:text-sm text-muted-foreground">
                       Nenhum post ainda
                     </td>
                   </tr>
                 ) : (
                   recentPosts.map((post) => (
                     <tr key={post.id} className="border-b border-border last:border-0 hover:bg-muted/30">
-                      <td className="py-3 px-4">
+                      <td className="py-2 sm:py-3 px-2 sm:px-4">
                         <Link
                           to={`/noticia/${generateSlug(post.title)}`}
-                          className="font-medium line-clamp-1 max-w-xs hover:text-primary transition-colors"
+                          className="font-medium text-xs sm:text-sm line-clamp-2 max-w-xs hover:text-primary transition-colors"
                         >
                           {post.title}
                         </Link>
+                        <div className="mt-1 sm:hidden">
+                          <span className="news-category-badge text-[10px]">
+                            {post.categories?.name || "Sem categoria"}
+                          </span>
+                        </div>
                       </td>
-                      <td className="py-3 px-4">
-                        <span className="news-category-badge">
+                      <td className="py-2 sm:py-3 px-2 sm:px-4 hidden sm:table-cell">
+                        <span className="news-category-badge text-xs">
                           {post.categories?.name || "Sem categoria"}
                         </span>
                       </td>
-                      <td className="py-3 px-4 text-sm">
+                      <td className="py-2 sm:py-3 px-2 sm:px-4 text-xs sm:text-sm hidden md:table-cell">
                         {post.profiles?.name || "Desconhecido"}
                       </td>
-                      <td className="py-3 px-4 text-sm">
+                      <td className="py-2 sm:py-3 px-2 sm:px-4 text-xs sm:text-sm">
                         {(post.views || 0).toLocaleString("pt-BR")}
                       </td>
-                      <td className="py-3 px-4">
+                      <td className="py-2 sm:py-3 px-2 sm:px-4">
                         {post.is_published ? (
-                          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300">
+                          <span className="inline-flex items-center px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-medium bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300">
                             Publicado
                           </span>
                         ) : (
-                          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300">
+                          <span className="inline-flex items-center px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-medium bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300">
                             Rascunho
                           </span>
                         )}
