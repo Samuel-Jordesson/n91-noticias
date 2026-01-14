@@ -1,0 +1,242 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700;900&family=Open+Sans:wght@400;500;600;700&display=swap');
+
+@layer base {
+  :root {
+    --background: 210 20% 98%;
+    --foreground: 215 25% 15%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 215 25% 15%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 215 25% 15%;
+
+    --primary: 215 80% 35%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 210 15% 93%;
+    --secondary-foreground: 215 25% 20%;
+
+    --muted: 210 15% 95%;
+    --muted-foreground: 215 15% 45%;
+
+    --accent: 0 75% 50%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 214 20% 88%;
+    --input: 214 20% 88%;
+    --ring: 215 80% 35%;
+
+    --radius: 0.5rem;
+
+    /* Custom N91 tokens */
+    --news-highlight: 215 90% 45%;
+    --news-breaking: 0 75% 50%;
+    --news-category: 215 60% 50%;
+    --news-date: 215 10% 55%;
+    --ad-background: 40 20% 96%;
+    --ad-border: 40 15% 85%;
+
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    --background: 215 25% 10%;
+    --foreground: 210 20% 95%;
+
+    --card: 215 25% 13%;
+    --card-foreground: 210 20% 95%;
+
+    --popover: 215 25% 13%;
+    --popover-foreground: 210 20% 95%;
+
+    --primary: 215 75% 55%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 215 20% 20%;
+    --secondary-foreground: 210 20% 95%;
+
+    --muted: 215 20% 18%;
+    --muted-foreground: 215 15% 60%;
+
+    --accent: 0 70% 55%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 215 20% 22%;
+    --input: 215 20% 22%;
+    --ring: 215 75% 55%;
+
+    --news-highlight: 215 80% 60%;
+    --news-breaking: 0 70% 55%;
+    --news-category: 215 55% 60%;
+    --news-date: 215 10% 60%;
+    --ad-background: 215 20% 15%;
+    --ad-border: 215 15% 25%;
+
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-family: 'Open Sans', sans-serif;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Merriweather', serif;
+  }
+}
+
+@layer components {
+  .news-headline {
+    @apply font-serif font-bold leading-tight tracking-tight;
+  }
+
+  .news-category-badge {
+    @apply inline-block px-3 py-1 text-xs font-bold uppercase tracking-wider rounded;
+    background: #FFD700;
+    color: #1a1a1a;
+  }
+
+  .news-date {
+    color: hsl(var(--news-date));
+    @apply text-sm;
+  }
+
+  .breaking-badge {
+    @apply inline-flex items-center gap-1 px-2 py-0.5 text-xs font-bold uppercase tracking-wider rounded animate-pulse;
+    background: hsl(var(--news-breaking));
+    color: white;
+  }
+
+  .ad-container {
+    background: hsl(var(--ad-background));
+    border: 1px solid hsl(var(--ad-border));
+    @apply rounded-lg p-2 text-center;
+  }
+
+  /* TipTap Editor Styles */
+  .ProseMirror {
+    outline: none;
+  }
+
+  .ProseMirror p.is-editor-empty:first-child::before {
+    content: attr(data-placeholder);
+    float: left;
+    color: hsl(var(--muted-foreground));
+    pointer-events: none;
+    height: 0;
+  }
+
+  .ProseMirror h1 {
+    @apply text-3xl font-bold mb-4;
+  }
+
+  .ProseMirror h2 {
+    @apply text-2xl font-bold mb-3;
+  }
+
+  .ProseMirror h3 {
+    @apply text-xl font-bold mb-2;
+  }
+
+  .ProseMirror p {
+    @apply mb-4;
+  }
+
+  .ProseMirror ul {
+    @apply list-disc list-inside mb-4;
+  }
+
+  .ProseMirror ol {
+    @apply list-decimal list-inside mb-4;
+  }
+
+  .ProseMirror blockquote {
+    @apply border-l-4 border-primary pl-4 italic my-4;
+  }
+
+  .ProseMirror code {
+    @apply bg-muted px-1 py-0.5 rounded text-sm;
+  }
+
+  .ProseMirror hr {
+    @apply my-6 border-t border-border;
+  }
+
+  .ProseMirror a,
+  .article-content a {
+    @apply text-primary underline hover:text-primary/80 transition-colors;
+  }
+
+  .article-content p {
+    @apply mb-4 text-foreground/90 leading-relaxed text-base;
+  }
+
+  .article-content p:last-child {
+    @apply mb-0;
+  }
+
+  .article-content strong {
+    @apply font-bold text-foreground;
+  }
+
+  .article-content em {
+    @apply italic text-foreground;
+  }
+
+  .news-card-hover {
+    @apply transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5;
+  }
+
+  .admin-sidebar {
+    @apply bg-primary text-primary-foreground min-h-screen w-64;
+  }
+
+  .admin-sidebar-link {
+    @apply flex items-center gap-3 px-4 py-3 text-sm font-medium transition-colors;
+  }
+
+  .admin-sidebar-link:hover {
+    @apply bg-white/10;
+  }
+
+  .admin-sidebar-link.active {
+    @apply bg-white/20;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}

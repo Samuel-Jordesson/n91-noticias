@@ -1,0 +1,36 @@
+# Robots.txt para N91 - Portal de Notícias
+
+# Google News Bot
+User-agent: Googlebot-News
+Allow: /
+Crawl-delay: 1
+
+# Google Search Bot
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 1
+
+# Bing Bot
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 1
+
+# Twitter Bot
+User-agent: Twitterbot
+Allow: /
+
+# Facebook Bot
+User-agent: facebookexternalhit
+Allow: /
+
+# Outros bots
+User-agent: *
+Allow: /
+Crawl-delay: 2
+
+# Sitemap
+Sitemap: https://n91.com.br/sitemap.xml
+
+# Bloquear áreas administrativas
+Disallow: /admin/
+Disallow: /api/
