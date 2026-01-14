@@ -1,10 +1,49 @@
 # Como Verificar o Domínio no Google Search Console
 
+## ⚠️ IMPORTANTE: Seu domínio usa Vercel DNS
+
+Seu domínio `n91.com.br` está usando os nameservers da Vercel (`ns1.vercel-dns.com` e `ns2.vercel-dns.com`). 
+
+**Você tem 2 opções:**
+
+1. **Método DNS TXT** (veja `VERCEL_DNS_VERIFICATION.md` para instruções na Vercel)
+2. **Método Arquivo HTML** (mais simples, recomendado) ⭐
+
 ## 📋 Informações da Verificação
 
 **Domínio**: `n91.com.br`  
 **Tipo de Registro**: TXT  
 **Valor do Registro**: `google-site-verification=csTUJ1FAz7blJbdax7HTjEPSTiQkTqHC14iGSesCAwQ`
+
+## 🎯 Método Recomendado: Arquivo HTML (Mais Simples)
+
+Este método é mais fácil e não requer acesso ao DNS da Vercel!
+
+### Passo a Passo:
+
+1. No Google Search Console, no modal de verificação:
+   - Clique em **"Não pode fazer a verificação por meio do provedor do nome de domínio?"**
+   - Escolha **"use uma propriedade de prefixo de URL"**
+   - Ou feche o modal e adicione uma nova propriedade escolhendo **"Prefixo de URL"** em vez de "Domínio"
+
+2. Escolha o método **"Arquivo HTML"**
+
+3. Baixe o arquivo de verificação (ex: `google1234567890abcdef.html`)
+
+4. Coloque o arquivo na pasta `public/` do seu projeto
+
+5. Faça commit e push:
+   ```bash
+   git add public/google*.html
+   git commit -m "Adicionar arquivo de verificação do Google"
+   git push origin main
+   ```
+
+6. Aguarde o deploy na Vercel (geralmente 1-2 minutos)
+
+7. Volte ao Google Search Console e clique em **"VERIFICAR"**
+
+✅ **Pronto!** Este método é muito mais simples e funciona imediatamente após o deploy.
 
 ## 🔧 Passo a Passo por Provedor
 
