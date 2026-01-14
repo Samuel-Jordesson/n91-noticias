@@ -26,10 +26,10 @@ const categoryToNewsAPI: Record<string, string> = {
 
 // Buscar notícias usando NewsAPI
 export const fetchNewsFromAPI = async (category?: string): Promise<NewsSource[]> => {
-  const NEWS_API_KEY = import.meta.env.VITE_NEWS_API_KEY || "0cc2192d2a4f46569780459d9b2d8d9a";
+  const NEWS_API_KEY = import.meta.env.VITE_NEWS_API_KEY;
   
   if (!NEWS_API_KEY) {
-    console.warn("NewsAPI key não configurada");
+    console.warn("NewsAPI key não configurada. Configure VITE_NEWS_API_KEY nas variáveis de ambiente.");
     return [];
   }
 
