@@ -6,7 +6,8 @@ import AdCarousel from "@/components/AdCarousel";
 import NewsCard from "@/components/NewsCard";
 import SEO from "@/components/SEO";
 import StructuredData from "@/components/StructuredData";
-import { usePost, usePostsByCategory, useIncrementViews } from "@/hooks/usePosts";
+import { usePostBySlug, usePostsByCategory, useIncrementViews } from "@/hooks/usePosts";
+import { generateSlug } from "@/lib/utils";
 import { usePostComments } from "@/hooks/useComments";
 import { useAdsByPosition } from "@/hooks/useAds";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -50,19 +51,19 @@ const convertPostToNewsArticle = (post: PostWithCategory): NewsArticle => {
 };
 
 const ArticlePage = () => {
-  const { id } = useParams();
-  const { data: post, isLoading, error } = usePost(id || "");
-  const { data: comments } = usePostComments(id || "");
-  const { data: sidebarAds } = useAdsByPosition("sidebar");
-  const { data: inlineAds } = useAdsByPosition("inline");
+  const { slug } = useParams();
+  const { data: post, isLoading, error } = usePostBySlug(slug || "");
   const incrementViews = useIncrementViews();
 
   // Incrementar visualizações quando a página carregar
   useEffect(() => {
-    if (id && post) {
-      incrementViews.mutate(id);
+    if (post?.id) {
+      incrementViews.mutate(post.id);
     }
-  }, [id, post]);
+  }, [post?.id]);
+
+  // Buscar comentários usando o ID do post
+  const { data: comments } = usePostComments(post?.id || "");
 
   // Buscar posts relacionados da mesma categoria
   const categorySlug = post?.categories?.slug;

@@ -3,6 +3,7 @@ import { NewsArticle } from "@/types/news";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Eye } from "lucide-react";
+import { generateSlug } from "@/lib/utils";
 
 interface NewsCardProps {
   article: NewsArticle;
@@ -17,10 +18,11 @@ const NewsCard = ({ article, variant = "default" }: NewsCardProps) => {
 
   const hasImage = article.imageUrl && article.imageUrl.trim() !== "";
   const imageUrl = hasImage ? article.imageUrl : "https://via.placeholder.com/800x450?text=Sem+Imagem";
+  const articleSlug = generateSlug(article.title);
 
   if (variant === "featured") {
     return (
-      <Link to={`/noticia/${article.id}`} className="block group">
+      <Link to={`/noticia/${articleSlug}`} className="block group">
         <article className="relative overflow-hidden rounded-lg news-card-hover">
           <div className="aspect-[16/9] md:aspect-[21/9] overflow-hidden bg-muted">
             {hasImage ? (
@@ -69,7 +71,7 @@ const NewsCard = ({ article, variant = "default" }: NewsCardProps) => {
 
   if (variant === "list") {
     return (
-      <Link to={`/noticia/${article.id}`} className="block group">
+      <Link to={`/noticia/${articleSlug}`} className="block group">
         <article className="flex flex-col sm:flex-row gap-3 md:gap-4 py-3 md:py-4 px-3 md:px-0 border-b border-border last:border-0 hover:bg-muted/30 transition-colors">
           {hasImage && (
             <div className="w-full sm:w-32 md:w-48 h-40 sm:h-24 md:h-32 flex-shrink-0 overflow-hidden rounded-md">
@@ -111,7 +113,7 @@ const NewsCard = ({ article, variant = "default" }: NewsCardProps) => {
 
   if (variant === "compact") {
     return (
-      <Link to={`/noticia/${article.id}`} className="block group">
+      <Link to={`/noticia/${articleSlug}`} className="block group">
         <article className="flex gap-4 py-4 border-b border-border last:border-0 news-card-hover">
           {hasImage && (
             <div className="w-24 h-24 flex-shrink-0 overflow-hidden rounded-md">
@@ -138,7 +140,7 @@ const NewsCard = ({ article, variant = "default" }: NewsCardProps) => {
 
   if (variant === "text-only") {
     return (
-      <Link to={`/noticia/${article.id}`} className="block group">
+      <Link to={`/noticia/${articleSlug}`} className="block group">
         <article className="p-4 border-b border-border last:border-0 hover:bg-muted/30 transition-colors">
           <div className="flex items-center gap-2 mb-2">
             <span className="news-category-badge text-[10px] px-2 py-0.5">
@@ -168,7 +170,7 @@ const NewsCard = ({ article, variant = "default" }: NewsCardProps) => {
   }
 
   return (
-    <Link to={`/noticia/${article.id}`} className="block group">
+    <Link to={`/noticia/${articleSlug}`} className="block group">
       <article className="bg-card rounded-lg overflow-hidden shadow-sm border border-border news-card-hover">
         {hasImage && (
           <div className="aspect-video overflow-hidden">

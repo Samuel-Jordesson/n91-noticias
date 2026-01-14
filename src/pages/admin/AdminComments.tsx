@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import { formatDistanceToNow, format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Link } from "react-router-dom";
+import { generateSlug } from "@/lib/utils";
 
 const AdminComments = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -138,7 +139,7 @@ const AdminComments = () => {
                             <span className="font-medium">Artigo:</span>{" "}
                             {postData ? (
                               <Link 
-                                to={`/noticia/${postData.id}`}
+                                to={`/noticia/${generateSlug(postData.title)}`}
                                 className="text-primary hover:underline"
                               >
                                 {getArticleTitle(postData)}

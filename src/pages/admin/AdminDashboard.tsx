@@ -9,6 +9,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Link } from "react-router-dom";
+import { generateSlug } from "@/lib/utils";
 
 const AdminDashboard = () => {
   const { data: allPosts, isLoading: isLoadingPosts } = useAllPosts();
@@ -185,7 +186,7 @@ const AdminDashboard = () => {
                 recentPosts.map((post) => (
                   <Link
                     key={post.id}
-                    to={`/noticia/${post.id}`}
+                    to={`/noticia/${generateSlug(post.title)}`}
                     className="flex items-start gap-3 hover:bg-muted/50 p-2 rounded-lg transition-colors"
                   >
                     <div className="h-10 w-10 rounded bg-muted flex items-center justify-center flex-shrink-0">
@@ -251,7 +252,7 @@ const AdminDashboard = () => {
                     <tr key={post.id} className="border-b border-border last:border-0 hover:bg-muted/30">
                       <td className="py-3 px-4">
                         <Link
-                          to={`/noticia/${post.id}`}
+                          to={`/noticia/${generateSlug(post.title)}`}
                           className="font-medium line-clamp-1 max-w-xs hover:text-primary transition-colors"
                         >
                           {post.title}

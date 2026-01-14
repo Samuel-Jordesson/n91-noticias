@@ -3,6 +3,7 @@ import {
   getAllPosts,
   getPublishedPosts,
   getPostById,
+  getPostBySlug,
   getPostsByCategory,
   getMostViewedPosts,
   getFeaturedPosts,
@@ -36,6 +37,15 @@ export const usePost = (id: string) => {
     queryKey: ["post", id],
     queryFn: () => getPostById(id),
     enabled: !!id,
+  });
+};
+
+// Hook para buscar post por slug
+export const usePostBySlug = (slug: string) => {
+  return useQuery({
+    queryKey: ["post", "slug", slug],
+    queryFn: () => getPostBySlug(slug),
+    enabled: !!slug,
   });
 };
 

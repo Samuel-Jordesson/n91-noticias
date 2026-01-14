@@ -11,6 +11,7 @@ import { usePosts, useMostViewedPosts, useFeaturedPosts } from "@/hooks/usePosts
 import { useCategories } from "@/hooks/useCategories";
 import { useAdsByPosition } from "@/hooks/useAds";
 import { Skeleton } from "@/components/ui/skeleton";
+import { generateSlug } from "@/lib/utils";
 import type { PostWithCategory } from "@/services/posts";
 import type { NewsArticle } from "@/types/news";
 
@@ -121,7 +122,7 @@ const Index = () => {
                   .slice(0, 4)
                   .map((article, index) => (
                     <div key={article.id} className="animate-fade-in" style={{ animationDelay: `${index * 50}ms` }}>
-                      <Link to={`/noticia/${article.id}`} className="block group h-full">
+                      <Link to={`/noticia/${generateSlug(article.title)}`} className="block group h-full">
                         <article className="h-full p-3 md:p-4 border border-border rounded-lg hover:border-primary/50 hover:bg-muted/30 transition-all">
                           <div className="flex items-center gap-2 mb-2 flex-wrap">
                             <span className="news-category-badge text-[10px] px-2 py-0.5">

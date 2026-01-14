@@ -63,6 +63,34 @@ export const getPostById = async (id: string) => {
   return data as PostWithCategory;
 };
 
+// Buscar post por slug (gerado dinamicamente do título)
+export const getPostBySlug = async (slug: string) => {
+  // Buscar todos os posts publicados e encontrar pelo slug gerado
+  const { data: posts, error } = await supabase
+    .from('posts')
+    .select(`
+      *,
+      categories:category_id (name, slug),
+      profiles:author_id (name, email)
+    `)
+    .eq('is_published', true);
+
+  if (error) throw error;
+
+  // Gerar slug para cada post e encontrar o match
+  const { generateSlug } = await import('@/lib/utils');
+  const post = posts?.find((p) => {
+    const postSlug = generateSlug(p.title);
+    return postSlug === slug;
+  });
+
+  if (!post) {
+    throw new Error('Post não encontrado');
+  }
+
+  return post as PostWithCategory;
+};
+
 // Buscar posts por categoria
 export const getPostsByCategory = async (categorySlug: string) => {
   // Primeiro buscar a categoria pelo slug
