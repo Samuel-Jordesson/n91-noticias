@@ -21,11 +21,11 @@
 
 ### 4. **Sitemap.xml**
 - ✅ Estrutura básica criada
-- ⚠️ **Necessário**: Gerar dinamicamente com todas as URLs de posts
+- ✅ **Implementado**: Endpoint dinâmico `/api/sitemap.xml` que gera todas as URLs de posts, categorias e páginas especiais
 
 ### 5. **RSS Feed**
 - ✅ Estrutura básica criada
-- ⚠️ **Necessário**: Gerar dinamicamente com posts recentes
+- ✅ **Implementado**: Endpoint dinâmico `/api/rss.xml` que gera os últimos 50 posts em formato RSS 2.0 completo
 
 ## 📋 Próximos Passos para Google News
 
@@ -35,18 +35,23 @@
 3. Verifique propriedade do domínio
 4. Configure categorias e seções
 
-### 2. **Gerar Sitemap Dinâmico**
-Criar endpoint `/sitemap.xml` que gera dinamicamente:
-- URLs de todos os posts publicados
-- URLs de categorias
-- URLs de páginas especiais
-- Prioridades e frequências de atualização
+### 2. **Gerar Sitemap Dinâmico** ✅ IMPLEMENTADO
+Endpoint `/sitemap.xml` que gera dinamicamente:
+- ✅ URLs de todos os posts publicados
+- ✅ URLs de categorias
+- ✅ URLs de páginas especiais (homepage, esportes, clima)
+- ✅ Prioridades e frequências de atualização
+- ✅ Lastmod (data de modificação) para posts
+- ✅ Cache configurado (1 hora)
 
-### 3. **Gerar RSS Feed Dinâmico**
-Criar endpoint `/rss.xml` que gera dinamicamente:
-- Últimos 20-50 posts
-- Formato RSS 2.0 completo
-- Atualização automática
+### 3. **Gerar RSS Feed Dinâmico** ✅ IMPLEMENTADO
+Endpoint `/rss.xml` que gera dinamicamente:
+- ✅ Últimos 50 posts publicados
+- ✅ Formato RSS 2.0 completo com namespaces
+- ✅ Atualização automática
+- ✅ Inclui título, descrição, link, autor, categoria, data
+- ✅ Suporte a imagens (enclosure)
+- ✅ Cache configurado (30 minutos)
 
 ### 4. **Melhorias Adicionais**
 - [ ] Adicionar breadcrumbs estruturados
