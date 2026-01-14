@@ -138,19 +138,19 @@ const AdminUsers = () => {
   return (
     <AdminLayout title="Gerenciar Usuários">
       {/* Actions */}
-      <div className="flex flex-col sm:flex-row gap-4 mb-6">
+      <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 md:gap-4 mb-4 sm:mb-6">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Search className="absolute left-2 sm:left-3 top-1/2 -translate-y-1/2 h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
           <Input
             type="search"
             placeholder="Buscar usuários..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10"
+            className="pl-8 sm:pl-10 h-8 sm:h-9 text-xs sm:text-sm"
           />
         </div>
         <Select value={filterRole} onValueChange={setFilterRole}>
-          <SelectTrigger className="w-full sm:w-48">
+          <SelectTrigger className="w-full sm:w-48 h-8 sm:h-9 text-xs sm:text-sm">
             <SelectValue placeholder="Filtrar por função" />
           </SelectTrigger>
           <SelectContent>
@@ -162,16 +162,16 @@ const AdminUsers = () => {
         </Select>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            <Button>
-              <Plus className="h-4 w-4 mr-2" />
-              Novo Usuário
+            <Button size="sm" className="w-full sm:w-auto">
+              <Plus className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+              <span className="text-xs sm:text-sm">Novo Usuário</span>
             </Button>
           </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>{editingUser ? "Editar Usuário" : "Criar Novo Usuário"}</DialogTitle>
+          <DialogContent className="w-[95vw] sm:w-full max-h-[90vh] overflow-y-auto p-3 sm:p-4 md:p-6">
+            <DialogHeader className="pb-2">
+              <DialogTitle className="text-base sm:text-lg md:text-xl">{editingUser ? "Editar Usuário" : "Criar Novo Usuário"}</DialogTitle>
             </DialogHeader>
-            <form onSubmit={handleCreateUser} className="space-y-4 mt-4">
+            <form onSubmit={handleCreateUser} className="space-y-2 sm:space-y-3 md:space-y-4 mt-2 sm:mt-4">
               {createUserMutation.isError && (
                 <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-3 text-sm text-yellow-800 dark:text-yellow-200">
                   <p className="font-medium">Atenção: Limite de requisições</p>
@@ -253,28 +253,28 @@ const AdminUsers = () => {
       </div>
 
       {/* Users Table */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Usuários ({filteredUsers.length})</CardTitle>
+      <Card className="overflow-hidden">
+        <CardHeader className="pb-2 sm:pb-3 p-3 sm:p-6">
+          <CardTitle className="text-sm sm:text-base md:text-lg">Usuários ({filteredUsers.length})</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-0 sm:p-6">
           <div className="overflow-x-auto">
-            <table className="w-full">
+            <table className="w-full min-w-[600px] sm:min-w-[700px]">
               <thead>
                 <tr className="border-b border-border">
-                  <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">
+                  <th className="text-left py-2 sm:py-3 px-2 sm:px-4 text-xs sm:text-sm font-medium text-muted-foreground">
                     Usuário
                   </th>
-                  <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">
+                  <th className="text-left py-2 sm:py-3 px-2 sm:px-4 text-xs sm:text-sm font-medium text-muted-foreground hidden md:table-cell">
                     Email
                   </th>
-                  <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">
+                  <th className="text-left py-2 sm:py-3 px-2 sm:px-4 text-xs sm:text-sm font-medium text-muted-foreground">
                     Função
                   </th>
-                  <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">
+                  <th className="text-left py-2 sm:py-3 px-2 sm:px-4 text-xs sm:text-sm font-medium text-muted-foreground hidden lg:table-cell">
                     Desde
                   </th>
-                  <th className="text-right py-3 px-4 text-sm font-medium text-muted-foreground">
+                  <th className="text-right py-2 sm:py-3 px-2 sm:px-4 text-xs sm:text-sm font-medium text-muted-foreground">
                     Ações
                   </th>
                 </tr>
@@ -282,17 +282,17 @@ const AdminUsers = () => {
               <tbody>
                 {isLoading ? (
                   <tr>
-                    <td colSpan={5} className="py-8">
+                    <td colSpan={5} className="py-6 sm:py-8 p-3 sm:p-0">
                       <div className="space-y-2">
                         {[...Array(3)].map((_, i) => (
-                          <Skeleton key={i} className="h-12 w-full" />
+                          <Skeleton key={i} className="h-10 sm:h-12 w-full" />
                         ))}
                       </div>
                     </td>
                   </tr>
                 ) : filteredUsers.length === 0 ? (
                   <tr>
-                    <td colSpan={5} className="py-8 text-center text-muted-foreground">
+                    <td colSpan={5} className="py-6 sm:py-8 text-center text-xs sm:text-sm text-muted-foreground p-3 sm:p-0">
                       {searchTerm || filterRole !== "all"
                         ? "Nenhum usuário encontrado com os filtros aplicados"
                         : "Nenhum usuário cadastrado ainda"}
@@ -304,18 +304,21 @@ const AdminUsers = () => {
                       key={user.id}
                       className="border-b border-border last:border-0 hover:bg-muted/50"
                     >
-                      <td className="py-3 px-4">
-                        <div className="flex items-center gap-3">
-                          <div className="h-10 w-10 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-semibold">
+                      <td className="py-2 sm:py-3 px-2 sm:px-4">
+                        <div className="flex items-center gap-1.5 sm:gap-2 md:gap-3">
+                          <div className="h-7 w-7 sm:h-8 sm:w-8 md:h-10 md:w-10 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-semibold text-xs sm:text-sm flex-shrink-0">
                             {user.name.charAt(0).toUpperCase()}
                           </div>
-                          <span className="font-medium">{user.name}</span>
+                          <div className="min-w-0 flex-1">
+                            <span className="font-medium text-xs sm:text-sm truncate block">{user.name}</span>
+                            <span className="text-[10px] sm:text-xs text-muted-foreground md:hidden truncate block">{user.email}</span>
+                          </div>
                         </div>
                       </td>
-                      <td className="py-3 px-4 text-sm text-muted-foreground">
+                      <td className="py-2 sm:py-3 px-2 sm:px-4 text-xs sm:text-sm text-muted-foreground hidden md:table-cell">
                         {user.email}
                       </td>
-                      <td className="py-3 px-4">
+                      <td className="py-2 sm:py-3 px-2 sm:px-4">
                         <span
                           className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${
                             roleLabels[user.role as keyof typeof roleLabels].className
@@ -325,30 +328,31 @@ const AdminUsers = () => {
                           {roleLabels[user.role as keyof typeof roleLabels].label}
                         </span>
                       </td>
-                      <td className="py-3 px-4 text-sm text-muted-foreground">
+                      <td className="py-2 sm:py-3 px-2 sm:px-4 text-xs sm:text-sm text-muted-foreground hidden lg:table-cell">
                         {user.created_at
                           ? format(new Date(user.created_at), "dd/MM/yyyy", { locale: ptBR })
                           : "N/A"}
                       </td>
-                      <td className="py-3 px-4">
-                        <div className="flex items-center justify-end gap-2">
+                      <td className="py-2 sm:py-3 px-2 sm:px-4">
+                        <div className="flex items-center justify-end gap-1 sm:gap-2">
                           <Button
                             variant="ghost"
                             size="icon"
                             onClick={() => handleEdit(user)}
                             title="Editar usuário"
+                            className="h-7 w-7 sm:h-9 sm:w-9"
                           >
-                            <Pencil className="h-4 w-4" />
+                            <Pencil className="h-3 w-3 sm:h-4 sm:w-4" />
                           </Button>
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="text-destructive hover:text-destructive"
+                            className="text-destructive hover:text-destructive h-7 w-7 sm:h-9 sm:w-9"
                             onClick={() => handleDelete(user.id)}
                             disabled={user.role === "admin" || deleteUserMutation.isPending}
                             title="Excluir usuário"
                           >
-                            <Trash2 className="h-4 w-4" />
+                            <Trash2 className="h-3 w-3 sm:h-4 sm:w-4" />
                           </Button>
                         </div>
                       </td>

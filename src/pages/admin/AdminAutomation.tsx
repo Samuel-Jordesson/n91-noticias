@@ -144,33 +144,33 @@ const AdminAutomation = () => {
 
   return (
     <AdminLayout title="Automação de Posts com IA">
-      <div className="space-y-6">
+      <div className="space-y-3 sm:space-y-4 md:space-y-6">
         {/* Status Card */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Clock className="h-5 w-5" />
+        <Card className="overflow-hidden">
+          <CardHeader className="pb-2 sm:pb-3 p-3 sm:p-6">
+            <CardTitle className="flex items-center gap-1.5 sm:gap-2 text-sm sm:text-base md:text-lg">
+              <Clock className="h-4 w-4 sm:h-5 sm:w-5" />
               Automação de Posts
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
+          <CardContent className="p-3 sm:p-6 pt-0">
+            <div className="space-y-2 sm:space-y-3 md:space-y-4">
               {/* Switch para Automação Automática */}
-              <div className="flex items-center justify-between p-4 border rounded-lg">
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2">
-                    <Power className="h-4 w-4 text-muted-foreground" />
-                    <Label htmlFor="auto-mode" className="text-base font-medium cursor-pointer">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-4 p-2 sm:p-3 md:p-4 border rounded-lg">
+                <div className="space-y-0.5 sm:space-y-1 flex-1 min-w-0">
+                  <div className="flex items-center gap-1.5 sm:gap-2">
+                    <Power className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground flex-shrink-0" />
+                    <Label htmlFor="auto-mode" className="text-xs sm:text-sm md:text-base font-medium cursor-pointer">
                       Automação Automática
                     </Label>
                   </div>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-[10px] sm:text-xs md:text-sm text-muted-foreground">
                     {isAutoEnabled 
                       ? "Posts serão criados automaticamente a cada 1 hora"
                       : "Automação automática desativada"}
                   </p>
                   {status.isInCooldown && status.remainingCooldown > 0 && (
-                    <p className="text-sm text-orange-600 font-medium">
+                    <p className="text-[10px] sm:text-xs md:text-sm text-orange-600 font-medium">
                       ⏸️ Em cooldown: {Math.ceil(status.remainingCooldown / 60)} minutos restantes
                     </p>
                   )}
@@ -180,14 +180,15 @@ const AdminAutomation = () => {
                   checked={isAutoEnabled}
                   onCheckedChange={handleToggleAuto}
                   disabled={status.isInCooldown && status.remainingCooldown > 0}
+                  className="flex-shrink-0"
                 />
               </div>
 
               {/* Botão Executar Agora */}
-              <div className="flex items-center justify-between p-4 border rounded-lg">
-                <div className="space-y-1">
-                  <Label className="text-base font-medium">Executar Agora</Label>
-                  <p className="text-sm text-muted-foreground">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-4 p-2 sm:p-3 md:p-4 border rounded-lg">
+                <div className="space-y-0.5 sm:space-y-1 flex-1 min-w-0">
+                  <Label className="text-xs sm:text-sm md:text-base font-medium">Executar Agora</Label>
+                  <p className="text-[10px] sm:text-xs md:text-sm text-muted-foreground">
                     Executa um ciclo de automação imediatamente (independente do modo automático)
                   </p>
                 </div>
@@ -195,7 +196,8 @@ const AdminAutomation = () => {
                   onClick={handleRunNow}
                   variant="outline"
                   disabled={isProcessing || (status.isInCooldown && status.remainingCooldown > 0)}
-                  className="gap-2"
+                  className="gap-1 sm:gap-2 w-full sm:w-auto text-xs sm:text-sm"
+                  size="sm"
                 >
                   <RefreshCw className={`h-4 w-4 ${isProcessing ? "animate-spin" : ""}`} />
                   {isProcessing ? "Processando..." : "Executar Agora"}
@@ -216,12 +218,12 @@ const AdminAutomation = () => {
         </Card>
 
         {/* Info Card */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Como Funciona</CardTitle>
+        <Card className="overflow-hidden">
+          <CardHeader className="pb-2 sm:pb-3 p-3 sm:p-6">
+            <CardTitle className="text-sm sm:text-base md:text-lg">Como Funciona</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2 text-sm">
+          <CardContent className="p-3 sm:p-6 pt-0 space-y-2 sm:space-y-3 md:space-y-4">
+            <div className="space-y-1.5 sm:space-y-2 text-xs sm:text-sm">
               <p className="text-muted-foreground">
                 O sistema de automação com IA (Gemini) funciona da seguinte forma:
               </p>

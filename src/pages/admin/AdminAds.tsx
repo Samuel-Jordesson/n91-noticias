@@ -175,22 +175,22 @@ const AdminAds = () => {
   return (
     <AdminLayout title="Gerenciar Anúncios">
       {/* Actions */}
-      <div className="flex justify-between items-center mb-6">
-        <p className="text-muted-foreground">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-4 mb-4 sm:mb-6">
+        <p className="text-xs sm:text-sm text-muted-foreground">
           Gerencie os anúncios exibidos no portal. Os anúncios são exibidos em formato de slider automático.
         </p>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            <Button>
-              <Plus className="h-4 w-4 mr-2" />
-              Novo Anúncio
+            <Button size="sm" className="w-full sm:w-auto">
+              <Plus className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+              <span className="text-xs sm:text-sm">Novo Anúncio</span>
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-2xl">
-            <DialogHeader>
-              <DialogTitle>{editingAd ? "Editar Anúncio" : "Criar Novo Anúncio"}</DialogTitle>
+          <DialogContent className="max-w-2xl w-[95vw] sm:w-full max-h-[90vh] overflow-y-auto p-3 sm:p-4 md:p-6">
+            <DialogHeader className="pb-2">
+              <DialogTitle className="text-base sm:text-lg md:text-xl">{editingAd ? "Editar Anúncio" : "Criar Novo Anúncio"}</DialogTitle>
             </DialogHeader>
-            <form onSubmit={handleCreateAd} className="space-y-4 mt-4">
+            <form onSubmit={handleCreateAd} className="space-y-2 sm:space-y-3 md:space-y-4 mt-2 sm:mt-4">
               <div className="space-y-2">
                 <Label htmlFor="title">Título do Anúncio</Label>
                 <Input
@@ -329,20 +329,20 @@ const AdminAds = () => {
       </div>
 
       {/* Position Specs Info */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 sm:gap-3 md:gap-4 mb-4 sm:mb-6 md:mb-8">
         {Object.entries(adPositionSpecs).map(([key, spec]) => (
-          <Card key={key} className="bg-muted/50">
-            <CardContent className="p-4">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
-                  <Monitor className="h-6 w-6 text-primary" />
+          <Card key={key} className="bg-muted/50 overflow-hidden">
+            <CardContent className="p-2 sm:p-3 md:p-4">
+              <div className="flex items-center gap-2 sm:gap-3">
+                <div className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <Monitor className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 text-primary" />
                 </div>
-                <div>
-                  <h4 className="font-medium">{spec.label}</h4>
-                  <p className="text-sm text-muted-foreground">
+                <div className="min-w-0 flex-1">
+                  <h4 className="font-medium text-xs sm:text-sm md:text-base truncate">{spec.label}</h4>
+                  <p className="text-[10px] sm:text-xs md:text-sm text-muted-foreground">
                     {spec.width} x {spec.height}px
                   </p>
-                  <p className="text-xs text-muted-foreground mt-0.5">
+                  <p className="text-[9px] sm:text-[10px] md:text-xs text-muted-foreground mt-0.5">
                     {adsByPosition[key as keyof typeof adsByPosition]?.length || 0} anúncios ativos
                   </p>
                 </div>
@@ -354,11 +354,11 @@ const AdminAds = () => {
 
       {/* Ads by Position */}
       {Object.entries(adsByPosition).map(([position, positionAds]) => (
-        <div key={position} className="mb-8">
-          <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
-            <Monitor className="h-5 w-5 text-primary" />
-            {adPositionSpecs[position as keyof typeof adPositionSpecs]?.label}
-            <span className="text-sm font-normal text-muted-foreground">
+        <div key={position} className="mb-4 sm:mb-6 md:mb-8">
+          <h2 className="text-sm sm:text-base md:text-lg font-semibold mb-2 sm:mb-3 md:mb-4 flex items-center gap-1.5 sm:gap-2 flex-wrap">
+            <Monitor className="h-4 w-4 sm:h-5 sm:w-5 text-primary flex-shrink-0" />
+            <span className="truncate">{adPositionSpecs[position as keyof typeof adPositionSpecs]?.label}</span>
+            <span className="text-[10px] sm:text-xs md:text-sm font-normal text-muted-foreground">
               ({positionAds.length} anúncios - slider automático a cada 5s)
             </span>
           </h2>
