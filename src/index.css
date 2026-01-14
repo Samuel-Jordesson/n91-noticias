@@ -198,8 +198,14 @@
     @apply text-primary underline hover:text-primary/80 transition-colors;
   }
 
+  .article-content {
+    font-family: 'Merriweather', 'Georgia', serif;
+  }
+
   .article-content p {
-    @apply mb-4 text-foreground/90 leading-relaxed text-base;
+    @apply mb-4 text-foreground/90 leading-relaxed text-lg;
+    font-size: 1.125rem;
+    line-height: 1.75;
   }
 
   .article-content p:last-child {
