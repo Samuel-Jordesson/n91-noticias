@@ -113,6 +113,16 @@ Retorne APENAS um JSON válido no seguinte formato:
         url: getGeminiUrl("gemini-3-flash-preview"),
       });
       
+      // Erro 403: chave inválida / bloqueada (ex: marcada como vazada)
+      if (response.status === 403) {
+        const msg = (errorData?.error?.message || errorData?.message || errorText || "").toString();
+        if (/reported as leaked/i.test(msg)) {
+          // Sinalizar explicitamente para o autoPoster cair em fallback sem ficar tentando IA.
+          throw new Error("GEMINI_KEY_LEAKED");
+        }
+        throw new Error(`GEMINI_FORBIDDEN:${msg.substring(0, 200)}`);
+      }
+
       // Tratar erro 429 (quota excedida) - retornar tempo de espera para retry
       if (response.status === 429) {
         const retryAfter = errorData.error?.message?.match(/retry in (\d+\.?\d*)s/i)?.[1];

@@ -165,6 +165,7 @@ export const runAutomationCycle = async (onLog?: LogCallback): Promise<Automatio
 
   try {
     addLog("info", "Iniciando ciclo de automação...");
+    let aiDisabledReason: "quota" | "key_leaked" | "missing_key" | "forbidden" | null = null;
 
     // Buscar categorias
     addLog("info", "Buscando categorias...");
@@ -210,6 +211,8 @@ export const runAutomationCycle = async (onLog?: LogCallback): Promise<Automatio
 
         // Adicionar delay entre requisições para evitar rate limiting (3 segundos)
         if (idx > 0) {
+          // Se IA está desabilitada (ex: chave vazada), não faz sentido continuar analisando
+          if (aiDisabledReason) break;
           addLog("info", "Aguardando 3 segundos antes da próxima análise...");
           await new Promise((resolve) => setTimeout(resolve, 3000));
         }
@@ -226,6 +229,24 @@ export const runAutomationCycle = async (onLog?: LogCallback): Promise<Automatio
             break; // Sucesso, sair do loop
           } catch (error: any) {
             const errorMessage = error?.message || "";
+
+            // Chave do Gemini marcada como vazada: não adianta tentar de novo
+            if (errorMessage.includes("GEMINI_KEY_LEAKED")) {
+              aiDisabledReason = "key_leaked";
+              throw error;
+            }
+
+            // Chave não configurada: também não adianta tentar de novo
+            if (errorMessage.includes("VITE_GEMINI_API_KEY")) {
+              aiDisabledReason = "missing_key";
+              throw error;
+            }
+
+            // 403 genérico (bloqueio): parar tentativas de IA
+            if (errorMessage.startsWith("GEMINI_FORBIDDEN:")) {
+              aiDisabledReason = "forbidden";
+              throw error;
+            }
             
             // Se for erro de quota, aguardar e tentar novamente
             if (errorMessage.includes("QUOTA_EXCEEDED") && retries < maxRetries) {
@@ -282,6 +303,7 @@ export const runAutomationCycle = async (onLog?: LogCallback): Promise<Automatio
         
         // Se ainda for erro de quota após retry, parar de tentar mais notícias
         if (errorMessage.includes("QUOTA_EXCEEDED") || errorMessage.includes("429")) {
+          aiDisabledReason = "quota";
           const waitTime = error?.waitTime || 60;
           const waitMinutes = Math.ceil(waitTime / 60);
           addLog("error", `⚠️ Quota da API excedida após retry! Aguarde ${waitMinutes} minutos (${waitTime} segundos) antes de executar novamente.`);
@@ -295,14 +317,49 @@ export const runAutomationCycle = async (onLog?: LogCallback): Promise<Automatio
           
           break; // Parar o loop se exceder quota mesmo após retry
         }
+
+        // Se a IA foi bloqueada por chave vazada / forbidden / missing key, parar de tentar analisar
+        if (errorMessage.includes("GEMINI_KEY_LEAKED")) {
+          aiDisabledReason = "key_leaked";
+          addLog("error", "⚠️ Gemini bloqueou a API Key (marcada como vazada). Gere uma nova chave e atualize na Vercel (VITE_GEMINI_API_KEY).");
+          break;
+        }
+        if (errorMessage.includes("VITE_GEMINI_API_KEY")) {
+          aiDisabledReason = "missing_key";
+          addLog("error", "⚠️ VITE_GEMINI_API_KEY não está configurada. Configure a variável de ambiente para usar IA.");
+          break;
+        }
+        if (errorMessage.startsWith("GEMINI_FORBIDDEN:")) {
+          aiDisabledReason = "forbidden";
+          addLog("error", "⚠️ Gemini retornou 403 (forbidden). Verifique a API Key e permissões.");
+          break;
+        }
         
         addLog("error", `Erro ao analisar notícia: ${news.title.substring(0, 40)}... - ${errorMessage.substring(0, 100)}`);
       }
     }
 
-    // Se nenhuma notícia foi analisada devido à quota, tentar criar post básico sem IA
+    const getFallbackImageUrl = (query: string) => {
+      // Imagem sem depender de IA (endpoint "source" do Unsplash faz redirect para uma imagem aleatória).
+      // Observação: algumas imagens podem variar a cada acesso.
+      const q = encodeURIComponent(query.trim());
+      return `https://source.unsplash.com/1200x675/?${q}`;
+    };
+
+    // Se nenhuma notícia foi analisada (quota/erro/IA indisponível), criar post básico sem IA
     if (analyzedNews.length === 0 && recentNews.length > 0) {
-      addLog("warning", "Nenhuma notícia analisada devido à quota excedida. Tentando criar post básico sem IA...");
+      const reasonLabel =
+        aiDisabledReason === "quota"
+          ? "quota excedida"
+          : aiDisabledReason === "key_leaked"
+          ? "API Key do Gemini bloqueada"
+          : aiDisabledReason === "missing_key"
+          ? "API Key do Gemini ausente"
+          : aiDisabledReason === "forbidden"
+          ? "Gemini 403 (forbidden)"
+          : "IA indisponível";
+
+      addLog("warning", `Nenhuma notícia analisada (${reasonLabel}). Criando post básico sem IA...`);
       
       // Pegar a primeira notícia e criar post básico
       const firstNews = recentNews[0];
@@ -342,22 +399,37 @@ export const runAutomationCycle = async (onLog?: LogCallback): Promise<Automatio
         addLog("info", `Criando post básico na categoria: ${category.name}...`);
         
         // Gerar conteúdo HTML básico
-        const excerpt = firstNews.description || firstNews.title.substring(0, 150);
+        const rawDesc = (firstNews.description || "").trim();
+        const excerpt =
+          rawDesc.length > 0 ? rawDesc.slice(0, 190) : firstNews.title.substring(0, 190);
+
+        const sourceIsDemo = (firstNews.url || "").includes("example.com/news/");
+        const sourceBlock =
+          firstNews.url && !sourceIsDemo
+            ? `<p><strong>Fonte:</strong> <a href="${firstNews.url}" target="_blank" rel="noopener noreferrer">Ver notícia original</a></p>`
+            : "";
+
         const content = `
-          <div>
-            <p>${firstNews.description || firstNews.title}</p>
-            <p>Esta notícia foi publicada automaticamente pelo sistema de automação.</p>
-            ${firstNews.url && firstNews.url !== `https://example.com/news/${category.name.toLowerCase()}/0` 
-              ? `<p><strong>Fonte:</strong> <a href="${firstNews.url}" target="_blank" rel="noopener noreferrer">Ver notícia original</a></p>`
-              : ''}
-          </div>
+<div>
+  <p>${rawDesc || firstNews.title}</p>
+  <h3>O que sabemos até agora</h3>
+  <ul>
+    <li>Categoria: ${category.name}</li>
+    <li>Publicação: ${new Date(firstNews.publishedAt).toLocaleString("pt-BR")}</li>
+    <li>Origem: ${firstNews.source}</li>
+  </ul>
+  <p>Este conteúdo foi publicado automaticamente porque a análise por IA não estava disponível no momento.</p>
+  ${sourceBlock}
+</div>
         `.trim();
+
+        const imageUrl = getFallbackImageUrl(`${firstNews.title} ${category.name} Brasil`);
         
         await createPost({
           title: firstNews.title,
           excerpt: excerpt,
           content: content,
-          image_url: undefined, // Sem imagem quando quota está excedida
+          image_url: imageUrl,
           category_id: category.id,
           author_id: profiles.id,
           is_breaking: false,
@@ -369,7 +441,8 @@ export const runAutomationCycle = async (onLog?: LogCallback): Promise<Automatio
         addLog("success", `✅ Post básico criado e publicado com sucesso na categoria ${category.name}!`, {
           title: firstNews.title,
           category: category.name,
-          note: "Post criado sem análise de IA devido à quota excedida",
+          note: "Post criado sem análise de IA (fallback) e com imagem automática",
+          imageUrl,
         });
         
         return logs;
