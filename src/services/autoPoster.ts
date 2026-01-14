@@ -104,13 +104,24 @@ const processAndCreatePostInternal = async (news: NewsSource): Promise<boolean> 
       return false;
     }
 
-    // Buscar autor padrão (primeiro admin/editor)
-    const { data: profiles } = await supabase
+    // Buscar autor "Marcos Paulo" (ou primeiro admin/editor como fallback)
+    let { data: profiles } = await supabase
       .from("profiles")
       .select("id")
-      .in("role", ["admin", "editor"])
+      .eq("name", "Marcos Paulo")
       .limit(1)
       .single();
+
+    // Se não encontrar "Marcos Paulo", usar primeiro admin/editor como fallback
+    if (!profiles) {
+      const { data: fallbackProfile } = await supabase
+        .from("profiles")
+        .select("id")
+        .in("role", ["admin", "editor"])
+        .limit(1)
+        .single();
+      profiles = fallbackProfile;
+    }
 
     if (!profiles) {
       return false;
@@ -381,16 +392,27 @@ export const runAutomationCycle = async (onLog?: LogCallback): Promise<Automatio
           return logs;
         }
         
-        // Buscar autor padrão
-        const { data: profiles } = await supabase
+        // Buscar autor "Marcos Paulo" (ou primeiro admin/editor como fallback)
+        let { data: profiles } = await supabase
           .from("profiles")
           .select("id")
-          .in("role", ["admin", "editor"])
+          .eq("name", "Marcos Paulo")
           .limit(1)
           .single();
-        
+
+        // Se não encontrar "Marcos Paulo", usar primeiro admin/editor como fallback
         if (!profiles) {
-          addLog("error", "Nenhum admin/editor encontrado");
+          const { data: fallbackProfile } = await supabase
+            .from("profiles")
+            .select("id")
+            .in("role", ["admin", "editor"])
+            .limit(1)
+            .single();
+          profiles = fallbackProfile;
+        }
+
+        if (!profiles) {
+          addLog("error", "Nenhum autor encontrado (Marcos Paulo ou admin/editor)");
           return logs;
         }
         
@@ -531,16 +553,27 @@ export const runAutomationCycle = async (onLog?: LogCallback): Promise<Automatio
           addLog("error", `Categoria não encontrada: ${analysis.category}`);
           errorCount++;
         } else {
-          // Buscar autor padrão
-          const { data: profiles } = await supabase
+          // Buscar autor "Marcos Paulo" (ou primeiro admin/editor como fallback)
+          let { data: profiles } = await supabase
             .from("profiles")
             .select("id")
-            .in("role", ["admin", "editor"])
+            .eq("name", "Marcos Paulo")
             .limit(1)
             .single();
 
+          // Se não encontrar "Marcos Paulo", usar primeiro admin/editor como fallback
           if (!profiles) {
-            addLog("error", "Nenhum admin/editor encontrado");
+            const { data: fallbackProfile } = await supabase
+              .from("profiles")
+              .select("id")
+              .in("role", ["admin", "editor"])
+              .limit(1)
+              .single();
+            profiles = fallbackProfile;
+          }
+
+          if (!profiles) {
+            addLog("error", "Nenhum autor encontrado (Marcos Paulo ou admin/editor)");
             errorCount++;
           } else {
             // Criar post
