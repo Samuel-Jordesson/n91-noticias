@@ -49,6 +49,7 @@ export const useProfile = () => {
     staleTime: 0, // Sempre buscar dados frescos
     refetchOnWindowFocus: true,
     refetchOnMount: true,
+    refetchInterval: 10000, // Refrescar a cada 10 segundos para garantir dados atualizados
   });
 };
 
