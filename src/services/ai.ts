@@ -1,12 +1,16 @@
 // Serviço de IA usando Google Gemini
 import { supabase } from "@/integrations/supabase/client";
 
-const GEMINI_API_KEY = "AIzaSyDVXRsF00mNFbgMzZnOhTkeYQc6z-EtB9I";
+const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY || "";
 // URL correta do Gemini API
 // Usar Gemini 3 Flash Preview como modelo principal
 // Formato correto: https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={key}
-const getGeminiUrl = (model: string = "gemini-3-flash-preview") => 
-  `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GEMINI_API_KEY}`;
+const getGeminiUrl = (model: string = "gemini-3-flash-preview") => {
+  if (!GEMINI_API_KEY) {
+    throw new Error("VITE_GEMINI_API_KEY não configurada. Configure a variável de ambiente.");
+  }
+  return `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GEMINI_API_KEY}`;
+};
 
 export interface NewsAnalysis {
   title: string;

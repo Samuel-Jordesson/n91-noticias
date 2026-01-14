@@ -34,13 +34,14 @@ Este projeto foi construído com:
 - Node.js 18+ instalado
 - Conta no Supabase
 - Chave da API do Google Gemini (opcional, para automação)
+- Chave da API do OpenWeatherMap (opcional, para página de clima)
 
 ### Instalação
 
 ```sh
 # 1. Clone o repositório
-git clone <URL_DO_REPOSITORIO>
-cd n91-news-hub
+git clone https://github.com/Samuel-Jordesson/n91-noticias.git
+cd n91-noticias
 
 # 2. Instale as dependências
 npm install
@@ -48,7 +49,7 @@ npm install
 # 3. Configure as variáveis de ambiente
 # Crie um arquivo .env na raiz do projeto com:
 VITE_SUPABASE_URL=sua_url_do_supabase
-VITE_SUPABASE_ANON_KEY=sua_chave_anonima
+VITE_SUPABASE_PUBLISHABLE_KEY=sua_chave_anonima
 VITE_GEMINI_API_KEY=sua_chave_gemini (opcional)
 VITE_WEATHER_API_KEY=sua_chave_openweathermap (opcional)
 ```
@@ -59,7 +60,7 @@ VITE_WEATHER_API_KEY=sua_chave_openweathermap (opcional)
 npm run dev
 ```
 
-O servidor de desenvolvimento estará disponível em `http://localhost:5173`
+O servidor de desenvolvimento estará disponível em `http://localhost:8080`
 
 ### Build para produção
 
@@ -68,6 +69,17 @@ npm run build
 ```
 
 Os arquivos de produção estarão na pasta `dist/`
+
+## Deploy na Vercel
+
+Para fazer deploy na Vercel, consulte o arquivo [DEPLOY_VERCEL.md](./DEPLOY_VERCEL.md) para instruções detalhadas.
+
+**Resumo rápido:**
+1. Conecte seu repositório GitHub na Vercel
+2. Configure as variáveis de ambiente na Vercel
+3. Faça o deploy!
+
+O arquivo `vercel.json` já está configurado para o projeto.
 
 ## Estrutura do Projeto
 
