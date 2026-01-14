@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 
-const WEATHER_API_KEY = import.meta.env.VITE_WEATHER_API_KEY || "";
+const WEATHER_API_KEY = import.meta.env.VITE_WEATHER_API_KEY;
 const WEATHER_BASE_URL = "https://api.openweathermap.org/data/2.5";
 
 interface WeatherData {
@@ -30,6 +30,10 @@ interface CityWeather {
 
 // Função para buscar clima atual
 const fetchCurrentWeather = async (city: string = "São Paulo"): Promise<WeatherData> => {
+  if (!WEATHER_API_KEY) {
+    throw new Error("VITE_WEATHER_API_KEY não configurada. Configure a variável de ambiente.");
+  }
+  
   // Adicionar ",BR" para garantir que busca no Brasil
   const cityQuery = city.includes(",") ? city : `${city},BR`;
   
@@ -59,6 +63,10 @@ const fetchCurrentWeather = async (city: string = "São Paulo"): Promise<Weather
 
 // Função para buscar previsão de 7 dias
 const fetchForecast = async (city: string = "São Paulo"): Promise<ForecastDay[]> => {
+  if (!WEATHER_API_KEY) {
+    throw new Error("VITE_WEATHER_API_KEY não configurada. Configure a variável de ambiente.");
+  }
+  
   // Adicionar ",BR" para garantir que busca no Brasil
   const cityQuery = city.includes(",") ? city : `${city},BR`;
   
@@ -123,6 +131,10 @@ const fetchForecast = async (city: string = "São Paulo"): Promise<ForecastDay[]
 
 // Função para buscar clima de múltiplas cidades
 const fetchCitiesWeather = async (cities: string[]): Promise<CityWeather[]> => {
+  if (!WEATHER_API_KEY) {
+    throw new Error("VITE_WEATHER_API_KEY não configurada. Configure a variável de ambiente.");
+  }
+  
   const promises = cities.map(city => {
     const cityQuery = city.includes(",") ? city : `${city},BR`;
     return fetch(`${WEATHER_BASE_URL}/weather?q=${encodeURIComponent(cityQuery)}&appid=${WEATHER_API_KEY}&units=metric&lang=pt_br`)
