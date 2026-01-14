@@ -49,11 +49,15 @@ const StructuredData = ({
       baseData.headline = title;
       baseData.description = description;
       baseData.url = currentUrl;
+      baseData.inLanguage = "pt-BR";
+      baseData.isAccessibleForFree = true;
       
       if (fullImageUrl) {
         baseData.image = {
           "@type": "ImageObject",
           url: fullImageUrl,
+          width: 1200,
+          height: 675,
         };
       }
 
@@ -81,6 +85,8 @@ const StructuredData = ({
             logo: {
               "@type": "ImageObject",
               url: publisher.logo,
+              width: 600,
+              height: 60,
             },
           }),
         };
@@ -93,10 +99,17 @@ const StructuredData = ({
       if (keywords) {
         baseData.keywords = keywords;
       }
+
+      // Adicionar informações específicas do Google News
+      baseData.mainEntityOfPage = {
+        "@type": "WebPage",
+        "@id": currentUrl,
+      };
     } else if (type === "WebSite") {
       baseData.name = title || "N91 - Portal de Notícias";
       baseData.url = siteUrl;
       baseData.description = description;
+      baseData.inLanguage = "pt-BR";
       baseData.potentialAction = {
         "@type": "SearchAction",
         target: {
@@ -108,8 +121,12 @@ const StructuredData = ({
     } else if (type === "Organization") {
       baseData.name = publisher.name;
       baseData.url = siteUrl;
+      baseData.inLanguage = "pt-BR";
       if (publisher.logo) {
-        baseData.logo = publisher.logo;
+        baseData.logo = {
+          "@type": "ImageObject",
+          url: publisher.logo,
+        };
       }
     }
 

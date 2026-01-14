@@ -1,13 +1,22 @@
 # Robots.txt para N91 - Portal de Notícias
+# Otimizado para Google News e SEO
 
-# Google News Bot
+# Google News Bot (prioridade máxima)
 User-agent: Googlebot-News
 Allow: /
+Allow: /noticia/
+Allow: /categoria/
+Allow: /esportes
+Allow: /clima
 Crawl-delay: 1
 
 # Google Search Bot
 User-agent: Googlebot
 Allow: /
+Allow: /noticia/
+Allow: /categoria/
+Allow: /esportes
+Allow: /clima
 Crawl-delay: 1
 
 # Bing Bot
@@ -23,14 +32,33 @@ Allow: /
 User-agent: facebookexternalhit
 Allow: /
 
+# LinkedIn Bot
+User-agent: LinkedInBot
+Allow: /
+
+# WhatsApp Bot
+User-agent: WhatsApp
+Allow: /
+
 # Outros bots
 User-agent: *
 Allow: /
 Crawl-delay: 2
 
-# Sitemap
+# Sitemaps
 Sitemap: https://n91.com.br/sitemap.xml
+Sitemap: https://n91.com.br/rss.xml
 
-# Bloquear áreas administrativas
+# Bloquear áreas administrativas e arquivos desnecessários
 Disallow: /admin/
 Disallow: /api/
+Disallow: /*.json$
+Disallow: /*?*utm_*
+Disallow: /*?*ref=*
+Disallow: /*?*source=*
+
+# Permitir recursos importantes
+Allow: /favicon.ico
+Allow: /robots.txt
+Allow: /sitemap.xml
+Allow: /rss.xml

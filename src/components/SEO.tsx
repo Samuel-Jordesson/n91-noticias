@@ -71,14 +71,18 @@ const SEO = ({
       }
       if (category) {
         updateMetaTag("property", "article:section", category);
+        updateMetaTag("property", "article:tag", category);
       }
     }
 
     // Canonical URL
     updateCanonical(currentUrl);
 
-    // Google News
+    // Google News específico
     updateMetaTag("name", "news_keywords", keywords);
+    if (type === "article") {
+      updateMetaTag("name", "original-source", currentUrl);
+    }
   }, [title, description, image, type, publishedTime, modifiedTime, author, category, keywords, currentUrl, fullImageUrl]);
 
   return null;

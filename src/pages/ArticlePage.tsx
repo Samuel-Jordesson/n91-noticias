@@ -188,6 +188,36 @@ const ArticlePage = () => {
         category={article.category}
         keywords={`${article.category}, notícias, brasil`}
       />
+      {/* BreadcrumbList Schema */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              {
+                "@type": "ListItem",
+                position: 1,
+                name: "Início",
+                item: typeof window !== "undefined" ? window.location.origin : "https://n91.com.br",
+              },
+              {
+                "@type": "ListItem",
+                position: 2,
+                name: article.category,
+                item: `${typeof window !== "undefined" ? window.location.origin : "https://n91.com.br"}/categoria/${article.category.toLowerCase()}`,
+              },
+              {
+                "@type": "ListItem",
+                position: 3,
+                name: article.title,
+                item: articleUrl,
+              },
+            ],
+          }),
+        }}
+      />
       <MainLayout>
         <article className="container py-6">
         {/* Breadcrumb */}
