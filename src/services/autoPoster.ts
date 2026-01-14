@@ -191,13 +191,12 @@ export const runAutomationCycle = async (onLog?: LogCallback): Promise<Automatio
       totalFound: allRecentNews.length
     });
 
-    // Analisar algumas notícias para determinar relevância e urgência
-    // Limitar a 3 notícias para não exceder quota da API (20 req/min no plano gratuito)
-    addLog("info", "Analisando relevância e urgência das notícias (limitado a 3 para evitar quota)...");
+    // Analisar apenas 1 notícia para economizar quota (máximo 1 chamada de IA por ciclo)
+    addLog("info", "Analisando relevância e urgência das notícias (limitado a 1 para economizar quota)...");
     const analyzedNews = [];
     
-    // Pegar uma amostra diversificada de categorias (1-2 de cada categoria)
-    const newsToAnalyze = recentNews.slice(0, 3); // Reduzir para 3 notícias para economizar API
+    // Analisar apenas a primeira notícia para economizar quota
+    const newsToAnalyze = recentNews.slice(0, 1); // Apenas 1 notícia para economizar API
     
     for (let idx = 0; idx < newsToAnalyze.length; idx++) {
       const news = newsToAnalyze[idx];
@@ -209,16 +208,16 @@ export const runAutomationCycle = async (onLog?: LogCallback): Promise<Automatio
           continue;
         }
 
-        // Adicionar delay entre requisições para evitar rate limiting (3 segundos)
+        // Adicionar delay entre requisições para evitar rate limiting (5 segundos)
         if (idx > 0) {
           // Se IA está desabilitada (ex: chave vazada), não faz sentido continuar analisando
           if (aiDisabledReason) break;
-          addLog("info", "Aguardando 3 segundos antes da próxima análise...");
-          await new Promise((resolve) => setTimeout(resolve, 3000));
+          addLog("info", "Aguardando 5 segundos antes da próxima análise...");
+          await new Promise((resolve) => setTimeout(resolve, 5000));
         }
 
         // Analisar com IA para determinar relevância (com retry automático se quota excedida)
-        addLog("info", `Analisando ${idx + 1}/3: ${news.title.substring(0, 50)}...`);
+        addLog("info", `Analisando notícia: ${news.title.substring(0, 50)}...`);
         let analysis;
         let retries = 0;
         const maxRetries = 1; // Tentar apenas 1 vez após esperar
@@ -486,16 +485,21 @@ export const runAutomationCycle = async (onLog?: LogCallback): Promise<Automatio
 
     try {
 
-        // Buscar imagem
-        addLog("info", "Buscando imagem relacionada...");
+        // Função auxiliar para imagem fallback (sem IA)
+        const getFallbackImageUrl = (query: string) => {
+          const q = encodeURIComponent(query.trim());
+          return `https://source.unsplash.com/1200x675/?${q}`;
+        };
+
+        // Buscar imagem SEM usar IA (para economizar quota)
+        // Usar apenas APIs gratuitas de imagens ou fallback automático
+        addLog("info", "Buscando imagem relacionada (sem IA para economizar quota)...");
         let imageUrl = analysis.imageUrl;
         if (!imageUrl) {
-          const { findImageWithAI, findRelatedImage, findImageFromSimilarPosts } = await import("./ai");
+          const { findRelatedImage, findImageFromSimilarPosts } = await import("./ai");
           
-          imageUrl = (await findImageWithAI(analysis.title, news.description || news.title, analysis.category)) || undefined;
-          if (imageUrl) {
-            addLog("success", "Imagem encontrada via IA", { imageUrl });
-          } else if (analysis.imageSearchTerms) {
+          // Pular findImageWithAI (consome quota) - usar apenas APIs gratuitas
+          if (analysis.imageSearchTerms) {
             imageUrl = (await findRelatedImage(analysis.imageSearchTerms, analysis.category)) || undefined;
             if (imageUrl) {
               addLog("success", "Imagem encontrada em API de imagens", { imageUrl });
@@ -506,9 +510,13 @@ export const runAutomationCycle = async (onLog?: LogCallback): Promise<Automatio
             imageUrl = (await findImageFromSimilarPosts(analysis.title, analysis.category)) || undefined;
             if (imageUrl) {
               addLog("success", "Imagem encontrada em post similar", { imageUrl });
-            } else {
-              addLog("warning", "Nenhuma imagem encontrada, post será criado sem imagem");
             }
+          }
+          
+          // Se ainda não encontrou, usar fallback automático (não consome quota)
+          if (!imageUrl) {
+            imageUrl = getFallbackImageUrl(`${analysis.title} ${analysis.category} Brasil`);
+            addLog("info", "Usando imagem automática (fallback)", { imageUrl });
           }
         } else {
           addLog("success", "Imagem sugerida pela IA", { imageUrl });
