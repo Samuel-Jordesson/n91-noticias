@@ -27,6 +27,7 @@ import TipTapEditor from "@/components/TipTapEditor";
 import { usePosts, useCreatePost, useUpdatePost, useDeletePost } from "@/hooks/usePosts";
 import { useCategories } from "@/hooks/useCategories";
 import { useProfile } from "@/hooks/useAuth";
+import { useAllProfiles } from "@/hooks/useUsers";
 import { Skeleton } from "@/components/ui/skeleton";
 
 const AdminPosts = () => {
@@ -39,6 +40,7 @@ const AdminPosts = () => {
   const [title, setTitle] = useState("");
   const [excerpt, setExcerpt] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
+  const [selectedAuthor, setSelectedAuthor] = useState<string>("");
   const [isBreaking, setIsBreaking] = useState(false);
   const [isFeatured, setIsFeatured] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -46,6 +48,7 @@ const AdminPosts = () => {
   const { data: posts, isLoading: isLoadingPosts } = usePosts();
   const { data: categories } = useCategories();
   const { data: profile } = useProfile();
+  const { data: allProfiles = [] } = useAllProfiles();
   const createPostMutation = useCreatePost();
   const updatePostMutation = useUpdatePost();
   const deletePostMutation = useDeletePost();
@@ -90,8 +93,11 @@ const AdminPosts = () => {
       return;
     }
 
-    if (!profile?.id) {
-      toast.error("Erro: Usuário não identificado. Faça login novamente.");
+    // Usar o autor selecionado ou o usuário logado como padrão
+    const authorId = selectedAuthor || profile?.id;
+    
+    if (!authorId) {
+      toast.error("Erro: Selecione um autor ou faça login novamente.");
       return;
     }
 
@@ -101,7 +107,7 @@ const AdminPosts = () => {
         excerpt,
         content: editorContent,
         category_id: category.id,
-        author_id: profile.id, // Usar o ID do usuário logado
+        author_id: authorId, // Usar o autor selecionado ou o usuário logado
         is_breaking: isBreaking,
         is_featured: isFeatured,
         is_published: true,
@@ -132,6 +138,7 @@ const AdminPosts = () => {
       setTitle("");
       setExcerpt("");
       setSelectedCategory("");
+      setSelectedAuthor("");
       setIsBreaking(false);
       setIsFeatured(false);
     } catch (error: any) {
@@ -254,6 +261,28 @@ const AdminPosts = () => {
                   </SelectContent>
                 </Select>
               </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="author">Autor</Label>
+                <Select 
+                  value={selectedAuthor || profile?.id || ""} 
+                  onValueChange={setSelectedAuthor}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecionar autor" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {allProfiles.map((author) => (
+                      <SelectItem key={author.id} value={author.id}>
+                        {author.name} {author.id === profile?.id ? "(Você)" : ""}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <p className="text-xs text-muted-foreground">
+                  Selecione o autor do post. Por padrão, será usado seu nome.
+                </p>
+              </div>
               
               {/* Image Upload */}
               <div className="space-y-2">
@@ -343,6 +372,7 @@ const AdminPosts = () => {
                     setTitle("");
                     setExcerpt("");
                     setSelectedCategory("");
+                    setSelectedAuthor("");
                     setIsBreaking(false);
                     setIsFeatured(false);
                   }}
