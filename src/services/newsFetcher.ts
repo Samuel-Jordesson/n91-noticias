@@ -8,14 +8,84 @@ export interface NewsSource {
   source: string;
 }
 
-// Buscar notícias usando NewsAPI (requer API key - você pode adicionar depois)
+// Mapeamento de categorias do sistema para categorias do NewsAPI
+const categoryToNewsAPI: Record<string, string> = {
+  "Economia": "business",
+  "Negócios": "business",
+  "Entretenimento": "entertainment",
+  "Cultura": "entertainment",
+  "Saúde": "health",
+  "Ciência": "science",
+  "Esportes": "sports",
+  "Tecnologia": "technology",
+  "Política": "general",
+  "Clima": "general",
+  "Internacional": "general",
+  "Educação": "general",
+};
+
+// Buscar notícias usando NewsAPI
 export const fetchNewsFromAPI = async (category?: string): Promise<NewsSource[]> => {
-  // Você pode adicionar uma API key do NewsAPI aqui
-  // const NEWS_API_KEY = "YOUR_NEWS_API_KEY";
-  // const url = `https://newsapi.org/v2/top-headlines?country=br&category=${category}&apiKey=${NEWS_API_KEY}`;
+  const NEWS_API_KEY = import.meta.env.VITE_NEWS_API_KEY || "0cc2192d2a4f46569780459d9b2d8d9a";
   
-  // Por enquanto, retornar array vazio - você pode integrar depois
-  return [];
+  if (!NEWS_API_KEY) {
+    console.warn("NewsAPI key não configurada");
+    return [];
+  }
+
+  try {
+    // Mapear categoria do sistema para categoria do NewsAPI
+    const newsAPICategory = category ? categoryToNewsAPI[category] || "general" : undefined;
+    
+    // Construir URL da API
+    let url = `https://newsapi.org/v2/top-headlines?country=br&apiKey=${NEWS_API_KEY}`;
+    if (newsAPICategory && newsAPICategory !== "general") {
+      url += `&category=${newsAPICategory}`;
+    }
+    
+    // Limitar a 10 resultados por categoria para economizar quota
+    url += "&pageSize=10";
+
+    const response = await fetch(url);
+    
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      console.error("Erro ao buscar notícias da NewsAPI:", {
+        status: response.status,
+        statusText: response.statusText,
+        error: errorData,
+      });
+      
+      // Se for erro 429 (quota excedida), retornar array vazio
+      if (response.status === 429) {
+        console.warn("Quota da NewsAPI excedida");
+        return [];
+      }
+      
+      return [];
+    }
+
+    const data = await response.json();
+    
+    if (data.status === "error") {
+      console.error("Erro da NewsAPI:", data.message);
+      return [];
+    }
+
+    // Converter resposta da NewsAPI para formato NewsSource
+    const news: NewsSource[] = (data.articles || []).map((article: any) => ({
+      title: article.title || "Sem título",
+      description: article.description || article.content?.substring(0, 200) || "Sem descrição",
+      url: article.url || "",
+      publishedAt: article.publishedAt || new Date().toISOString(),
+      source: category || article.source?.name || "NewsAPI",
+    }));
+
+    return news;
+  } catch (error) {
+    console.error("Erro ao buscar notícias da NewsAPI:", error);
+    return [];
+  }
 };
 
 // Buscar notícias de RSS feeds brasileiros usando um proxy
@@ -71,97 +141,85 @@ export const extractNewsFromUrl = async (url: string): Promise<string> => {
   }
 };
 
-// Buscar notícias recentes e relevantes de múltiplas categorias
+// Buscar notícias recentes e relevantes de múltiplas categorias usando NewsAPI
 export const fetchRecentNews = async (categories: string[]): Promise<NewsSource[]> => {
   const allNews: NewsSource[] = [];
 
-  // Gerar notícias de exemplo para cada categoria
-  // Em produção, você pode integrar APIs reais (NewsAPI, RSS feeds, etc.)
+  // Buscar notícias da NewsAPI para cada categoria
+  // Limitar a 2-3 categorias por vez para não exceder quota (100 req/dia no plano gratuito)
+  const categoriesToFetch = categories.slice(0, 3); // Buscar apenas 3 categorias por ciclo
   
-  const categoryNewsMap: Record<string, string[]> = {
-    "Economia": [
-      "Inflação no Brasil: especialistas analisam impacto na economia",
-      "Dólar sobe e atinge nova máxima do ano",
-      "Brasil registra crescimento no PIB do último trimestre",
-    ],
-    "Política": [
-      "Nova lei aprovada no Congresso Nacional",
-      "Eleições municipais: confira os principais candidatos",
-      "Governo anuncia novo pacote de medidas econômicas",
-    ],
-    "Esportes": [
-      "Campeonato Brasileiro: resultados dos jogos de hoje",
-      "Seleção Brasileira se prepara para próximo amistoso",
-      "Atleta brasileiro conquista medalha em competição internacional",
-    ],
-    "Tecnologia": [
-      "Novo lançamento de smartphone com tecnologia inovadora",
-      "Inteligência Artificial: avanços e impactos na sociedade",
-      "Startup brasileira recebe investimento milionário",
-    ],
-    "Saúde": [
-      "Ministério da Saúde anuncia nova campanha de vacinação",
-      "Pesquisa revela benefícios de hábitos saudáveis",
-      "Hospital inaugura nova unidade de tratamento",
-    ],
-    "Entretenimento": [
-      "Festival de música anuncia line-up completo",
-      "Filme brasileiro ganha prêmio internacional",
-      "Série nacional estreia em plataforma de streaming",
-    ],
-    "Negócios": [
-      "Empresa anuncia expansão e criação de novos empregos",
-      "Mercado de ações fecha em alta",
-      "Startup brasileira é adquirida por multinacional",
-    ],
-    "Clima": [
-      "Previsão do tempo: alerta para chuvas intensas",
-      "Temperaturas sobem em várias regiões do país",
-      "Especialistas alertam para mudanças climáticas",
-    ],
-    "Internacional": [
-      "Cúpula internacional discute questões globais",
-      "País estrangeiro anuncia novo acordo comercial",
-      "Organização internacional lança novo relatório",
-    ],
-    "Educação": [
-      "Universidade lança novo programa de bolsas",
-      "Pesquisa educacional revela dados importantes",
-      "Escola pública recebe investimento em infraestrutura",
-    ],
-    "Ciência": [
-      "Pesquisadores brasileiros fazem descoberta importante",
-      "Nova pesquisa científica publicada em revista internacional",
-      "Laboratório anuncia avanço em estudos médicos",
-    ],
-    "Cultura": [
-      "Museu inaugura nova exposição temporária",
-      "Festival cultural reúne artistas de todo o país",
-      "Livro brasileiro ganha destaque internacional",
-    ],
-  };
+  for (const category of categoriesToFetch) {
+    try {
+      const news = await fetchNewsFromAPI(category);
+      
+      // Adicionar a categoria original ao source para manter rastreabilidade
+      const newsWithCategory = news.map((item) => ({
+        ...item,
+        source: category, // Manter categoria do sistema
+      }));
+      
+      allNews.push(...newsWithCategory);
+      
+      // Adicionar delay entre requisições para evitar rate limiting
+      if (categoriesToFetch.indexOf(category) < categoriesToFetch.length - 1) {
+        await new Promise((resolve) => setTimeout(resolve, 1000)); // 1 segundo entre requisições
+      }
+    } catch (error) {
+      console.error(`Erro ao buscar notícias da categoria ${category}:`, error);
+      // Continuar com outras categorias mesmo se uma falhar
+    }
+  }
 
-  // Gerar notícias para cada categoria disponível
-  categories.forEach((category) => {
-    const newsTitles = categoryNewsMap[category] || [];
+  // Se não encontrou notícias da NewsAPI, usar fallback com dados mockados para categorias não buscadas
+  if (allNews.length === 0) {
+    console.warn("Nenhuma notícia encontrada da NewsAPI, usando fallback...");
     
-    newsTitles.forEach((title, index) => {
-      allNews.push({
-        title: `${title}`,
-        description: `Notícia relevante sobre ${category.toLowerCase()}. Esta é uma notícia gerada automaticamente para demonstrar o sistema de automação.`,
-        url: `https://example.com/news/${category.toLowerCase()}/${index}`,
-        publishedAt: new Date(Date.now() - Math.random() * 24 * 60 * 60 * 1000).toISOString(), // Últimas 24h
-        source: category,
+    // Fallback apenas para as categorias que não foram buscadas
+    const fallbackCategories = categories.slice(3);
+    const categoryNewsMap: Record<string, string[]> = {
+      "Política": [
+        "Nova lei aprovada no Congresso Nacional",
+        "Eleições municipais: confira os principais candidatos",
+      ],
+      "Clima": [
+        "Previsão do tempo: alerta para chuvas intensas",
+        "Temperaturas sobem em várias regiões do país",
+      ],
+      "Internacional": [
+        "Cúpula internacional discute questões globais",
+        "País estrangeiro anuncia novo acordo comercial",
+      ],
+      "Educação": [
+        "Universidade lança novo programa de bolsas",
+        "Pesquisa educacional revela dados importantes",
+      ],
+    };
+
+    fallbackCategories.forEach((category) => {
+      const newsTitles = categoryNewsMap[category] || [];
+      
+      newsTitles.forEach((title, index) => {
+        allNews.push({
+          title: `${title}`,
+          description: `Notícia relevante sobre ${category.toLowerCase()}.`,
+          url: `https://example.com/news/${category.toLowerCase()}/${index}`,
+          publishedAt: new Date(Date.now() - Math.random() * 24 * 60 * 60 * 1000).toISOString(),
+          source: category,
+        });
       });
     });
-  });
+  }
 
   // Filtrar notícias muito antigas (últimas 24 horas)
   const oneDayAgo = new Date();
   oneDayAgo.setHours(oneDayAgo.getHours() - 24);
 
-  return allNews.filter((news) => {
+  const recentNews = allNews.filter((news) => {
     const newsDate = new Date(news.publishedAt);
     return newsDate >= oneDayAgo;
   });
+
+  // Limitar a 10 notícias no total para economizar processamento
+  return recentNews.slice(0, 10);
 };

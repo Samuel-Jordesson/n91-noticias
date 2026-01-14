@@ -41,7 +41,11 @@ VITE_SUPABASE_PUBLISHABLE_KEY=sua_chave_anonima_do_supabase
 #### Opcionais (para funcionalidades específicas):
 ```
 VITE_GEMINI_API_KEY=sua_chave_do_google_gemini
-# Necessária para automação de posts com IA
+# Necessária para automação de posts com IA (reescrita de conteúdo)
+
+VITE_NEWS_API_KEY=sua_chave_do_newsapi
+# Necessária para buscar notícias reais da NewsAPI (recomendado)
+# Chave padrão: 0cc2192d2a4f46569780459d9b2d8d9a (já configurada no código)
 
 VITE_WEATHER_API_KEY=sua_chave_do_openweathermap
 # Necessária para página de clima funcionar
