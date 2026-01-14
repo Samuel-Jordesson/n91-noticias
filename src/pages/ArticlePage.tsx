@@ -12,7 +12,7 @@ import { useAdsByPosition } from "@/hooks/useAds";
 import { Skeleton } from "@/components/ui/skeleton";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { Eye, Clock, User, Share2, Facebook, Twitter } from "lucide-react";
+import { Eye, Clock, User, Share2, Facebook, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import type { PostWithCategory } from "@/services/posts";
@@ -139,6 +139,24 @@ const ArticlePage = () => {
     toast.success("Link copiado para a área de transferência!");
   };
 
+  const handleShareFacebook = () => {
+    const url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`;
+    window.open(url, "_blank", "width=600,height=400");
+  };
+
+  const handleShareX = () => {
+    const text = encodeURIComponent(article.title);
+    const url = encodeURIComponent(window.location.href);
+    const shareUrl = `https://twitter.com/intent/tweet?text=${text}&url=${url}`;
+    window.open(shareUrl, "_blank", "width=600,height=400");
+  };
+
+  const handleShareWhatsApp = () => {
+    const text = encodeURIComponent(`${article.title} - ${window.location.href}`);
+    const shareUrl = `https://wa.me/?text=${text}`;
+    window.open(shareUrl, "_blank");
+  };
+
   const articleUrl = typeof window !== "undefined" ? window.location.href : "";
   const articleImage = article.imageUrl || "";
   const publishedTimeISO = article.publishedAt.toISOString();
@@ -235,11 +253,16 @@ const ArticlePage = () => {
                   <Share2 className="h-4 w-4 mr-1" />
                   Copiar link
                 </Button>
-                <Button variant="outline" size="icon" className="h-8 w-8">
+                <Button variant="outline" size="icon" className="h-8 w-8" onClick={handleShareFacebook} title="Compartilhar no Facebook">
                   <Facebook className="h-4 w-4" />
                 </Button>
-                <Button variant="outline" size="icon" className="h-8 w-8">
-                  <Twitter className="h-4 w-4" />
+                <Button variant="outline" size="icon" className="h-8 w-8" onClick={handleShareX} title="Compartilhar no X">
+                  <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                  </svg>
+                </Button>
+                <Button variant="outline" size="icon" className="h-8 w-8" onClick={handleShareWhatsApp} title="Compartilhar no WhatsApp">
+                  <MessageCircle className="h-4 w-4" />
                 </Button>
               </div>
             </header>
