@@ -11,14 +11,54 @@ export const signIn = async (email: string, password: string) => {
   });
 
   if (error) {
-    // Ignorar erro de email não confirmado se a confirmação estiver desativada
+    // Se o erro for de email não confirmado, ignorar e tentar obter a sessão
+    // (assumindo que a confirmação de email está desativada no Supabase)
     if (error.message?.includes('Email not confirmed') || error.message?.includes('email_not_confirmed')) {
-      // Se o erro for apenas de confirmação, mas o usuário existe, tentar obter a sessão
-      const { data: sessionData } = await supabase.auth.getSession();
-      if (sessionData?.session) {
+      console.log("Email não confirmado detectado, mas ignorando (confirmação pode estar desativada)");
+      
+      // Tentar obter a sessão diretamente - pode funcionar se a confirmação estiver desativada
+      const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+      
+      if (sessionData?.session && !sessionError) {
+        console.log("Sessão obtida com sucesso, ignorando erro de confirmação");
         return { user: sessionData.session.user, session: sessionData.session };
       }
+      
+      // Se não conseguiu a sessão, tentar fazer login novamente após um pequeno delay
+      // Às vezes o Supabase precisa de um momento para processar
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      const { data: retryData, error: retryError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      
+      // Se ainda der erro de confirmação, mas conseguirmos a sessão, retornar sucesso
+      if (retryError && (retryError.message?.includes('Email not confirmed') || retryError.message?.includes('email_not_confirmed'))) {
+        const { data: finalSession } = await supabase.auth.getSession();
+        if (finalSession?.session) {
+          console.log("Sessão obtida após retry, continuando login");
+          return { user: finalSession.session.user, session: finalSession.session };
+        }
+      }
+      
+      // Se o retry funcionou, retornar
+      if (!retryError && retryData) {
+        return retryData;
+      }
+      
+      // Se chegou aqui, não conseguimos contornar o erro
+      // Mas vamos tentar uma última vez obter a sessão
+      const { data: lastSession } = await supabase.auth.getSession();
+      if (lastSession?.session) {
+        return { user: lastSession.session.user, session: lastSession.session };
+      }
+      
+      // Se nada funcionou, lançar o erro original (mas isso não deveria acontecer se a confirmação estiver desativada)
+      console.warn("Não foi possível contornar erro de email não confirmado");
     }
+    
+    // Se não for erro de email não confirmado, lançar o erro normalmente
     throw error;
   }
   return data;

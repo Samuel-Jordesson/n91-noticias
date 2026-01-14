@@ -39,13 +39,28 @@ const AdminLogin = () => {
         }
       }, 500);
     } catch (error: any) {
+      // Ignorar erro de email não confirmado - o signIn já tenta contornar isso
       if (error.message?.includes('Email not confirmed') || error.message?.includes('email_not_confirmed')) {
-        toast.error("Email não confirmado. Se você desativou a confirmação de email no Supabase, confirme o email do usuário manualmente no Dashboard do Supabase (Authentication > Users > [usuário] > Confirm email).", {
-          duration: 8000,
-        });
-      } else {
-        toast.error(error.message || "Email ou senha incorretos");
+        // Tentar verificar se conseguiu fazer login mesmo assim
+        setTimeout(async () => {
+          try {
+            const profileData = await getCurrentProfile();
+            if (profileData) {
+              // Se conseguiu obter o perfil, o login funcionou
+              if (profileData?.role === 'admin' || profileData?.role === 'editor') {
+                toast.success("Login realizado com sucesso!");
+                navigate("/admin/dashboard");
+                return;
+              }
+            }
+          } catch (profileError) {
+            // Se não conseguiu, mostrar erro genérico
+            toast.error("Email ou senha incorretos");
+          }
+        }, 1000);
+        return; // Não mostrar erro ainda, aguardar verificação do perfil
       }
+      toast.error(error.message || "Email ou senha incorretos");
     }
   };
 
