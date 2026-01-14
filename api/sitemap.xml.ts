@@ -6,9 +6,10 @@ const supabaseKey = process.env.VITE_SUPABASE_PUBLISHABLE_KEY || process.env.SUP
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
-    const siteUrl = process.env.VERCEL_URL 
-      ? `https://${process.env.VERCEL_URL}` 
-      : (process.env.NEXT_PUBLIC_SITE_URL || 'https://n91.com.br');
+    // Priorizar variável de ambiente customizada, depois verificar se é produção
+    const siteUrl = process.env.SITE_URL || process.env.NEXT_PUBLIC_SITE_URL 
+      || (process.env.VERCEL_ENV === 'production' ? 'https://n91.com.br' : null)
+      || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'https://n91.com.br');
 
     const supabase = createClient(supabaseUrl, supabaseKey);
 
