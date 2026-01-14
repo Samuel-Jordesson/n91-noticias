@@ -45,7 +45,7 @@ const NewsCard = ({ article, variant = "default" }: NewsCardProps) => {
             <span className="news-category-badge mb-2 md:mb-3 block w-fit text-[10px] md:text-xs">
               {article.category}
             </span>
-            <h2 className="news-headline text-lg md:text-2xl lg:text-4xl text-white mb-2 md:mb-3 line-clamp-2 md:line-clamp-none">
+            <h2 className="news-headline text-base md:text-xl lg:text-2xl text-white mb-2 md:mb-3 line-clamp-2 md:line-clamp-3">
               {article.title}
             </h2>
             <p className="text-white/80 text-xs md:text-sm lg:text-base line-clamp-2 mb-3 md:mb-4 max-w-3xl hidden sm:block">
