@@ -6,8 +6,11 @@ import StructuredData from "@/components/StructuredData";
 import { Cloud, Wind, Droplets, Thermometer, MapPin } from "lucide-react";
 import { useCurrentWeather, useForecast, useCitiesWeather } from "@/hooks/useWeather";
 import { useAdsByPosition } from "@/hooks/useAds";
+import { usePostsByCategory } from "@/hooks/usePosts";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useState } from "react";
+import type { PostWithCategory } from "@/services/posts";
+import type { NewsArticle } from "@/types/news";
 import {
   Select,
   SelectContent,
@@ -37,10 +40,30 @@ const availableCities = [
   { name: "Recife", state: "PE", region: "Nordeste" },
 ];
 
+// Converter post do Supabase para NewsArticle
+const convertPostToNewsArticle = (post: PostWithCategory): NewsArticle => {
+  return {
+    id: post.id,
+    title: post.title,
+    excerpt: post.excerpt,
+    content: post.content,
+    imageUrl: post.image_url,
+    category: post.categories?.name || "Geral",
+    author: post.profiles?.name || "Desconhecido",
+    publishedAt: post.published_at ? new Date(post.published_at) : new Date(post.created_at),
+    isBreaking: post.is_breaking,
+    views: post.views,
+  };
+};
+
 const WeatherPage = () => {
   const [selectedCity, setSelectedCity] = useState("Belém");
   const { data: bannerAds } = useAdsByPosition("banner");
   const { data: sidebarAds } = useAdsByPosition("sidebar");
+  const { data: climatePosts } = usePostsByCategory("clima");
+  
+  // Converter posts de clima para NewsArticle
+  const weatherNews = climatePosts?.map(convertPostToNewsArticle) || [];
 
   // Converter ads do Supabase para o formato esperado
   const convertAds = (ads: any[]) => {
@@ -253,17 +276,15 @@ const WeatherPage = () => {
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {weatherNews.length > 0 ? (
-                weatherNews.map((article, index) => (
+                weatherNews.slice(0, 4).map((article, index) => (
                   <div key={article.id} className="animate-fade-in" style={{ animationDelay: `${index * 100}ms` }}>
                     <NewsCard article={article} />
                   </div>
                 ))
               ) : (
-                mockNews.slice(0, 4).map((article, index) => (
-                  <div key={article.id} className="animate-fade-in" style={{ animationDelay: `${index * 100}ms` }}>
-                    <NewsCard article={article} />
-                  </div>
-                ))
+                <div className="col-span-2 text-center py-8 text-muted-foreground">
+                  <p>Nenhuma notícia sobre clima disponível no momento.</p>
+                </div>
               )}
             </div>
           </div>
