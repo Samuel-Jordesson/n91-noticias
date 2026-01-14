@@ -203,9 +203,9 @@
   }
 
   .article-content p {
-    @apply mb-4 text-foreground/90 leading-relaxed text-lg;
-    font-size: 1.125rem;
-    line-height: 1.75;
+    @apply mb-4 text-foreground/90 leading-relaxed;
+    font-size: 1.25rem;
+    line-height: 1.8;
   }
 
   .article-content p:last-child {

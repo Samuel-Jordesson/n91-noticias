@@ -281,15 +281,15 @@ const ArticlePage = () => {
 
             {/* Article Body */}
             <div 
-              className="article-content prose prose-lg max-w-none font-serif
+              className="article-content prose prose-xl max-w-none font-serif
                 prose-headings:text-foreground prose-headings:font-serif prose-headings:font-bold
-                prose-p:text-foreground/90 prose-p:leading-relaxed prose-p:mb-4 prose-p:text-lg
+                prose-p:text-foreground/90 prose-p:leading-relaxed prose-p:mb-4 prose-p:text-xl
                 prose-a:text-primary prose-a:underline prose-a:font-medium prose-a:hover:text-primary/80
                 prose-strong:text-foreground prose-strong:font-bold
                 prose-em:text-foreground prose-em:italic
                 prose-ul:text-foreground/90 prose-ol:text-foreground/90
                 prose-li:mb-2 prose-blockquote:border-l-primary prose-blockquote:pl-4"
-              style={{ fontFamily: "'Merriweather', 'Georgia', serif" }}
+              style={{ fontFamily: "'Merriweather', 'Georgia', serif", fontSize: '1.25rem' }}
               dangerouslySetInnerHTML={{ __html: article.content }}
             />
 
