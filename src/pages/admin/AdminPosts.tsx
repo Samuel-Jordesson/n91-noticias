@@ -26,6 +26,7 @@ import { ptBR } from "date-fns/locale";
 import TipTapEditor from "@/components/TipTapEditor";
 import { usePosts, useCreatePost, useUpdatePost, useDeletePost } from "@/hooks/usePosts";
 import { useCategories } from "@/hooks/useCategories";
+import { useProfile } from "@/hooks/useAuth";
 import { Skeleton } from "@/components/ui/skeleton";
 
 const AdminPosts = () => {
@@ -44,6 +45,7 @@ const AdminPosts = () => {
 
   const { data: posts, isLoading: isLoadingPosts } = usePosts();
   const { data: categories } = useCategories();
+  const { data: profile } = useProfile();
   const createPostMutation = useCreatePost();
   const updatePostMutation = useUpdatePost();
   const deletePostMutation = useDeletePost();
@@ -88,12 +90,18 @@ const AdminPosts = () => {
       return;
     }
 
+    if (!profile?.id) {
+      toast.error("Erro: Usuário não identificado. Faça login novamente.");
+      return;
+    }
+
     try {
       const postData: any = {
         title,
         excerpt,
         content: editorContent,
         category_id: category.id,
+        author_id: profile.id, // Usar o ID do usuário logado
         is_breaking: isBreaking,
         is_featured: isFeatured,
         is_published: true,

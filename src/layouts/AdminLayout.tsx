@@ -23,23 +23,32 @@ const AdminLayout = ({ children, title }: AdminLayoutProps) => {
     }
   }, [isLoading, profile, queryClient]);
 
+  // Forçar refresh do perfil a cada 5 segundos para garantir dados atualizados
+  useEffect(() => {
+    const interval = setInterval(() => {
+      queryClient.invalidateQueries({ queryKey: ["profile"] });
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [queryClient]);
+
   // Garantir que o nome seja exibido corretamente
+  // Prioridade: name > email (sem @) > "Admin"
   const userInitial = profile?.name?.charAt(0)?.toUpperCase() || profile?.email?.charAt(0)?.toUpperCase() || "A";
-  const userName = profile?.name || profile?.email?.split("@")[0] || "Admin";
+  const userName = profile?.name?.trim() || (profile?.email ? profile.email.split("@")[0] : "Admin");
 
   // Debug: verificar se o perfil está sendo carregado
   useEffect(() => {
-    console.log("AdminLayout Debug:", { 
-      isLoading, 
-      profile, 
-      userName, 
-      userInitial,
-      hasName: !!profile?.name,
-      hasEmail: !!profile?.email,
-      profileName: profile?.name,
-      profileEmail: profile?.email
-    });
-  }, [profile, isLoading, userName, userInitial]);
+    if (profile) {
+      console.log("AdminLayout - Perfil carregado:", { 
+        id: profile.id,
+        name: profile.name,
+        email: profile.email,
+        userName,
+        userInitial
+      });
+    }
+  }, [profile, userName, userInitial]);
 
   return (
     <div className="flex min-h-screen">
