@@ -70,46 +70,46 @@ const AdminLayout = ({ children, title }: AdminLayoutProps) => {
       
       <div className="flex-1 flex flex-col lg:ml-0">
         {/* Top bar */}
-        <header className="bg-card border-b border-border px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between gap-2">
-          <div className="flex items-center gap-3">
+        <header className="bg-card border-b border-border px-3 sm:px-4 md:px-6 py-2 sm:py-3 md:py-4 flex items-center justify-between gap-2 min-w-0">
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
             <Button
               variant="ghost"
               size="icon"
-              className="lg:hidden"
+              className="lg:hidden flex-shrink-0 h-9 w-9"
               onClick={() => setSidebarOpen(!sidebarOpen)}
             >
-              {sidebarOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+              {sidebarOpen ? <X className="h-4 w-4 sm:h-5 sm:w-5" /> : <Menu className="h-4 w-4 sm:h-5 sm:w-5" />}
             </Button>
-            <h1 className="text-lg sm:text-xl font-serif font-bold truncate">{title}</h1>
+            <h1 className="text-base sm:text-lg md:text-xl font-serif font-bold truncate min-w-0">{title}</h1>
           </div>
           
-          <div className="flex items-center gap-2 sm:gap-4">
+          <div className="flex items-center gap-1 sm:gap-2 md:gap-4 flex-shrink-0">
             <div className="relative hidden sm:block">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Search className="absolute left-2 sm:left-3 top-1/2 -translate-y-1/2 h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
               <Input
                 type="search"
                 placeholder="Buscar..."
-                className="pl-10 w-40 md:w-64"
+                className="pl-8 sm:pl-10 w-32 sm:w-40 md:w-64 h-8 sm:h-9 text-xs sm:text-sm"
               />
             </div>
             
-            <Button variant="ghost" size="icon" className="relative hidden sm:flex">
-              <Bell className="h-5 w-5" />
-              <span className="absolute top-1 right-1 h-2 w-2 bg-accent rounded-full" />
+            <Button variant="ghost" size="icon" className="relative hidden sm:flex h-8 w-8 sm:h-9 sm:w-9">
+              <Bell className="h-4 w-4 sm:h-5 sm:w-5" />
+              <span className="absolute top-0.5 right-0.5 sm:top-1 sm:right-1 h-1.5 w-1.5 sm:h-2 sm:w-2 bg-accent rounded-full" />
             </Button>
             
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1 sm:gap-2">
               {isLoading ? (
                 <>
-                  <Skeleton className="h-8 w-8 rounded-full" />
-                  <Skeleton className="h-4 w-20 hidden md:block" />
+                  <Skeleton className="h-7 w-7 sm:h-8 sm:w-8 rounded-full" />
+                  <Skeleton className="h-3 w-16 sm:h-4 sm:w-20 hidden md:block" />
                 </>
               ) : (
                 <>
-                  <div className="h-8 w-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-semibold text-sm">
+                  <div className="h-7 w-7 sm:h-8 sm:w-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-semibold text-xs sm:text-sm flex-shrink-0">
                     {userInitial}
                   </div>
-                  <span className="hidden md:block text-sm font-medium truncate max-w-[120px]">{userName}</span>
+                  <span className="hidden md:block text-xs sm:text-sm font-medium truncate max-w-[100px] lg:max-w-[120px]">{userName}</span>
                 </>
               )}
             </div>
@@ -117,8 +117,10 @@ const AdminLayout = ({ children, title }: AdminLayoutProps) => {
         </header>
 
         {/* Content */}
-        <main className="flex-1 p-4 sm:p-6 bg-muted/50 overflow-auto">
-          {children}
+        <main className="flex-1 p-3 sm:p-4 md:p-6 bg-muted/50 overflow-x-hidden">
+          <div className="max-w-full overflow-x-hidden">
+            {children}
+          </div>
         </main>
       </div>
     </div>

@@ -121,22 +121,22 @@ const AdminDashboard = () => {
   return (
     <AdminLayout title="Dashboard">
       {/* Stats Grid */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6 mb-6 sm:mb-8">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 md:gap-4 lg:gap-6 mb-4 sm:mb-6 md:mb-8">
         {stats.map((stat) => (
-          <Card key={stat.title} className="animate-fade-in">
-            <CardHeader className="flex flex-row items-center justify-between pb-2 p-3 sm:p-6">
-              <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground truncate pr-2">
+          <Card key={stat.title} className="animate-fade-in overflow-hidden">
+            <CardHeader className="flex flex-row items-center justify-between pb-1 sm:pb-2 p-2 sm:p-4 md:p-6">
+              <CardTitle className="text-[10px] sm:text-xs md:text-sm font-medium text-muted-foreground truncate pr-1 sm:pr-2 min-w-0">
                 {stat.title}
               </CardTitle>
-              <stat.icon className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground flex-shrink-0" />
+              <stat.icon className="h-3 w-3 sm:h-4 sm:w-4 md:h-5 md:w-5 text-muted-foreground flex-shrink-0" />
             </CardHeader>
-            <CardContent className="p-3 sm:p-6 pt-0">
-              <div className="text-lg sm:text-2xl font-bold">{stat.value}</div>
-              <p className="text-[10px] sm:text-xs text-muted-foreground mt-1">
+            <CardContent className="p-2 sm:p-4 md:p-6 pt-0">
+              <div className="text-base sm:text-lg md:text-2xl font-bold truncate">{stat.value}</div>
+              <p className="text-[9px] sm:text-[10px] md:text-xs text-muted-foreground mt-0.5 sm:mt-1 line-clamp-1">
                 {stat.change}
               </p>
               {stat.subtitle && (
-                <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5">
+                <p className="text-[9px] sm:text-[10px] md:text-xs text-muted-foreground mt-0.5 line-clamp-1">
                   {stat.subtitle}
                 </p>
               )}
@@ -146,13 +146,13 @@ const AdminDashboard = () => {
       </div>
 
       {/* Charts */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
-        <Card className="lg:col-span-2">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-base sm:text-lg">Visualizações por Dia</CardTitle>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-4 md:gap-6 mb-4 sm:mb-6 md:mb-8">
+        <Card className="lg:col-span-2 overflow-hidden">
+          <CardHeader className="pb-2 sm:pb-3 p-3 sm:p-6">
+            <CardTitle className="text-sm sm:text-base md:text-lg">Visualizações por Dia</CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="h-[250px] sm:h-[300px]">
+          <CardContent className="p-3 sm:p-6 pt-0">
+            <div className="h-[200px] sm:h-[250px] md:h-[300px] w-full overflow-hidden">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={chartData}>
                   <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
@@ -172,12 +172,12 @@ const AdminDashboard = () => {
         </Card>
 
         {/* Recent Activity */}
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-base sm:text-lg">Atividade Recente</CardTitle>
+        <Card className="overflow-hidden">
+          <CardHeader className="pb-2 sm:pb-3 p-3 sm:p-6">
+            <CardTitle className="text-sm sm:text-base md:text-lg">Atividade Recente</CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="space-y-3 sm:space-y-4">
+          <CardContent className="p-3 sm:p-6 pt-0">
+            <div className="space-y-2 sm:space-y-3 md:space-y-4">
               {recentPosts.length === 0 ? (
                 <p className="text-xs sm:text-sm text-muted-foreground text-center py-4">
                   Nenhum post ainda
@@ -214,13 +214,13 @@ const AdminDashboard = () => {
       </div>
 
       {/* Recent Posts Table */}
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className="text-base sm:text-lg">Posts Recentes</CardTitle>
+      <Card className="overflow-hidden">
+        <CardHeader className="pb-2 sm:pb-3 p-3 sm:p-6">
+          <CardTitle className="text-sm sm:text-base md:text-lg">Posts Recentes</CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0">
-            <table className="w-full min-w-[600px]">
+        <CardContent className="p-0 sm:p-6">
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[500px] sm:min-w-[600px]">
               <thead>
                 <tr className="border-b border-border">
                   <th className="text-left py-2 sm:py-3 px-2 sm:px-4 text-xs sm:text-sm font-medium text-muted-foreground">

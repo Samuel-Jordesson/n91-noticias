@@ -34,7 +34,7 @@ const AdminSidebar = ({ onClose }: AdminSidebarProps) => {
   };
 
   return (
-    <aside className="admin-sidebar flex flex-col h-full w-64 lg:w-72">
+    <aside className="admin-sidebar flex flex-col h-full w-64 lg:w-72 overflow-hidden">
       {/* Logo */}
       <div className="p-4 sm:p-6 border-b border-white/10">
         <Link to="/" className="inline-block" onClick={handleLinkClick}>

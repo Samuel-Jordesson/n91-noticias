@@ -178,7 +178,7 @@ const AdminPosts = () => {
   return (
     <AdminLayout title="Gerenciar Posts">
       {/* Actions */}
-      <div className="flex flex-col sm:flex-row gap-4 mb-6">
+      <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 md:gap-4 mb-4 sm:mb-6">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
@@ -209,11 +209,11 @@ const AdminPosts = () => {
               Novo Post
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto p-4 sm:p-6">
-            <DialogHeader>
-              <DialogTitle className="text-lg sm:text-xl">Criar Novo Post</DialogTitle>
+          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto p-3 sm:p-4 md:p-6 w-[95vw] sm:w-full">
+            <DialogHeader className="pb-2">
+              <DialogTitle className="text-base sm:text-lg md:text-xl">Criar Novo Post</DialogTitle>
             </DialogHeader>
-            <form onSubmit={handleCreatePost} className="space-y-3 sm:space-y-4 mt-4">
+            <form onSubmit={handleCreatePost} className="space-y-2 sm:space-y-3 md:space-y-4 mt-2 sm:mt-4">
               <div className="space-y-2">
                 <Label htmlFor="title">Título</Label>
                 <Input 
@@ -389,22 +389,22 @@ const AdminPosts = () => {
       </div>
 
       {/* Posts Table */}
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className="text-base sm:text-lg">
+      <Card className="overflow-hidden">
+        <CardHeader className="pb-2 sm:pb-3 p-3 sm:p-6">
+          <CardTitle className="text-sm sm:text-base md:text-lg">
             Posts ({isLoadingPosts ? "..." : filteredPosts.length})
           </CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-0 sm:p-6">
           {isLoadingPosts ? (
-            <div className="space-y-4">
+            <div className="space-y-3 sm:space-y-4 p-3 sm:p-0">
               {[...Array(5)].map((_, i) => (
-                <Skeleton key={i} className="h-16 w-full" />
+                <Skeleton key={i} className="h-12 sm:h-16 w-full" />
               ))}
             </div>
           ) : (
-            <div className="overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0">
-              <table className="w-full min-w-[800px]">
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[700px] sm:min-w-[800px]">
                 <thead>
                   <tr className="border-b border-border">
                     <th className="text-left py-2 sm:py-3 px-2 sm:px-4 text-xs sm:text-sm font-medium text-muted-foreground">
