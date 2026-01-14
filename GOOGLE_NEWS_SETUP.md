@@ -27,18 +27,28 @@ Este guia explica como configurar o portal N91 para aparecer no Google News.
 - BreadcrumbList para navegação
 
 ### 4. RSS Feed
-⚠️ **Pendente**: Criar endpoint dinâmico
+✅ **Implementado**: Endpoint dinâmico `/api/rss.xml`
 - URL: `https://n91.com.br/rss.xml`
-- Deve incluir todas as notícias publicadas nas últimas 24 horas
-- Formato RSS 2.0 com namespace do Google News
+- Inclui os últimos 50 posts publicados
+- Formato RSS 2.0 completo com namespaces
+- Atualização automática
 
 ### 5. Sitemap
-⚠️ **Pendente**: Criar sitemap dinâmico
+✅ **Implementado**: Endpoint dinâmico `/api/sitemap.xml`
 - URL: `https://n91.com.br/sitemap.xml`
-- Deve incluir todas as URLs de notícias
-- Atualizar diariamente
+- Inclui todas as URLs de notícias, categorias e páginas especiais
+- Atualização automática com prioridades baseadas na recência
 
 ## 🚀 Passos para Submeter ao Google News
+
+### Passo 0: Verificar Domínio no Google Search Console
+1. Acesse: https://search.google.com/search-console
+2. Adicione a propriedade `n91.com.br` (domínio completo)
+3. Escolha o método de verificação: **Registro DNS TXT**
+4. Copie o valor: `google-site-verification=csTUJ1FAz7blJbdax7HTjEPSTiQkTqHC14iGSesCAwQ`
+5. Adicione este registro TXT no DNS do seu provedor (veja `GOOGLE_SEARCH_CONSOLE_VERIFICATION.md` para instruções detalhadas)
+6. Aguarde a propagação (5 minutos a 24 horas)
+7. Volte ao Search Console e clique em **VERIFICAR**
 
 ### Passo 1: Criar Conta no Google Publisher Center
 1. Acesse: https://publishers.google.com/
