@@ -53,6 +53,9 @@ const convertPostToNewsArticle = (post: PostWithCategory): NewsArticle => {
 const ArticlePage = () => {
   const { slug } = useParams();
   const { data: post, isLoading, error } = usePostBySlug(slug || "");
+  const { data: comments } = usePostComments(post?.id || "");
+  const { data: sidebarAds } = useAdsByPosition("sidebar");
+  const { data: inlineAds } = useAdsByPosition("inline");
   const incrementViews = useIncrementViews();
 
   // Incrementar visualizações quando a página carregar
@@ -62,14 +65,11 @@ const ArticlePage = () => {
     }
   }, [post?.id]);
 
-  // Buscar comentários usando o ID do post
-  const { data: comments } = usePostComments(post?.id || "");
-
   // Buscar posts relacionados da mesma categoria
   const categorySlug = post?.categories?.slug;
   const { data: categoryPosts } = usePostsByCategory(categorySlug || "");
   const relatedPosts = categoryPosts
-    ?.filter((p) => p.id !== id && p.is_published)
+    ?.filter((p) => p.id !== post?.id && p.is_published)
     .slice(0, 7) || [];
 
   const article = post ? convertPostToNewsArticle(post) : null;
