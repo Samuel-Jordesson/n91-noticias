@@ -153,8 +153,8 @@ const AdminDashboard = () => {
           <CardHeader className="pb-2 sm:pb-3 p-3 sm:p-6">
             <CardTitle className="text-sm sm:text-base md:text-lg">Visualizações por Dia</CardTitle>
           </CardHeader>
-          <CardContent className="p-3 sm:p-6 pt-0">
-            <div className="h-[200px] sm:h-[250px] md:h-[300px] w-full overflow-hidden relative">
+          <CardContent className="p-2 sm:p-3 md:p-6 pt-0">
+            <div className="h-[150px] sm:h-[200px] md:h-[250px] lg:h-[300px] w-full overflow-hidden relative">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={chartData}>
                   <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
@@ -217,12 +217,12 @@ const AdminDashboard = () => {
 
       {/* Recent Posts Table */}
       <Card className="overflow-hidden">
-        <CardHeader className="pb-2 sm:pb-3 p-3 sm:p-6">
+        <CardHeader className="pb-2 sm:pb-3 p-2 sm:p-3 md:p-6">
           <CardTitle className="text-sm sm:text-base md:text-lg">Posts Recentes</CardTitle>
         </CardHeader>
-        <CardContent className="p-0 sm:p-6">
+        <CardContent className="p-0 sm:p-3 md:p-6">
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[500px] sm:min-w-[600px]">
+            <table className="w-full min-w-[400px] sm:min-w-[500px] md:min-w-[600px]">
               <thead>
                 <tr className="border-b border-border">
                   <th className="text-left py-2 sm:py-3 px-2 sm:px-4 text-xs sm:text-sm font-medium text-muted-foreground">
