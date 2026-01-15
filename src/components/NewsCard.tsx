@@ -24,7 +24,7 @@ const NewsCard = ({ article, variant = "default" }: NewsCardProps) => {
     return (
       <Link to={`/noticia/${articleSlug}`} className="block group">
         <article className="relative overflow-hidden rounded-lg news-card-hover">
-          <div className="aspect-[16/9] md:aspect-[21/9] overflow-hidden bg-muted">
+          <div className="aspect-[16/9] md:aspect-[16/7] lg:aspect-[16/6] overflow-hidden bg-muted">
             {hasImage ? (
               <img
                 src={imageUrl}
@@ -38,7 +38,7 @@ const NewsCard = ({ article, variant = "default" }: NewsCardProps) => {
             )}
           </div>
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
-          <div className="absolute bottom-0 left-0 right-0 p-4 md:p-6 lg:p-8">
+          <div className="absolute bottom-0 left-0 right-0 p-4 md:p-6 lg:p-10 xl:p-12">
             {article.isBreaking && (
               <span className="breaking-badge mb-2 md:mb-3 text-xs md:text-sm">
                 🔴 Urgente
@@ -47,13 +47,13 @@ const NewsCard = ({ article, variant = "default" }: NewsCardProps) => {
             <span className="news-category-badge mb-2 md:mb-3 block w-fit text-[10px] md:text-xs">
               {article.category}
             </span>
-            <h2 className="news-headline text-base md:text-xl lg:text-2xl text-white mb-2 md:mb-3 line-clamp-2 md:line-clamp-3">
+            <h2 className="news-headline text-lg md:text-2xl lg:text-3xl xl:text-4xl text-white mb-3 md:mb-4 line-clamp-2 md:line-clamp-3">
               {article.title}
             </h2>
-            <p className="text-white/80 text-xs md:text-sm lg:text-base line-clamp-2 mb-3 md:mb-4 max-w-3xl hidden sm:block">
+            <p className="text-white/80 text-sm md:text-base lg:text-lg line-clamp-2 md:line-clamp-3 mb-4 md:mb-5 max-w-3xl hidden sm:block">
               {article.excerpt}
             </p>
-            <div className="flex items-center gap-2 md:gap-4 text-white/60 text-xs md:text-sm flex-wrap">
+            <div className="flex items-center gap-2 md:gap-4 text-white/60 text-xs md:text-sm lg:text-base flex-wrap">
               <span className="truncate">{article.author}</span>
               <span>•</span>
               <span>{timeAgo}</span>
