@@ -24,7 +24,7 @@ const NewsCard = ({ article, variant = "default" }: NewsCardProps) => {
     return (
       <Link to={`/noticia/${articleSlug}`} className="block group">
         <article className="relative overflow-hidden rounded-lg news-card-hover">
-          <div className="aspect-[16/9] md:aspect-[4/3] lg:aspect-[3/2] overflow-hidden bg-muted">
+          <div className="aspect-[16/9] md:aspect-[16/10] lg:aspect-[16/8] overflow-hidden bg-muted">
             {hasImage ? (
               <img
                 src={imageUrl}
