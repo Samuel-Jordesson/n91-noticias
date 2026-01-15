@@ -123,23 +123,25 @@ const AdminDashboard = () => {
       {/* Stats Grid */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 md:gap-4 lg:gap-6 mb-4 sm:mb-6 md:mb-8">
         {stats.map((stat) => (
-          <Card key={stat.title} className="animate-fade-in overflow-hidden">
-            <CardHeader className="flex flex-row items-center justify-between pb-1 sm:pb-2 p-2 sm:p-4 md:p-6">
+          <Card key={stat.title} className="animate-fade-in overflow-hidden flex flex-col min-h-[100px] sm:min-h-[120px]">
+            <CardHeader className="flex flex-row items-center justify-between pb-1 sm:pb-2 p-2 sm:p-4 md:p-6 flex-shrink-0">
               <CardTitle className="text-[10px] sm:text-xs md:text-sm font-medium text-muted-foreground truncate pr-1 sm:pr-2 min-w-0">
                 {stat.title}
               </CardTitle>
               <stat.icon className="h-3 w-3 sm:h-4 sm:w-4 md:h-5 md:w-5 text-muted-foreground flex-shrink-0" />
             </CardHeader>
-            <CardContent className="p-2 sm:p-4 md:p-6 pt-0">
+            <CardContent className="p-2 sm:p-4 md:p-6 pt-0 flex-1 flex flex-col justify-between">
               <div className="text-base sm:text-lg md:text-2xl font-bold truncate">{stat.value}</div>
-              <p className="text-[9px] sm:text-[10px] md:text-xs text-muted-foreground mt-0.5 sm:mt-1 line-clamp-1">
-                {stat.change}
-              </p>
-              {stat.subtitle && (
-                <p className="text-[9px] sm:text-[10px] md:text-xs text-muted-foreground mt-0.5 line-clamp-1">
-                  {stat.subtitle}
+              <div className="mt-auto">
+                <p className="text-[9px] sm:text-[10px] md:text-xs text-muted-foreground mt-0.5 sm:mt-1 line-clamp-1">
+                  {stat.change}
                 </p>
-              )}
+                {stat.subtitle && (
+                  <p className="text-[9px] sm:text-[10px] md:text-xs text-muted-foreground mt-0.5 line-clamp-1">
+                    {stat.subtitle}
+                  </p>
+                )}
+              </div>
             </CardContent>
           </Card>
         ))}
@@ -147,12 +149,12 @@ const AdminDashboard = () => {
 
       {/* Charts */}
       <div className="flex flex-col lg:grid lg:grid-cols-3 gap-3 sm:gap-4 md:gap-6 mb-4 sm:mb-6 md:mb-8">
-        <Card className="w-full lg:col-span-2 overflow-hidden">
+        <Card className="w-full lg:col-span-2 overflow-hidden flex-shrink-0">
           <CardHeader className="pb-2 sm:pb-3 p-3 sm:p-6">
             <CardTitle className="text-sm sm:text-base md:text-lg">Visualizações por Dia</CardTitle>
           </CardHeader>
           <CardContent className="p-3 sm:p-6 pt-0">
-            <div className="h-[200px] sm:h-[250px] md:h-[300px] w-full overflow-hidden">
+            <div className="h-[200px] sm:h-[250px] md:h-[300px] w-full overflow-hidden relative">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={chartData}>
                   <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
@@ -172,7 +174,7 @@ const AdminDashboard = () => {
         </Card>
 
         {/* Recent Activity */}
-        <Card className="w-full overflow-hidden">
+        <Card className="w-full overflow-hidden flex-shrink-0">
           <CardHeader className="pb-2 sm:pb-3 p-3 sm:p-6">
             <CardTitle className="text-sm sm:text-base md:text-lg">Atividade Recente</CardTitle>
           </CardHeader>
