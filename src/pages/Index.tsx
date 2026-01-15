@@ -119,7 +119,7 @@ const Index = () => {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
                 {newsArticles
                   .filter(article => article.id !== featuredNews.id)
-                  .slice(0, 4)
+                  .slice(2, 4)
                   .map((article, index) => (
                     <div key={article.id} className="animate-fade-in" style={{ animationDelay: `${index * 50}ms` }}>
                       <Link to={`/noticia/${generateSlug(article.title)}`} className="block group h-full">
