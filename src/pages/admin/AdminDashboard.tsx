@@ -150,16 +150,16 @@ const AdminDashboard = () => {
       {/* Charts */}
       <div className="flex flex-col lg:grid lg:grid-cols-3 gap-3 sm:gap-4 md:gap-6 mb-4 sm:mb-6 md:mb-8">
         <Card className="w-full lg:col-span-2 overflow-hidden flex-shrink-0">
-          <CardHeader className="pb-2 sm:pb-3 p-3 sm:p-6">
-            <CardTitle className="text-sm sm:text-base md:text-lg">Visualizações por Dia</CardTitle>
+          <CardHeader className="pb-1 sm:pb-2 md:pb-3 p-2 sm:p-3 md:p-6">
+            <CardTitle className="text-xs sm:text-sm md:text-base lg:text-lg">Visualizações por Dia</CardTitle>
           </CardHeader>
-          <CardContent className="p-2 sm:p-3 md:p-6 pt-0">
-            <div className="h-[150px] sm:h-[200px] md:h-[250px] lg:h-[300px] w-full overflow-hidden relative">
+          <CardContent className="p-1.5 sm:p-2 md:p-3 lg:p-6 pt-0">
+            <div className="h-[120px] sm:h-[150px] md:h-[200px] lg:h-[250px] xl:h-[300px] w-full overflow-hidden relative">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={chartData}>
                   <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
-                  <XAxis dataKey="name" className="text-xs" />
-                  <YAxis className="text-xs" />
+                  <XAxis dataKey="name" className="text-[10px] sm:text-xs" tick={{ fontSize: 10 }} />
+                  <YAxis className="text-[10px] sm:text-xs" tick={{ fontSize: 10 }} />
                   <Tooltip />
                   <Area
                     type="monotone"
@@ -175,10 +175,10 @@ const AdminDashboard = () => {
 
         {/* Recent Activity */}
         <Card className="w-full overflow-hidden flex-shrink-0">
-          <CardHeader className="pb-2 sm:pb-3 p-3 sm:p-6">
-            <CardTitle className="text-sm sm:text-base md:text-lg">Atividade Recente</CardTitle>
+          <CardHeader className="pb-1 sm:pb-2 md:pb-3 p-2 sm:p-3 md:p-6">
+            <CardTitle className="text-xs sm:text-sm md:text-base lg:text-lg">Atividade Recente</CardTitle>
           </CardHeader>
-          <CardContent className="p-3 sm:p-6 pt-0">
+          <CardContent className="p-1.5 sm:p-2 md:p-3 lg:p-6 pt-0">
             <div className="space-y-2 sm:space-y-3 md:space-y-4">
               {recentPosts.length === 0 ? (
                 <p className="text-xs sm:text-sm text-muted-foreground text-center py-4">
