@@ -115,9 +115,9 @@ const Index = () => {
             </section>
           </div>
 
-          {/* Grid de 4 artigos menores à direita (2x2) - Oculto em mobile, visível em desktop */}
-          <div className="hidden lg:grid lg:col-span-2 grid-cols-2 gap-4">
-            {topNews.slice(0, 4).map((article, index) => (
+          {/* Grid de 2 artigos menores à direita (embaixo) - Oculto em mobile, visível em desktop */}
+          <div className="hidden lg:grid lg:col-span-2 grid-cols-2 gap-4 items-end">
+            {topNews.slice(2, 4).map((article, index) => (
               <div key={article.id} className="animate-fade-in" style={{ animationDelay: `${index * 100}ms` }}>
                 <NewsCard article={article} variant="default" />
               </div>
