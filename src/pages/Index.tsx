@@ -109,15 +109,54 @@ const Index = () => {
         {/* Main Hero Section - Layout inspirado no G1 e agênciaBrasil */}
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 md:gap-6 mb-6 md:mb-8">
           {/* Featured Article - Grande à esquerda */}
-          <div className="lg:col-span-3">
+          <div className="lg:col-span-3 space-y-4 md:space-y-6">
             <section className="animate-fade-in">
               <NewsCard article={featuredNews} variant="featured" />
             </section>
+            
+            {/* Notícias Rápidas - Aproveitando espaço abaixo do post principal */}
+            {newsArticles.length > 1 && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
+                {newsArticles
+                  .filter(article => article.id !== featuredNews.id)
+                  .slice(0, 4)
+                  .map((article, index) => (
+                    <div key={article.id} className="animate-fade-in" style={{ animationDelay: `${index * 50}ms` }}>
+                      <Link to={`/noticia/${generateSlug(article.title)}`} className="block group h-full">
+                        <article className="h-full p-3 md:p-4 border border-border rounded-lg hover:border-primary/50 hover:bg-muted/30 transition-all">
+                          <div className="flex items-center gap-2 mb-2 flex-wrap">
+                            <span className="news-category-badge text-[10px] px-2 py-0.5">
+                              {article.category}
+                            </span>
+                            {article.isBreaking && (
+                              <span className="text-[10px] md:text-xs font-bold text-destructive">Urgente</span>
+                            )}
+                          </div>
+                          <h3 className="text-xs md:text-sm font-bold text-foreground mb-2 line-clamp-2 group-hover:text-primary transition-colors">
+                            {article.title}
+                          </h3>
+                          <p className="text-[10px] md:text-xs text-muted-foreground line-clamp-2 mb-2 hidden sm:block">
+                            {article.excerpt}
+                          </p>
+                          <div className="flex items-center gap-1.5 md:gap-2 text-[10px] md:text-xs text-muted-foreground flex-wrap">
+                            <span>{formatDistanceToNow(article.publishedAt, { addSuffix: true, locale: ptBR })}</span>
+                            <span>•</span>
+                            <span className="flex items-center gap-1">
+                              <Eye className="h-3 w-3" />
+                              {article.views.toLocaleString("pt-BR")}
+                            </span>
+                          </div>
+                        </article>
+                      </Link>
+                    </div>
+                  ))}
+              </div>
+            )}
           </div>
 
-          {/* Grid de 2 artigos menores à direita (embaixo) - Oculto em mobile, visível em desktop */}
-          <div className="hidden lg:grid lg:col-span-2 grid-cols-2 gap-4 items-end">
-            {topNews.slice(2, 4).map((article, index) => (
+          {/* Grid de 4 artigos menores à direita (2x2) - Oculto em mobile, visível em desktop */}
+          <div className="hidden lg:grid lg:col-span-2 grid-cols-2 gap-4">
+            {topNews.slice(0, 4).map((article, index) => (
               <div key={article.id} className="animate-fade-in" style={{ animationDelay: `${index * 100}ms` }}>
                 <NewsCard article={article} variant="default" />
               </div>
