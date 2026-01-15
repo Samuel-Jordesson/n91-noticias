@@ -264,8 +264,8 @@ const AdminDashboard = () => {
         </Card>
       </div>
 
-        {/* Recent Posts Table */}
-        <Card className="overflow-hidden">
+      {/* Recent Posts Table */}
+      <Card className="overflow-hidden">
           <CardHeader className="pb-2 p-3 sm:p-4 md:p-6">
             <CardTitle className="text-sm sm:text-base md:text-lg">Posts Recentes</CardTitle>
           </CardHeader>
@@ -344,6 +344,7 @@ const AdminDashboard = () => {
           </div>
         </CardContent>
       </Card>
+      </div>
     </AdminLayout>
   );
 };
