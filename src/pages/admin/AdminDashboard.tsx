@@ -153,8 +153,8 @@ const AdminDashboard = () => {
           <CardHeader className="pb-1 sm:pb-2 md:pb-3 p-2 sm:p-3 md:p-6">
             <CardTitle className="text-xs sm:text-sm md:text-base lg:text-lg">Visualizações por Dia</CardTitle>
           </CardHeader>
-          <CardContent className="p-1.5 sm:p-2 md:p-3 lg:p-6 pt-0">
-            <div className="h-[120px] sm:h-[150px] md:h-[200px] lg:h-[250px] xl:h-[300px] w-full overflow-hidden relative">
+          <CardContent className="px-3 py-1.5 sm:px-4 sm:py-2 md:p-3 lg:p-6 pt-0">
+            <div className="h-[120px] sm:h-[150px] md:h-[200px] lg:h-[250px] xl:h-[300px] w-full max-w-full overflow-hidden relative">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={chartData}>
                   <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
