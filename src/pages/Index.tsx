@@ -107,16 +107,16 @@ const Index = () => {
       <MainLayout>
       <div className="container py-4 md:py-6 px-4 md:px-6">
         {/* Main Hero Section - Layout inspirado no G1 e agênciaBrasil */}
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 md:gap-6 mb-6 md:mb-8">
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 md:gap-6 mb-6 md:mb-8 lg:items-end">
           {/* Featured Article - Grande à esquerda */}
-          <div className="lg:col-span-3 space-y-4 md:space-y-6">
-            <section className="animate-fade-in">
+          <div className="lg:col-span-3 flex flex-col">
+            <section className="animate-fade-in mb-4 md:mb-6">
               <NewsCard article={featuredNews} variant="featured" />
             </section>
             
-            {/* Notícias Rápidas - Aproveitando espaço abaixo do post principal */}
+            {/* Notícias Rápidas - Alinhadas embaixo com os posts da direita */}
             {newsArticles.length > 1 && (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4 mt-auto">
                 {newsArticles
                   .filter(article => article.id !== featuredNews.id)
                   .slice(2, 4)
