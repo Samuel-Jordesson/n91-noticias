@@ -120,20 +120,20 @@ const AdminDashboard = () => {
 
   return (
     <AdminLayout title="Dashboard">
-      {/* Stats Grid */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 md:gap-4 lg:gap-6 mb-4 sm:mb-6 md:mb-8">
-        {stats.map((stat) => (
-          <Card key={stat.title} className="animate-fade-in overflow-hidden flex flex-col min-h-[100px] sm:min-h-[120px]">
-            <CardHeader className="flex flex-row items-center justify-between pb-1 sm:pb-2 p-2 sm:p-4 md:p-6 flex-shrink-0">
-              <CardTitle className="text-[10px] sm:text-xs md:text-sm font-medium text-muted-foreground truncate pr-1 sm:pr-2 min-w-0">
-                {stat.title}
-              </CardTitle>
-              <stat.icon className="h-3 w-3 sm:h-4 sm:w-4 md:h-5 md:w-5 text-muted-foreground flex-shrink-0" />
-            </CardHeader>
-            <CardContent className="p-2 sm:p-4 md:p-6 pt-0 flex-1 flex flex-col justify-between">
-              <div className="text-base sm:text-lg md:text-2xl font-bold truncate">{stat.value}</div>
-              <div className="mt-auto">
-                <p className="text-[9px] sm:text-[10px] md:text-xs text-muted-foreground mt-0.5 sm:mt-1 line-clamp-1">
+      <div className="space-y-3 sm:space-y-4 md:space-y-6">
+        {/* Stats Grid */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 md:gap-4 lg:gap-6">
+          {stats.map((stat) => (
+            <Card key={stat.title} className="animate-fade-in overflow-hidden">
+              <CardHeader className="flex flex-row items-center justify-between pb-1 sm:pb-2 p-2 sm:p-3 md:p-4 lg:p-6">
+                <CardTitle className="text-[10px] sm:text-xs md:text-sm font-medium text-muted-foreground truncate pr-1 min-w-0">
+                  {stat.title}
+                </CardTitle>
+                <stat.icon className="h-3 w-3 sm:h-4 sm:w-4 md:h-5 md:w-5 text-muted-foreground flex-shrink-0" />
+              </CardHeader>
+              <CardContent className="p-2 sm:p-3 md:p-4 lg:p-6 pt-0">
+                <div className="text-sm sm:text-base md:text-lg lg:text-2xl font-bold truncate mb-1">{stat.value}</div>
+                <p className="text-[9px] sm:text-[10px] md:text-xs text-muted-foreground line-clamp-1">
                   {stat.change}
                 </p>
                 {stat.subtitle && (
@@ -141,44 +141,51 @@ const AdminDashboard = () => {
                     {stat.subtitle}
                   </p>
                 )}
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+
+        {/* Charts - Mobile: Stacked, Desktop: Side by side */}
+        <div className="flex flex-col lg:grid lg:grid-cols-3 gap-3 sm:gap-4 md:gap-6">
+          {/* Chart Card */}
+          <Card className="w-full lg:col-span-2 overflow-hidden">
+            <CardHeader className="pb-2 p-3 sm:p-4 md:p-6">
+              <CardTitle className="text-sm sm:text-base md:text-lg">Visualizações por Dia</CardTitle>
+            </CardHeader>
+            <CardContent className="p-3 sm:p-4 md:p-6 pt-0">
+              <div className="h-[180px] sm:h-[220px] md:h-[280px] lg:h-[320px] w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={chartData} margin={{ top: 5, right: 5, left: -20, bottom: 5 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--muted))" />
+                    <XAxis 
+                      dataKey="name" 
+                      tick={{ fontSize: 10 }}
+                      interval={0}
+                    />
+                    <YAxis 
+                      tick={{ fontSize: 10 }}
+                      width={40}
+                    />
+                    <Tooltip />
+                    <Area
+                      type="monotone"
+                      dataKey="views"
+                      stroke="hsl(var(--primary))"
+                      fill="hsl(var(--primary) / 0.2)"
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
               </div>
             </CardContent>
           </Card>
-        ))}
-      </div>
 
-      {/* Charts */}
-      <div className="flex flex-col lg:grid lg:grid-cols-3 gap-3 sm:gap-4 md:gap-6 mb-4 sm:mb-6 md:mb-8">
-        <Card className="w-full lg:col-span-2 overflow-hidden flex-shrink-0">
-          <CardHeader className="pb-1 sm:pb-2 md:pb-3 p-2 sm:p-3 md:p-6">
-            <CardTitle className="text-xs sm:text-sm md:text-base lg:text-lg">Visualizações por Dia</CardTitle>
-          </CardHeader>
-          <CardContent className="px-3 py-1.5 sm:px-4 sm:py-2 md:p-3 lg:p-6 pt-0">
-            <div className="h-[120px] sm:h-[150px] md:h-[200px] lg:h-[250px] xl:h-[300px] w-full max-w-full overflow-hidden relative">
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={chartData}>
-                  <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
-                  <XAxis dataKey="name" className="text-[10px] sm:text-xs" tick={{ fontSize: 10 }} />
-                  <YAxis className="text-[10px] sm:text-xs" tick={{ fontSize: 10 }} />
-                  <Tooltip />
-                  <Area
-                    type="monotone"
-                    dataKey="views"
-                    stroke="hsl(var(--primary))"
-                    fill="hsl(var(--primary) / 0.2)"
-                  />
-                </AreaChart>
-              </ResponsiveContainer>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Recent Activity */}
-        <Card className="w-full overflow-hidden flex-shrink-0">
-          <CardHeader className="pb-1 sm:pb-2 md:pb-3 p-2 sm:p-3 md:p-6">
-            <CardTitle className="text-xs sm:text-sm md:text-base lg:text-lg">Atividade Recente</CardTitle>
-          </CardHeader>
-          <CardContent className="p-1.5 sm:p-2 md:p-3 lg:p-6 pt-0">
+          {/* Recent Activity */}
+          <Card className="w-full overflow-hidden">
+            <CardHeader className="pb-2 p-3 sm:p-4 md:p-6">
+              <CardTitle className="text-sm sm:text-base md:text-lg">Atividade Recente</CardTitle>
+            </CardHeader>
+            <CardContent className="p-3 sm:p-4 md:p-6 pt-0">
             <div className="space-y-2 sm:space-y-3 md:space-y-4">
               {recentPosts.length === 0 ? (
                 <p className="text-xs sm:text-sm text-muted-foreground text-center py-4">
@@ -214,15 +221,14 @@ const AdminDashboard = () => {
           </CardContent>
         </Card>
       </div>
-
-      {/* Recent Posts Table */}
-      <Card className="overflow-hidden">
-        <CardHeader className="pb-2 sm:pb-3 p-2 sm:p-3 md:p-6">
-          <CardTitle className="text-sm sm:text-base md:text-lg">Posts Recentes</CardTitle>
-        </CardHeader>
-        <CardContent className="p-0 sm:p-3 md:p-6">
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[400px] sm:min-w-[500px] md:min-w-[600px]">
+      </div>
+        <Card className="overflow-hidden">
+          <CardHeader className="pb-2 p-3 sm:p-4 md:p-6">
+            <CardTitle className="text-sm sm:text-base md:text-lg">Posts Recentes</CardTitle>
+          </CardHeader>
+          <CardContent className="p-0 sm:p-3 md:p-6">
+            <div className="overflow-x-auto -mx-3 sm:mx-0">
+              <table className="w-full min-w-[500px] sm:min-w-full">
               <thead>
                 <tr className="border-b border-border">
                   <th className="text-left py-2 sm:py-3 px-2 sm:px-4 text-xs sm:text-sm font-medium text-muted-foreground">
