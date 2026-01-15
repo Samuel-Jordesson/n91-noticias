@@ -146,8 +146,8 @@ const AdminDashboard = () => {
       </div>
 
       {/* Charts */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-4 md:gap-6 mb-4 sm:mb-6 md:mb-8">
-        <Card className="lg:col-span-2 overflow-hidden">
+      <div className="flex flex-col lg:grid lg:grid-cols-3 gap-3 sm:gap-4 md:gap-6 mb-4 sm:mb-6 md:mb-8">
+        <Card className="w-full lg:col-span-2 overflow-hidden">
           <CardHeader className="pb-2 sm:pb-3 p-3 sm:p-6">
             <CardTitle className="text-sm sm:text-base md:text-lg">Visualizações por Dia</CardTitle>
           </CardHeader>
@@ -172,7 +172,7 @@ const AdminDashboard = () => {
         </Card>
 
         {/* Recent Activity */}
-        <Card className="overflow-hidden">
+        <Card className="w-full overflow-hidden">
           <CardHeader className="pb-2 sm:pb-3 p-3 sm:p-6">
             <CardTitle className="text-sm sm:text-base md:text-lg">Atividade Recente</CardTitle>
           </CardHeader>
