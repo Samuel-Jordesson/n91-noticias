@@ -91,14 +91,29 @@ export const getPostBySlug = async (slug: string) => {
   return post as PostWithCategory;
 };
 
+// Função para normalizar slug (remover acentos)
+const normalizeSlug = (slug: string): string => {
+  return slug
+    .toLowerCase()
+    .normalize("NFD") // Remove acentos
+    .replace(/[\u0300-\u036f]/g, "") // Remove diacríticos
+    .trim();
+};
+
 // Buscar posts por categoria
 export const getPostsByCategory = async (categorySlug: string) => {
-  // Primeiro buscar a categoria pelo slug
-  const { data: category } = await supabase
+  // Normalizar o slug para remover acentos
+  const normalizedSlug = normalizeSlug(categorySlug);
+  
+  // Primeiro buscar a categoria pelo slug normalizado
+  const { data: categories } = await supabase
     .from('categories')
-    .select('id')
-    .eq('slug', categorySlug)
-    .single();
+    .select('id, slug');
+
+  if (!categories || categories.length === 0) return [];
+
+  // Encontrar a categoria que corresponde ao slug normalizado
+  const category = categories.find(cat => normalizeSlug(cat.slug) === normalizedSlug);
 
   if (!category) return [];
 

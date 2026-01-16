@@ -1,6 +1,15 @@
 import { Link } from "react-router-dom";
 import { categories } from "@/data/mockData";
 
+// Função para normalizar slug (remover acentos)
+const normalizeSlug = (slug: string): string => {
+  return slug
+    .toLowerCase()
+    .normalize("NFD") // Remove acentos
+    .replace(/[\u0300-\u036f]/g, "") // Remove diacríticos
+    .trim();
+};
+
 const Footer = () => {
   return (
     <footer className="bg-primary text-primary-foreground mt-12">
@@ -24,7 +33,7 @@ const Footer = () => {
               {categories.slice(0, 5).map((category) => (
                 <li key={category}>
                   <Link
-                    to={`/categoria/${category.toLowerCase()}`}
+                    to={`/categoria/${normalizeSlug(category)}`}
                     className="text-primary-foreground/80 hover:text-primary-foreground transition-colors"
                   >
                     {category}

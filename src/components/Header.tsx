@@ -11,19 +11,29 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 
+// Função para normalizar slug (remover acentos)
+const normalizeSlug = (slug: string): string => {
+  return slug
+    .toLowerCase()
+    .normalize("NFD") // Remove acentos
+    .replace(/[\u0300-\u036f]/g, "") // Remove diacríticos
+    .trim();
+};
+
 const Header = () => {
   const [searchOpen, setSearchOpen] = useState(false);
   const { user } = useAuth();
 
   // Category links
   const getCategoryLink = (category: string) => {
-    switch (category.toLowerCase()) {
+    const normalized = normalizeSlug(category);
+    switch (normalized) {
       case "esportes":
         return "/esportes";
       case "clima":
         return "/clima";
       default:
-        return `/categoria/${category.toLowerCase()}`;
+        return `/categoria/${normalized}`;
     }
   };
 

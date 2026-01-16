@@ -206,7 +206,7 @@ const ArticlePage = () => {
                 "@type": "ListItem",
                 position: 2,
                 name: article.category,
-                item: `${typeof window !== "undefined" ? window.location.origin : "https://n91.com.br"}/categoria/${article.category.toLowerCase()}`,
+                item: `${typeof window !== "undefined" ? window.location.origin : "https://n91.com.br"}/categoria/${article.category.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim()}`,
               },
               {
                 "@type": "ListItem",
@@ -231,7 +231,7 @@ const ArticlePage = () => {
             <li>/</li>
             <li>
               <Link
-                to={`/categoria/${article.category.toLowerCase()}`}
+                to={`/categoria/${article.category.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim()}`}
                 className="hover:text-primary"
               >
                 {article.category}

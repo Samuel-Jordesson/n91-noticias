@@ -13,6 +13,15 @@ import { Skeleton } from "@/components/ui/skeleton";
 import type { PostWithCategory } from "@/services/posts";
 import type { NewsArticle } from "@/types/news";
 
+// Função para normalizar slug (remover acentos)
+const normalizeSlug = (slug: string): string => {
+  return slug
+    .toLowerCase()
+    .normalize("NFD") // Remove acentos
+    .replace(/[\u0300-\u036f]/g, "") // Remove diacríticos
+    .trim();
+};
+
 // Converter post do Supabase para NewsArticle
 const convertPostToNewsArticle = (post: PostWithCategory): NewsArticle => {
   return {
@@ -46,8 +55,10 @@ const CategoryPage = () => {
     }
   }, [category, navigate]);
 
+  // Normalizar o slug da URL para encontrar a categoria
+  const normalizedCategorySlug = category ? normalizeSlug(category) : "";
   const currentCategory = categories?.find(
-    (cat) => cat.slug === category?.toLowerCase()
+    (cat) => normalizeSlug(cat.slug) === normalizedCategorySlug
   );
 
   const categoryNews = categoryPosts?.map(convertPostToNewsArticle) || [];
