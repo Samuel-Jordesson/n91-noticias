@@ -25,10 +25,18 @@ import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import TipTapEditor from "@/components/TipTapEditor";
 import { usePosts, useCreatePost, useUpdatePost, useDeletePost } from "@/hooks/usePosts";
-import { useCategories } from "@/hooks/useCategories";
+import { useCategories, useCreateCategory, useUpdateCategory, useDeleteCategory } from "@/hooks/useCategories";
 import { useProfile } from "@/hooks/useAuth";
 import { useAllProfiles } from "@/hooks/useUsers";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuTrigger,
+  ContextMenuSeparator,
+} from "@/components/ui/context-menu";
+import { Pencil, Trash2 as TrashIcon } from "lucide-react";
 
 const AdminPosts = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -45,6 +53,12 @@ const AdminPosts = () => {
   const [isFeatured, setIsFeatured] = useState(false);
   const [editingPost, setEditingPost] = useState<any>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  
+  // Estados para gerenciar categorias
+  const [isCategoryDialogOpen, setIsCategoryDialogOpen] = useState(false);
+  const [isEditCategoryDialogOpen, setIsEditCategoryDialogOpen] = useState(false);
+  const [categoryName, setCategoryName] = useState("");
+  const [editingCategory, setEditingCategory] = useState<any>(null);
 
   const { data: posts, isLoading: isLoadingPosts } = usePosts();
   const { data: categories } = useCategories();
@@ -53,6 +67,9 @@ const AdminPosts = () => {
   const createPostMutation = useCreatePost();
   const updatePostMutation = useUpdatePost();
   const deletePostMutation = useDeletePost();
+  const createCategoryMutation = useCreateCategory();
+  const updateCategoryMutation = useUpdateCategory();
+  const deleteCategoryMutation = useDeleteCategory();
 
   const filteredPosts = posts?.filter((post) => {
     const matchesSearch = post.title
@@ -192,6 +209,57 @@ const AdminPosts = () => {
     }
   };
 
+  // Handlers para categorias
+  const handleCreateCategory = async () => {
+    if (!categoryName.trim()) {
+      toast.error("Por favor, insira um nome para a categoria");
+      return;
+    }
+
+    try {
+      await createCategoryMutation.mutateAsync(categoryName.trim());
+      setCategoryName("");
+      setIsCategoryDialogOpen(false);
+    } catch (error: any) {
+      // Erro já é tratado no hook
+    }
+  };
+
+  const handleEditCategory = (category: any) => {
+    setEditingCategory(category);
+    setCategoryName(category.name);
+    setIsEditCategoryDialogOpen(true);
+  };
+
+  const handleUpdateCategory = async () => {
+    if (!categoryName.trim()) {
+      toast.error("Por favor, insira um nome para a categoria");
+      return;
+    }
+
+    try {
+      await updateCategoryMutation.mutateAsync({
+        id: editingCategory.id,
+        name: categoryName.trim(),
+      });
+      setCategoryName("");
+      setEditingCategory(null);
+      setIsEditCategoryDialogOpen(false);
+    } catch (error: any) {
+      // Erro já é tratado no hook
+    }
+  };
+
+  const handleDeleteCategory = async (category: any) => {
+    if (!confirm(`Tem certeza que deseja excluir a categoria "${category.name}"?`)) return;
+
+    try {
+      await deleteCategoryMutation.mutateAsync(category.id);
+    } catch (error: any) {
+      // Erro já é tratado no hook
+    }
+  };
+
   return (
     <AdminLayout title="Gerenciar Posts">
       {/* Actions */}
@@ -213,10 +281,52 @@ const AdminPosts = () => {
           <SelectContent>
             <SelectItem value="all">Todas as categorias</SelectItem>
             {categories?.map((cat) => (
-              <SelectItem key={cat.id} value={cat.slug}>
-                {cat.name}
-              </SelectItem>
+              <ContextMenu key={cat.id}>
+                <ContextMenuTrigger asChild>
+                  <SelectItem 
+                    value={cat.slug}
+                    onContextMenu={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                    }}
+                  >
+                    {cat.name}
+                  </SelectItem>
+                </ContextMenuTrigger>
+                <ContextMenuContent>
+                  <ContextMenuItem onClick={() => handleEditCategory(cat)}>
+                    <Pencil className="mr-2 h-4 w-4" />
+                    Editar
+                  </ContextMenuItem>
+                  <ContextMenuSeparator />
+                  <ContextMenuItem 
+                    onClick={() => handleDeleteCategory(cat)}
+                    className="text-destructive focus:text-destructive"
+                  >
+                    <TrashIcon className="mr-2 h-4 w-4" />
+                    Apagar
+                  </ContextMenuItem>
+                </ContextMenuContent>
+              </ContextMenu>
             ))}
+            <SelectItem 
+              value="__separator__" 
+              disabled
+              className="opacity-0 h-1 p-0 pointer-events-none"
+            >
+              <div className="h-px bg-border -mx-1" />
+            </SelectItem>
+            <SelectItem 
+              value="create" 
+              onSelect={(e) => {
+                e.preventDefault();
+                setIsCategoryDialogOpen(true);
+              }}
+              className="cursor-pointer"
+            >
+              <Plus className="mr-2 h-4 w-4 inline" />
+              Criar categoria
+            </SelectItem>
           </SelectContent>
         </Select>
         <Dialog 
@@ -577,6 +687,87 @@ const AdminPosts = () => {
           )}
         </CardContent>
       </Card>
+
+      {/* Dialog para criar categoria */}
+      <Dialog open={isCategoryDialogOpen} onOpenChange={setIsCategoryDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Criar Nova Categoria</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="category-name">Nome da Categoria</Label>
+              <Input
+                id="category-name"
+                value={categoryName}
+                onChange={(e) => setCategoryName(e.target.value)}
+                placeholder="Ex: Tecnologia, Esportes..."
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    handleCreateCategory();
+                  }
+                }}
+              />
+            </div>
+            <div className="flex justify-end gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => {
+                  setIsCategoryDialogOpen(false);
+                  setCategoryName("");
+                }}
+              >
+                Cancelar
+              </Button>
+              <Button onClick={handleCreateCategory}>
+                Criar
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Dialog para editar categoria */}
+      <Dialog open={isEditCategoryDialogOpen} onOpenChange={setIsEditCategoryDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Editar Categoria</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="edit-category-name">Nome da Categoria</Label>
+              <Input
+                id="edit-category-name"
+                value={categoryName}
+                onChange={(e) => setCategoryName(e.target.value)}
+                placeholder="Ex: Tecnologia, Esportes..."
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    handleUpdateCategory();
+                  }
+                }}
+              />
+            </div>
+            <div className="flex justify-end gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => {
+                  setIsEditCategoryDialogOpen(false);
+                  setCategoryName("");
+                  setEditingCategory(null);
+                }}
+              >
+                Cancelar
+              </Button>
+              <Button onClick={handleUpdateCategory}>
+                Atualizar
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </AdminLayout>
   );
 };

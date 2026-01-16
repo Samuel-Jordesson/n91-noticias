@@ -25,3 +25,44 @@ export const getCategoryBySlug = async (slug: string) => {
   if (error) throw error;
   return data as Category;
 };
+
+// Criar categoria
+export const createCategory = async (name: string) => {
+  const { generateSlug } = await import('@/lib/utils');
+  const slug = generateSlug(name);
+  
+  const { data, error } = await supabase
+    .from('categories')
+    .insert({ name, slug })
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data as Category;
+};
+
+// Atualizar categoria
+export const updateCategory = async (id: string, name: string) => {
+  const { generateSlug } = await import('@/lib/utils');
+  const slug = generateSlug(name);
+  
+  const { data, error } = await supabase
+    .from('categories')
+    .update({ name, slug })
+    .eq('id', id)
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data as Category;
+};
+
+// Deletar categoria
+export const deleteCategory = async (id: string) => {
+  const { error } = await supabase
+    .from('categories')
+    .delete()
+    .eq('id', id);
+
+  if (error) throw error;
+};
