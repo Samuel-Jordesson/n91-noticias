@@ -102,7 +102,7 @@ const JobDetailPage = () => {
               <Card>
                 <CardContent className="p-6">
                   {job.image_url && (
-                    <div className="w-full overflow-hidden rounded-lg mb-6 bg-muted" style={{ height: '40vh', maxHeight: '400px' }}>
+                    <div className="w-full overflow-hidden rounded-lg mb-6 bg-muted aspect-[3/4] max-w-md mx-auto">
                       <img
                         src={job.image_url}
                         alt={job.title}
