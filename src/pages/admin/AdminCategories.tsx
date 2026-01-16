@@ -118,133 +118,108 @@ const AdminCategories = () => {
         </Button>
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-        <Card>
-          <CardContent className="p-4 sm:p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground mb-1">Total de Categorias</p>
-                <p className="text-2xl sm:text-3xl font-bold">{categories?.length || 0}</p>
-              </div>
-              <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
-                <FolderTree className="h-6 w-6 text-primary" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4 sm:p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground mb-1">Total de Posts</p>
-                <p className="text-2xl sm:text-3xl font-bold">{totalPosts}</p>
-              </div>
-              <div className="h-12 w-12 rounded-full bg-blue-500/10 flex items-center justify-center">
-                <FileText className="h-6 w-6 text-blue-500" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4 sm:p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground mb-1">Categorias com Posts</p>
-                <p className="text-2xl sm:text-3xl font-bold">
-                  {categories?.filter(cat => (postsByCategory[cat.id] || 0) > 0).length || 0}
-                </p>
-              </div>
-              <div className="h-12 w-12 rounded-full bg-green-500/10 flex items-center justify-center">
-                <FolderTree className="h-6 w-6 text-green-500" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Categories List */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <FolderTree className="h-5 w-5" />
-            Categorias ({filteredCategories.length})
+      {/* Categories Table */}
+      <Card className="overflow-hidden">
+        <CardHeader className="pb-2 sm:pb-3 p-3 sm:p-6">
+          <CardTitle className="text-sm sm:text-base md:text-lg">
+            Categorias ({isLoading ? "..." : filteredCategories.length})
           </CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-0 sm:p-6">
           {isLoading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {[...Array(6)].map((_, i) => (
-                <Skeleton key={i} className="h-32" />
+            <div className="space-y-3 sm:space-y-4 p-3 sm:p-0">
+              {[...Array(5)].map((_, i) => (
+                <Skeleton key={i} className="h-12 sm:h-16 w-full" />
               ))}
             </div>
-          ) : filteredCategories.length === 0 ? (
-            <div className="text-center py-12 text-muted-foreground">
-              <FolderTree className="h-12 w-12 mx-auto mb-4 opacity-50" />
-              <p className="text-lg font-medium">
-                {searchTerm ? "Nenhuma categoria encontrada" : "Nenhuma categoria cadastrada"}
-              </p>
-              <p className="text-sm mt-2">
-                {searchTerm ? "Tente buscar por outro termo" : "Crie sua primeira categoria clicando no botão acima"}
-              </p>
-            </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {filteredCategories.map((category) => {
-                const postCount = postsByCategory[category.id] || 0;
-                return (
-                  <Card
-                    key={category.id}
-                    className="hover:shadow-md transition-all duration-200 border-2 hover:border-primary/50"
-                  >
-                    <CardContent className="p-4 sm:p-5">
-                      <div className="flex items-start justify-between mb-3">
-                        <div className="flex-1 min-w-0">
-                          <h3 className="font-semibold text-base sm:text-lg mb-1 truncate">
-                            {category.name}
-                          </h3>
-                          <p className="text-xs text-muted-foreground truncate">
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[600px] sm:min-w-[700px]">
+                <thead>
+                  <tr className="border-b border-border">
+                    <th className="text-left py-2 sm:py-3 px-2 sm:px-4 text-xs sm:text-sm font-medium text-muted-foreground">
+                      Nome
+                    </th>
+                    <th className="text-left py-2 sm:py-3 px-2 sm:px-4 text-xs sm:text-sm font-medium text-muted-foreground hidden sm:table-cell">
+                      Slug
+                    </th>
+                    <th className="text-left py-2 sm:py-3 px-2 sm:px-4 text-xs sm:text-sm font-medium text-muted-foreground">
+                      Posts
+                    </th>
+                    <th className="text-right py-2 sm:py-3 px-2 sm:px-4 text-xs sm:text-sm font-medium text-muted-foreground">
+                      Ações
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredCategories.length === 0 ? (
+                    <tr>
+                      <td colSpan={4} className="py-8 text-center text-xs sm:text-sm text-muted-foreground">
+                        {searchTerm ? "Nenhuma categoria encontrada" : "Nenhuma categoria cadastrada"}
+                      </td>
+                    </tr>
+                  ) : (
+                    filteredCategories.map((category) => {
+                      const postCount = postsByCategory[category.id] || 0;
+                      return (
+                        <tr
+                          key={category.id}
+                          className="border-b border-border last:border-0 hover:bg-muted/50"
+                        >
+                          <td className="py-2 sm:py-3 px-2 sm:px-4">
+                            <div className="flex items-center gap-2 sm:gap-3">
+                              <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                                <FolderTree className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
+                              </div>
+                              <div className="min-w-0 flex-1">
+                                <p className="font-medium text-xs sm:text-sm">
+                                  {category.name}
+                                </p>
+                                <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5 sm:hidden">
+                                  {category.slug}
+                                </p>
+                              </div>
+                            </div>
+                          </td>
+                          <td className="py-2 sm:py-3 px-2 sm:px-4 text-xs sm:text-sm text-muted-foreground hidden sm:table-cell">
                             {category.slug}
-                          </p>
-                        </div>
-                        <Badge 
-                          variant={postCount > 0 ? "default" : "secondary"}
-                          className="ml-2 flex-shrink-0"
-                        >
-                          {postCount} {postCount === 1 ? "post" : "posts"}
-                        </Badge>
-                      </div>
-                      
-                      <div className="flex items-center gap-2 mt-4 pt-4 border-t">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleEditCategory(category)}
-                          className="flex-1 h-9"
-                        >
-                          <Pencil className="h-3.5 w-3.5 mr-1.5" />
-                          Editar
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleDeleteCategory(category)}
-                          className="flex-1 h-9 text-destructive hover:text-destructive hover:bg-destructive/10"
-                          disabled={postCount > 0}
-                        >
-                          <Trash2 className="h-3.5 w-3.5 mr-1.5" />
-                          Apagar
-                        </Button>
-                      </div>
-                      {postCount > 0 && (
-                        <p className="text-xs text-muted-foreground mt-2 text-center">
-                          Remova os posts antes de apagar
-                        </p>
-                      )}
-                    </CardContent>
-                  </Card>
-                );
-              })}
+                          </td>
+                          <td className="py-2 sm:py-3 px-2 sm:px-4">
+                            <Badge 
+                              variant={postCount > 0 ? "default" : "secondary"}
+                              className="text-xs"
+                            >
+                              {postCount} {postCount === 1 ? "post" : "posts"}
+                            </Badge>
+                          </td>
+                          <td className="py-2 sm:py-3 px-2 sm:px-4">
+                            <div className="flex items-center justify-end gap-1 sm:gap-2">
+                              <Button 
+                                variant="ghost" 
+                                size="icon" 
+                                className="h-8 w-8 sm:h-10 sm:w-10"
+                                onClick={() => handleEditCategory(category)}
+                              >
+                                <Pencil className="h-3 w-3 sm:h-4 sm:w-4" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="text-destructive hover:text-destructive h-8 w-8 sm:h-10 sm:w-10"
+                                onClick={() => handleDeleteCategory(category)}
+                                disabled={postCount > 0}
+                                title={postCount > 0 ? "Remova os posts antes de apagar" : "Apagar categoria"}
+                              >
+                                <Trash2 className="h-3 w-3 sm:h-4 sm:w-4" />
+                              </Button>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })
+                  )}
+                </tbody>
+              </table>
             </div>
           )}
         </CardContent>
