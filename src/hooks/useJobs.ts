@@ -3,6 +3,7 @@ import {
   getAllJobs,
   getPublishedJobs,
   getJobById,
+  getJobBySlug,
   getFeaturedJobs,
   createJob,
   updateJob,
@@ -34,6 +35,15 @@ export const useJob = (id: string) => {
     queryKey: ["job", id],
     queryFn: () => getJobById(id),
     enabled: !!id,
+  });
+};
+
+// Hook para buscar emprego por slug
+export const useJobBySlug = (slug: string) => {
+  return useQuery({
+    queryKey: ["job", "slug", slug],
+    queryFn: () => getJobBySlug(slug),
+    enabled: !!slug,
   });
 };
 

@@ -56,6 +56,33 @@ export const getJobById = async (id: string) => {
   return data as JobWithAuthor;
 };
 
+// Buscar emprego por slug (gerado dinamicamente do título)
+export const getJobBySlug = async (slug: string) => {
+  // Buscar todos os empregos publicados e encontrar pelo slug gerado
+  const { data: jobs, error } = await supabase
+    .from('jobs')
+    .select(`
+      *,
+      profiles:author_id (name, email)
+    `)
+    .eq('is_published', true);
+
+  if (error) throw error;
+
+  // Gerar slug para cada emprego e encontrar o match
+  const { generateSlug } = await import('@/lib/utils');
+  const job = jobs?.find((j) => {
+    const jobSlug = generateSlug(j.title);
+    return jobSlug === slug;
+  });
+
+  if (!job) {
+    throw new Error('Emprego não encontrado');
+  }
+
+  return job as JobWithAuthor;
+};
+
 // Buscar empregos destacados
 export const getFeaturedJobs = async (limit: number = 4) => {
   const { data, error } = await supabase

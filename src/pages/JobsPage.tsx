@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import MainLayout from "@/layouts/MainLayout";
 import SEO from "@/components/SEO";
 import { useJobs } from "@/hooks/useJobs";
+import { generateSlug } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent } from "@/components/ui/card";
 import { format } from "date-fns";
@@ -62,7 +63,7 @@ const JobsPage = () => {
           ) : jobs && jobs.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {jobs.map((job) => (
-                <Link key={job.id} to={`/empregos/${job.id}`}>
+                <Link key={job.id} to={`/empregos/${generateSlug(job.title)}`}>
                   <Card className="overflow-hidden hover:shadow-lg transition-all cursor-pointer h-full flex flex-col max-w-xs mx-auto">
                     {job.image_url && (
                       <div className="w-full bg-muted aspect-[3/4] overflow-hidden">

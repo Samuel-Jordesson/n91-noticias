@@ -1,7 +1,7 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
 import MainLayout from "@/layouts/MainLayout";
 import SEO from "@/components/SEO";
-import { useJob, useIncrementJobViews } from "@/hooks/useJobs";
+import { useJobBySlug, useIncrementJobViews } from "@/hooks/useJobs";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -11,9 +11,9 @@ import { MapPin, DollarSign, Clock, ExternalLink, Eye, ArrowLeft, Briefcase } fr
 import { useEffect } from "react";
 
 const JobDetailPage = () => {
-  const { id } = useParams();
+  const { slug } = useParams();
   const navigate = useNavigate();
-  const { data: job, isLoading } = useJob(id || "");
+  const { data: job, isLoading } = useJobBySlug(slug || "");
   const incrementViewsMutation = useIncrementJobViews();
 
   // Incrementar visualizações quando a página carregar
