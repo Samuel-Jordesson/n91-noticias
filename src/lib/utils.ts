@@ -5,6 +5,16 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+// Normalizar slug (remover acentos, manter apenas letras, números e hífens)
+export function normalizeSlug(slug: string): string {
+  if (!slug) return '';
+  return slug
+    .toLowerCase()
+    .normalize("NFD") // Remove acentos
+    .replace(/[\u0300-\u036f]/g, "") // Remove diacríticos
+    .trim();
+}
+
 // Gerar slug a partir de um título
 export function generateSlug(title: string): string {
   return title

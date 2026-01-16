@@ -10,17 +10,9 @@ import { useCategories } from "@/hooks/useCategories";
 import { useMostViewedPosts } from "@/hooks/usePosts";
 import { useAdsByPosition } from "@/hooks/useAds";
 import { Skeleton } from "@/components/ui/skeleton";
+import { normalizeSlug } from "@/lib/utils";
 import type { PostWithCategory } from "@/services/posts";
 import type { NewsArticle } from "@/types/news";
-
-// Função para normalizar slug (remover acentos)
-const normalizeSlug = (slug: string): string => {
-  return slug
-    .toLowerCase()
-    .normalize("NFD") // Remove acentos
-    .replace(/[\u0300-\u036f]/g, "") // Remove diacríticos
-    .trim();
-};
 
 // Converter post do Supabase para NewsArticle
 const convertPostToNewsArticle = (post: PostWithCategory): NewsArticle => {

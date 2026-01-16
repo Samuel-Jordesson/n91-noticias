@@ -1,5 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
 import type { Database } from "@/integrations/supabase/types";
+import { normalizeSlug } from "@/lib/utils";
 
 type Post = Database['public']['Tables']['posts']['Row'];
 type PostInsert = Database['public']['Tables']['posts']['Insert'];
@@ -91,32 +92,46 @@ export const getPostBySlug = async (slug: string) => {
   return post as PostWithCategory;
 };
 
-// Função para normalizar slug (remover acentos)
-const normalizeSlug = (slug: string): string => {
-  return slug
-    .toLowerCase()
-    .normalize("NFD") // Remove acentos
-    .replace(/[\u0300-\u036f]/g, "") // Remove diacríticos
-    .trim();
-};
-
 // Buscar posts por categoria
 export const getPostsByCategory = async (categorySlug: string) => {
+  if (!categorySlug) return [];
+
   // Normalizar o slug para remover acentos
   const normalizedSlug = normalizeSlug(categorySlug);
   
-  // Primeiro buscar a categoria pelo slug normalizado
-  const { data: categories } = await supabase
+  if (!normalizedSlug) return [];
+
+  // Primeiro tentar buscar pelo slug exato (caso o slug já esteja normalizado no banco)
+  let { data: category, error: categoryError } = await supabase
     .from('categories')
-    .select('id, slug');
+    .select('id, slug')
+    .eq('slug', normalizedSlug)
+    .single();
 
-  if (!categories || categories.length === 0) return [];
+  // Se não encontrou pelo slug exato, buscar todas e comparar normalizado
+  if (categoryError || !category) {
+    const { data: categories, error: categoriesError } = await supabase
+      .from('categories')
+      .select('id, slug');
 
-  // Encontrar a categoria que corresponde ao slug normalizado
-  const category = categories.find(cat => normalizeSlug(cat.slug) === normalizedSlug);
+    if (categoriesError || !categories || categories.length === 0) {
+      console.warn('Nenhuma categoria encontrada no banco de dados');
+      return [];
+    }
 
-  if (!category) return [];
+    // Encontrar a categoria que corresponde ao slug normalizado
+    category = categories.find(cat => {
+      if (!cat.slug) return false;
+      return normalizeSlug(cat.slug) === normalizedSlug;
+    });
 
+    if (!category) {
+      console.warn(`Categoria não encontrada para o slug: ${categorySlug} (normalizado: ${normalizedSlug})`);
+      return [];
+    }
+  }
+
+  // Buscar posts da categoria
   const { data, error } = await supabase
     .from('posts')
     .select(`
@@ -128,8 +143,12 @@ export const getPostsByCategory = async (categorySlug: string) => {
     .eq('category_id', category.id)
     .order('published_at', { ascending: false });
 
-  if (error) throw error;
-  return data as PostWithCategory[];
+  if (error) {
+    console.error('Erro ao buscar posts por categoria:', error);
+    throw error;
+  }
+
+  return (data || []) as PostWithCategory[];
 };
 
 // Buscar posts mais visualizados

@@ -7,7 +7,7 @@ import NewsCard from "@/components/NewsCard";
 import SEO from "@/components/SEO";
 import StructuredData from "@/components/StructuredData";
 import { usePostBySlug, usePostsByCategory, useIncrementViews } from "@/hooks/usePosts";
-import { generateSlug } from "@/lib/utils";
+import { generateSlug, normalizeSlug } from "@/lib/utils";
 import { usePostComments } from "@/hooks/useComments";
 import { useAdsByPosition } from "@/hooks/useAds";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -206,7 +206,7 @@ const ArticlePage = () => {
                 "@type": "ListItem",
                 position: 2,
                 name: article.category,
-                item: `${typeof window !== "undefined" ? window.location.origin : "https://n91.com.br"}/categoria/${article.category.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim()}`,
+                item: `${typeof window !== "undefined" ? window.location.origin : "https://n91.com.br"}/categoria/${normalizeSlug(article.category)}`,
               },
               {
                 "@type": "ListItem",
@@ -231,7 +231,7 @@ const ArticlePage = () => {
             <li>/</li>
             <li>
               <Link
-                to={`/categoria/${article.category.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim()}`}
+                to={`/categoria/${normalizeSlug(article.category)}`}
                 className="hover:text-primary"
               >
                 {article.category}

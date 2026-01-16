@@ -1,14 +1,6 @@
 import { Link } from "react-router-dom";
 import { categories } from "@/data/mockData";
-
-// Função para normalizar slug (remover acentos)
-const normalizeSlug = (slug: string): string => {
-  return slug
-    .toLowerCase()
-    .normalize("NFD") // Remove acentos
-    .replace(/[\u0300-\u036f]/g, "") // Remove diacríticos
-    .trim();
-};
+import { normalizeSlug } from "@/lib/utils";
 
 const Footer = () => {
   return (

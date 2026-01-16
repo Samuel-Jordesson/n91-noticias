@@ -5,20 +5,12 @@ import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { categories } from "@/data/mockData";
 import { useAuth } from "@/hooks/useAuth";
+import { normalizeSlug } from "@/lib/utils";
 import {
   Sheet,
   SheetContent,
   SheetTrigger,
 } from "@/components/ui/sheet";
-
-// Função para normalizar slug (remover acentos)
-const normalizeSlug = (slug: string): string => {
-  return slug
-    .toLowerCase()
-    .normalize("NFD") // Remove acentos
-    .replace(/[\u0300-\u036f]/g, "") // Remove diacríticos
-    .trim();
-};
 
 const Header = () => {
   const [searchOpen, setSearchOpen] = useState(false);
