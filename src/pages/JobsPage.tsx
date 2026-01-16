@@ -65,7 +65,7 @@ const JobsPage = () => {
                 <Link key={job.id} to={`/empregos/${job.id}`}>
                   <Card className="overflow-hidden hover:shadow-lg transition-all cursor-pointer h-full">
                     {job.image_url && (
-                      <div className="aspect-[3/4] overflow-hidden bg-muted">
+                      <div className="aspect-[3/4] overflow-hidden bg-muted max-h-[40%]">
                         <img
                           src={job.image_url}
                           alt={job.title}
