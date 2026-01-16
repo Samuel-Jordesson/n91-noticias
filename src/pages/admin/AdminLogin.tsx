@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -13,29 +14,41 @@ const AdminLogin = () => {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const signInMutation = useSignIn();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     try {
-      await signInMutation.mutateAsync({ email, password });
+      const loginResult = await signInMutation.mutateAsync({ email, password });
+      
+      // Invalidar cache do perfil antes de buscar
+      await queryClient.invalidateQueries({ queryKey: ["profile"] });
       
       // Aguardar um pouco e verificar perfil
       setTimeout(async () => {
         try {
+          // Forçar refetch do perfil
           const profileData = await getCurrentProfile();
+          
+          // Atualizar cache manualmente
+          if (loginResult?.user?.id) {
+            await queryClient.setQueryData(["profile", loginResult.user.id], profileData);
+          }
           
           // Verificar se é admin ou editor
           if (profileData?.role === 'admin' || profileData?.role === 'editor') {
-            toast.success("Login realizado com sucesso!");
+            toast.success(`Login realizado com sucesso! Bem-vindo, ${profileData.name}`);
             navigate("/admin/dashboard");
           } else {
             toast.error("Acesso negado. Apenas administradores e editores podem acessar.");
             await signOut();
+            await queryClient.clear();
           }
         } catch (error) {
-          toast.error("Erro ao verificar perfil");
+          console.error("Erro ao verificar perfil:", error);
+          toast.error("Erro ao verificar perfil. Tente fazer login novamente.");
         }
       }, 500);
     } catch (error: any) {

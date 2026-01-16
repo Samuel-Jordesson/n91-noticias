@@ -111,7 +111,13 @@ export const createProfile = async (userId: string, name: string, email: string)
 
 // Buscar perfil do usuário atual
 export const getCurrentProfile = async () => {
-  const { data: { user } } = await supabase.auth.getUser();
+  const { data: { user }, error: userError } = await supabase.auth.getUser();
+  
+  if (userError) {
+    console.error("getCurrentProfile: Erro ao obter usuário:", userError);
+    return null;
+  }
+  
   if (!user) {
     console.log("getCurrentProfile: Nenhum usuário autenticado");
     return null;
@@ -127,10 +133,25 @@ export const getCurrentProfile = async () => {
 
   if (error) {
     console.error("getCurrentProfile: Erro ao buscar perfil:", error);
+    // Se o perfil não existir, retornar null ao invés de lançar erro
+    if (error.code === 'PGRST116') {
+      console.warn("getCurrentProfile: Perfil não encontrado para o usuário:", user.id);
+      return null;
+    }
     throw error;
   }
 
-  console.log("getCurrentProfile: Perfil encontrado:", { name: data?.name, email: data?.email });
+  if (!data) {
+    console.warn("getCurrentProfile: Perfil não encontrado (data é null)");
+    return null;
+  }
+
+  console.log("getCurrentProfile: Perfil encontrado:", { 
+    id: data.id, 
+    name: data.name, 
+    email: data.email, 
+    role: data.role 
+  });
   return data as Profile;
 };
 

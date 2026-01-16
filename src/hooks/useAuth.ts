@@ -40,16 +40,17 @@ export const useAuth = () => {
 
 // Hook para perfil do usuário
 export const useProfile = () => {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
 
   return useQuery({
     queryKey: ["profile", user?.id],
     queryFn: getCurrentProfile,
-    enabled: !!user,
+    enabled: !!user && !authLoading,
     staleTime: 0, // Sempre buscar dados frescos
     refetchOnWindowFocus: true,
     refetchOnMount: true,
-    refetchInterval: 10000, // Refrescar a cada 10 segundos para garantir dados atualizados
+    // Remover refetchInterval para evitar requisições desnecessárias
+    // O refetch será feito quando necessário (login, etc)
   });
 };
 
@@ -72,8 +73,13 @@ export const useSignIn = () => {
   return useMutation({
     mutationFn: ({ email, password }: { email: string; password: string }) =>
       signIn(email, password),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["profile"] });
+    onSuccess: async (data) => {
+      // Invalidar e refetch o perfil após login
+      await queryClient.invalidateQueries({ queryKey: ["profile"] });
+      // Forçar refetch do perfil para garantir dados atualizados
+      if (data?.user) {
+        await queryClient.refetchQueries({ queryKey: ["profile", data.user.id] });
+      }
     },
   });
 };

@@ -191,11 +191,14 @@ export const createPost = async (post: PostInsert) => {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error('Usuário não autenticado');
 
+  // Se author_id já foi especificado no post, usar ele. Caso contrário, usar o usuário logado
+  const authorId = post.author_id || user.id;
+
   const { data, error } = await supabase
     .from('posts')
     .insert({
       ...post,
-      author_id: user.id,
+      author_id: authorId,
     })
     .select()
     .single();

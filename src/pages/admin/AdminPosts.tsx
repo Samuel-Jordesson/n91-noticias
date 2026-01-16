@@ -202,7 +202,29 @@ const AdminPosts = () => {
             ))}
           </SelectContent>
         </Select>
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <Dialog 
+          open={isDialogOpen} 
+          onOpenChange={(open) => {
+            setIsDialogOpen(open);
+            if (!open) {
+              // Resetar quando fechar
+              setEditorContent("");
+              setImagePreview("");
+              setImageUrl("");
+              setTitle("");
+              setExcerpt("");
+              setSelectedCategory("");
+              setSelectedAuthor("");
+              setIsBreaking(false);
+              setIsFeatured(false);
+            } else {
+              // Quando abrir, inicializar com o perfil do usuário logado
+              if (profile?.id && !selectedAuthor) {
+                setSelectedAuthor(profile.id);
+              }
+            }
+          }}
+        >
           <DialogTrigger asChild>
             <Button>
               <Plus className="h-4 w-4 mr-2" />
@@ -265,11 +287,13 @@ const AdminPosts = () => {
               <div className="space-y-2">
                 <Label htmlFor="author">Autor</Label>
                 <Select 
-                  value={selectedAuthor || profile?.id || ""} 
-                  onValueChange={setSelectedAuthor}
+                  value={selectedAuthor || ""} 
+                  onValueChange={(value) => {
+                    setSelectedAuthor(value);
+                  }}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Selecionar autor" />
+                    <SelectValue placeholder={profile?.name || "Selecionar autor"} />
                   </SelectTrigger>
                   <SelectContent>
                     {allProfiles.map((author) => (
@@ -280,7 +304,9 @@ const AdminPosts = () => {
                   </SelectContent>
                 </Select>
                 <p className="text-xs text-muted-foreground">
-                  Selecione o autor do post. Por padrão, será usado seu nome.
+                  {selectedAuthor 
+                    ? `Autor selecionado: ${allProfiles.find(p => p.id === selectedAuthor)?.name || "Desconhecido"}`
+                    : `Por padrão, será usado: ${profile?.name || "seu nome"}`}
                 </p>
               </div>
               
