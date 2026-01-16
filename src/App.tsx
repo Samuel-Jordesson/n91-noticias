@@ -17,6 +17,7 @@ import AdminComments from "./pages/admin/AdminComments";
 import AdminSettings from "./pages/admin/AdminSettings";
 import AdminAutomation from "./pages/admin/AdminAutomation";
 import AdminEmpregos from "./pages/admin/AdminEmpregos";
+import AdminCategories from "./pages/admin/AdminCategories";
 import JobsPage from "./pages/JobsPage";
 import JobDetailPage from "./pages/JobDetailPage";
 import NotFound from "./pages/NotFound";
@@ -41,6 +42,7 @@ const App = () => (
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="/admin/posts" element={<AdminPosts />} />
           <Route path="/admin/empregos" element={<AdminEmpregos />} />
+          <Route path="/admin/categories" element={<AdminCategories />} />
           <Route path="/admin/users" element={<AdminUsers />} />
           <Route path="/admin/ads" element={<AdminAds />} />
           <Route path="/admin/comments" element={<AdminComments />} />

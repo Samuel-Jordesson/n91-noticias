@@ -9,12 +9,14 @@ import {
   MessageSquare,
   Bot,
   Briefcase,
+  FolderTree,
 } from "lucide-react";
 
 const menuItems = [
   { icon: LayoutDashboard, label: "Dashboard", path: "/admin/dashboard" },
   { icon: FileText, label: "Posts", path: "/admin/posts" },
   { icon: Briefcase, label: "Empregos", path: "/admin/empregos" },
+  { icon: FolderTree, label: "Categorias", path: "/admin/categories" },
   { icon: MessageSquare, label: "Comentários", path: "/admin/comments" },
   { icon: Megaphone, label: "Anúncios", path: "/admin/ads" },
   { icon: Users, label: "Usuários", path: "/admin/users" },
