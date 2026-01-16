@@ -16,6 +16,8 @@ import AdminAds from "./pages/admin/AdminAds";
 import AdminComments from "./pages/admin/AdminComments";
 import AdminSettings from "./pages/admin/AdminSettings";
 import AdminAutomation from "./pages/admin/AdminAutomation";
+import AdminEmpregos from "./pages/admin/AdminEmpregos";
+import JobsPage from "./pages/JobsPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -32,9 +34,11 @@ const App = () => (
           <Route path="/categoria/:category" element={<CategoryPage />} />
           <Route path="/esportes" element={<SportsPage />} />
           <Route path="/clima" element={<WeatherPage />} />
+          <Route path="/empregos" element={<JobsPage />} />
           <Route path="/admin/login" element={<AdminLogin />} />
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="/admin/posts" element={<AdminPosts />} />
+          <Route path="/admin/empregos" element={<AdminEmpregos />} />
           <Route path="/admin/users" element={<AdminUsers />} />
           <Route path="/admin/ads" element={<AdminAds />} />
           <Route path="/admin/comments" element={<AdminComments />} />

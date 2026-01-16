@@ -74,6 +74,12 @@ const Header = () => {
                     {category}
                   </Link>
                 ))}
+                <Link
+                  to="/empregos"
+                  className="px-4 py-2 text-sm font-medium hover:bg-muted rounded-md transition-colors"
+                >
+                  Empregos
+                </Link>
               </nav>
             </SheetContent>
           </Sheet>
@@ -126,6 +132,14 @@ const Header = () => {
                 </Link>
               </li>
             ))}
+            <li>
+              <Link
+                to="/empregos"
+                className="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-primary hover:bg-muted rounded-md transition-colors"
+              >
+                Empregos
+              </Link>
+            </li>
           </ul>
         </div>
       </nav>

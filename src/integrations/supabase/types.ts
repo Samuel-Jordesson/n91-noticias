@@ -181,6 +181,62 @@ export interface Database {
           updated_at?: string
         }
       }
+      jobs: {
+        Row: {
+          id: string
+          title: string
+          company_name: string
+          description: string
+          image_url: string | null
+          application_link: string | null
+          location: string | null
+          salary: string | null
+          employment_type: string | null
+          is_published: boolean
+          is_featured: boolean
+          views: number
+          author_id: string | null
+          published_at: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          title: string
+          company_name: string
+          description: string
+          image_url?: string | null
+          application_link?: string | null
+          location?: string | null
+          salary?: string | null
+          employment_type?: string | null
+          is_published?: boolean
+          is_featured?: boolean
+          views?: number
+          author_id?: string | null
+          published_at?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          title?: string
+          company_name?: string
+          description?: string
+          image_url?: string | null
+          application_link?: string | null
+          location?: string | null
+          salary?: string | null
+          employment_type?: string | null
+          is_published?: boolean
+          is_featured?: boolean
+          views?: number
+          author_id?: string | null
+          published_at?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+      }
     }
     Views: {
       [_ in never]: never
