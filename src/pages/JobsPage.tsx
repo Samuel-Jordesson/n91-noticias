@@ -63,10 +63,10 @@ const JobsPage = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {jobs.map((job) => (
                 <Link key={job.id} to={`/empregos/${job.id}`}>
-                  <Card className="overflow-hidden hover:shadow-lg transition-all cursor-pointer h-full flex flex-col">
+                  <Card className="overflow-hidden hover:shadow-lg transition-all cursor-pointer h-full flex flex-col max-w-md mx-auto">
                     {job.image_url && (
-                      <div className="w-full bg-muted flex justify-center" style={{ paddingBottom: 'calc(133.33% * 0.6)', position: 'relative' }}>
-                        <div className="absolute inset-0 w-[60%] aspect-[3/4] scale-[0.6] origin-top overflow-hidden mx-auto">
+                      <div className="w-full bg-muted" style={{ paddingBottom: 'calc(133.33% * 0.6)', position: 'relative' }}>
+                        <div className="absolute inset-0 w-full aspect-[3/4] scale-[0.6] origin-top overflow-hidden">
                           <img
                             src={job.image_url}
                             alt={job.title}
