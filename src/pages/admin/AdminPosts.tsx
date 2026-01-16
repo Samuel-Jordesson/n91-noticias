@@ -19,7 +19,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Plus, Pencil, Trash2, Search, Image as ImageIcon, Star } from "lucide-react";
+import { Plus, Pencil, Trash2, Trash2 as TrashIcon, Search, Image as ImageIcon, Star } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -36,7 +36,6 @@ import {
   ContextMenuTrigger,
   ContextMenuSeparator,
 } from "@/components/ui/context-menu";
-import { Pencil, Trash2 as TrashIcon } from "lucide-react";
 
 const AdminPosts = () => {
   const [searchTerm, setSearchTerm] = useState("");
