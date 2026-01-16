@@ -43,6 +43,7 @@ const AdminPosts = () => {
   const [selectedAuthor, setSelectedAuthor] = useState<string>("");
   const [isBreaking, setIsBreaking] = useState(false);
   const [isFeatured, setIsFeatured] = useState(false);
+  const [editingPost, setEditingPost] = useState<any>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const { data: posts, isLoading: isLoadingPosts } = usePosts();
@@ -111,8 +112,12 @@ const AdminPosts = () => {
         is_breaking: isBreaking,
         is_featured: isFeatured,
         is_published: true,
-        published_at: new Date().toISOString(),
       };
+
+      // Só adiciona published_at se for um novo post
+      if (!editingPost) {
+        postData.published_at = new Date().toISOString();
+      }
 
       // Só adiciona image_url se houver valor
       if (imageUrl || imagePreview) {
@@ -124,26 +129,38 @@ const AdminPosts = () => {
           finalImageUrlStart: finalImageUrl?.substring(0, 50),
         });
         postData.image_url = finalImageUrl;
-      } else {
-        console.log("Nenhuma imagem fornecida");
+      } else if (editingPost && !imageUrl && !imagePreview) {
+        // Se estiver editando e não houver nova imagem, manter a imagem existente
+        postData.image_url = editingPost.image_url || null;
       }
 
-      await createPostMutation.mutateAsync(postData);
+      if (editingPost) {
+        await updatePostMutation.mutateAsync({ id: editingPost.id, post: postData });
+        toast.success("Post atualizado com sucesso!");
+      } else {
+        await createPostMutation.mutateAsync(postData);
+        toast.success("Post criado com sucesso!");
+      }
 
-      toast.success("Post criado com sucesso!");
       setIsDialogOpen(false);
-      setEditorContent("");
-      setImagePreview("");
-      setImageUrl("");
-      setTitle("");
-      setExcerpt("");
-      setSelectedCategory("");
-      setSelectedAuthor("");
-      setIsBreaking(false);
-      setIsFeatured(false);
+      handleCancel();
     } catch (error: any) {
-      toast.error(error.message || "Erro ao criar post");
+      toast.error(error.message || `Erro ao ${editingPost ? 'atualizar' : 'criar'} post`);
     }
+  };
+
+  const handleEdit = (post: any) => {
+    setEditingPost(post);
+    setTitle(post.title);
+    setExcerpt(post.excerpt);
+    setEditorContent(post.content);
+    setImageUrl(post.image_url || "");
+    setImagePreview("");
+    setSelectedCategory(post.categories?.name || "");
+    setSelectedAuthor(post.author_id || "");
+    setIsBreaking(post.is_breaking || false);
+    setIsFeatured(post.is_featured || false);
+    setIsDialogOpen(true);
   };
 
   const handleDelete = async (id: string) => {
@@ -208,18 +225,10 @@ const AdminPosts = () => {
             setIsDialogOpen(open);
             if (!open) {
               // Resetar quando fechar
-              setEditorContent("");
-              setImagePreview("");
-              setImageUrl("");
-              setTitle("");
-              setExcerpt("");
-              setSelectedCategory("");
-              setSelectedAuthor("");
-              setIsBreaking(false);
-              setIsFeatured(false);
+              handleCancel();
             } else {
-              // Quando abrir, inicializar com o perfil do usuário logado
-              if (profile?.id && !selectedAuthor) {
+              // Quando abrir, inicializar com o perfil do usuário logado (apenas se não estiver editando)
+              if (!editingPost && profile?.id && !selectedAuthor) {
                 setSelectedAuthor(profile.id);
               }
             }
@@ -233,7 +242,9 @@ const AdminPosts = () => {
           </DialogTrigger>
           <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto p-3 sm:p-4 md:p-6 w-[95vw] sm:w-full">
             <DialogHeader className="pb-2">
-              <DialogTitle className="text-base sm:text-lg md:text-xl">Criar Novo Post</DialogTitle>
+              <DialogTitle className="text-base sm:text-lg md:text-xl">
+                {editingPost ? "Editar Post" : "Criar Novo Post"}
+              </DialogTitle>
             </DialogHeader>
             <form onSubmit={handleCreatePost} className="space-y-2 sm:space-y-3 md:space-y-4 mt-2 sm:mt-4">
               <div className="space-y-2">
@@ -405,8 +416,10 @@ const AdminPosts = () => {
                 >
                   Cancelar
                 </Button>
-                <Button type="submit" disabled={createPostMutation.isPending}>
-                  {createPostMutation.isPending ? "Publicando..." : "Publicar"}
+                <Button type="submit" disabled={createPostMutation.isPending || updatePostMutation.isPending}>
+                  {createPostMutation.isPending || updatePostMutation.isPending 
+                    ? (editingPost ? "Atualizando..." : "Publicando...") 
+                    : (editingPost ? "Atualizar" : "Publicar")}
                 </Button>
               </div>
             </form>
@@ -545,7 +558,12 @@ const AdminPosts = () => {
                         </td>
                         <td className="py-2 sm:py-3 px-2 sm:px-4">
                           <div className="flex items-center justify-end gap-1 sm:gap-2">
-                            <Button variant="ghost" size="icon" className="h-8 w-8 sm:h-10 sm:w-10">
+                            <Button 
+                              variant="ghost" 
+                              size="icon" 
+                              className="h-8 w-8 sm:h-10 sm:w-10"
+                              onClick={() => handleEdit(post)}
+                            >
                               <Pencil className="h-3 w-3 sm:h-4 sm:w-4" />
                             </Button>
                             <Button
