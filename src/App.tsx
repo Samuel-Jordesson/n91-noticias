@@ -18,6 +18,7 @@ import AdminSettings from "./pages/admin/AdminSettings";
 import AdminAutomation from "./pages/admin/AdminAutomation";
 import AdminEmpregos from "./pages/admin/AdminEmpregos";
 import JobsPage from "./pages/JobsPage";
+import JobDetailPage from "./pages/JobDetailPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -35,6 +36,7 @@ const App = () => (
           <Route path="/esportes" element={<SportsPage />} />
           <Route path="/clima" element={<WeatherPage />} />
           <Route path="/empregos" element={<JobsPage />} />
+          <Route path="/empregos/:id" element={<JobDetailPage />} />
           <Route path="/admin/login" element={<AdminLogin />} />
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="/admin/posts" element={<AdminPosts />} />
