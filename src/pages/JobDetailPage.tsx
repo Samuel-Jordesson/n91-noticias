@@ -7,8 +7,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { MapPin, DollarSign, Clock, ExternalLink, Eye, ArrowLeft, Briefcase } from "lucide-react";
+import { MapPin, DollarSign, Clock, ExternalLink, Eye, ArrowLeft, Briefcase, Share2, Facebook, MessageCircle } from "lucide-react";
 import { useEffect } from "react";
+import { toast } from "sonner";
 
 const JobDetailPage = () => {
   const { slug } = useParams();
@@ -22,6 +23,37 @@ const JobDetailPage = () => {
       incrementViewsMutation.mutate(job.id);
     }
   }, [job?.id]);
+
+  // Funções de compartilhamento
+  const jobUrl = typeof window !== "undefined" 
+    ? `${window.location.origin}/empregos/${slug}` 
+    : `https://n91.com.br/empregos/${slug}`;
+
+  const handleShare = async () => {
+    try {
+      await navigator.clipboard.writeText(jobUrl);
+      toast.success("Link copiado para a área de transferência!");
+    } catch (err) {
+      toast.error("Erro ao copiar link");
+    }
+  };
+
+  const handleShareFacebook = () => {
+    const url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(jobUrl)}`;
+    window.open(url, "_blank", "width=600,height=400");
+  };
+
+  const handleShareX = () => {
+    const text = `${job?.title} - ${job?.company_name}`;
+    const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(jobUrl)}`;
+    window.open(url, "_blank", "width=600,height=400");
+  };
+
+  const handleShareWhatsApp = () => {
+    const text = `${job?.title} - ${job?.company_name}\n${jobUrl}`;
+    const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
+    window.open(url, "_blank");
+  };
 
   if (isLoading) {
     return (
@@ -150,7 +182,7 @@ const JobDetailPage = () => {
                   </div>
 
                   {job.application_link && (
-                    <div className="pt-6 border-t">
+                    <div className="pt-6 border-t mb-6">
                       <Button
                         asChild
                         size="lg"
@@ -167,6 +199,26 @@ const JobDetailPage = () => {
                       </Button>
                     </div>
                   )}
+
+                  {/* Share buttons */}
+                  <div className="flex items-center gap-2 py-4 border-t">
+                    <span className="text-sm font-medium">Compartilhar:</span>
+                    <Button variant="outline" size="sm" onClick={handleShare}>
+                      <Share2 className="h-4 w-4 mr-1" />
+                      Copiar link
+                    </Button>
+                    <Button variant="outline" size="icon" className="h-8 w-8" onClick={handleShareFacebook} title="Compartilhar no Facebook">
+                      <Facebook className="h-4 w-4" />
+                    </Button>
+                    <Button variant="outline" size="icon" className="h-8 w-8" onClick={handleShareX} title="Compartilhar no X">
+                      <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                      </svg>
+                    </Button>
+                    <Button variant="outline" size="icon" className="h-8 w-8" onClick={handleShareWhatsApp} title="Compartilhar no WhatsApp">
+                      <MessageCircle className="h-4 w-4" />
+                    </Button>
+                  </div>
 
                   {job.published_at && (
                     <p className="text-sm text-muted-foreground mt-6 pt-6 border-t">
