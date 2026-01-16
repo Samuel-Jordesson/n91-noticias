@@ -403,15 +403,7 @@ const AdminPosts = () => {
                   variant="outline"
                   onClick={() => {
                     setIsDialogOpen(false);
-                    setEditorContent("");
-                    setImagePreview("");
-                    setImageUrl("");
-                    setTitle("");
-                    setExcerpt("");
-                    setSelectedCategory("");
-                    setSelectedAuthor("");
-                    setIsBreaking(false);
-                    setIsFeatured(false);
+                    handleCancel();
                   }}
                 >
                   Cancelar
