@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import AdminLayout from "@/layouts/AdminLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -10,10 +10,12 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Plus, Pencil, Trash2, Search } from "lucide-react";
+import { Plus, Pencil, Trash2, Search, FileText, FolderTree } from "lucide-react";
 import { toast } from "sonner";
 import { useCategories, useCreateCategory, useUpdateCategory, useDeleteCategory } from "@/hooks/useCategories";
+import { useAllPosts } from "@/hooks/usePosts";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Badge } from "@/components/ui/badge";
 
 const AdminCategories = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -23,13 +25,28 @@ const AdminCategories = () => {
   const [editingCategory, setEditingCategory] = useState<any>(null);
 
   const { data: categories, isLoading } = useCategories();
+  const { data: allPosts } = useAllPosts();
   const createCategoryMutation = useCreateCategory();
   const updateCategoryMutation = useUpdateCategory();
   const deleteCategoryMutation = useDeleteCategory();
 
+  // Contar posts por categoria
+  const postsByCategory = useMemo(() => {
+    if (!allPosts || !categories) return {};
+    
+    const counts: Record<string, number> = {};
+    categories.forEach(cat => {
+      counts[cat.id] = allPosts.filter(post => post.category_id === cat.id).length;
+    });
+    
+    return counts;
+  }, [allPosts, categories]);
+
   const filteredCategories = categories?.filter((cat) =>
     cat.name.toLowerCase().includes(searchTerm.toLowerCase())
   ) || [];
+
+  const totalPosts = allPosts?.length || 0;
 
   const handleCreateCategory = async () => {
     if (!categoryName.trim()) {
@@ -101,55 +118,133 @@ const AdminCategories = () => {
         </Button>
       </div>
 
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+        <Card>
+          <CardContent className="p-4 sm:p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-muted-foreground mb-1">Total de Categorias</p>
+                <p className="text-2xl sm:text-3xl font-bold">{categories?.length || 0}</p>
+              </div>
+              <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
+                <FolderTree className="h-6 w-6 text-primary" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4 sm:p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-muted-foreground mb-1">Total de Posts</p>
+                <p className="text-2xl sm:text-3xl font-bold">{totalPosts}</p>
+              </div>
+              <div className="h-12 w-12 rounded-full bg-blue-500/10 flex items-center justify-center">
+                <FileText className="h-6 w-6 text-blue-500" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4 sm:p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-muted-foreground mb-1">Categorias com Posts</p>
+                <p className="text-2xl sm:text-3xl font-bold">
+                  {categories?.filter(cat => (postsByCategory[cat.id] || 0) > 0).length || 0}
+                </p>
+              </div>
+              <div className="h-12 w-12 rounded-full bg-green-500/10 flex items-center justify-center">
+                <FolderTree className="h-6 w-6 text-green-500" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
       {/* Categories List */}
       <Card>
         <CardHeader>
-          <CardTitle>Categorias ({filteredCategories.length})</CardTitle>
+          <CardTitle className="flex items-center gap-2">
+            <FolderTree className="h-5 w-5" />
+            Categorias ({filteredCategories.length})
+          </CardTitle>
         </CardHeader>
         <CardContent>
           {isLoading ? (
-            <div className="space-y-3">
-              {[...Array(5)].map((_, i) => (
-                <Skeleton key={i} className="h-16" />
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {[...Array(6)].map((_, i) => (
+                <Skeleton key={i} className="h-32" />
               ))}
             </div>
           ) : filteredCategories.length === 0 ? (
-            <div className="text-center py-8 text-muted-foreground">
-              {searchTerm ? "Nenhuma categoria encontrada" : "Nenhuma categoria cadastrada"}
+            <div className="text-center py-12 text-muted-foreground">
+              <FolderTree className="h-12 w-12 mx-auto mb-4 opacity-50" />
+              <p className="text-lg font-medium">
+                {searchTerm ? "Nenhuma categoria encontrada" : "Nenhuma categoria cadastrada"}
+              </p>
+              <p className="text-sm mt-2">
+                {searchTerm ? "Tente buscar por outro termo" : "Crie sua primeira categoria clicando no botão acima"}
+              </p>
             </div>
           ) : (
-            <div className="space-y-2">
-              {filteredCategories.map((category) => (
-                <div
-                  key={category.id}
-                  className="flex items-center justify-between p-3 sm:p-4 border rounded-lg hover:bg-accent/50 transition-colors"
-                >
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-medium text-sm sm:text-base">{category.name}</h3>
-                    <p className="text-xs sm:text-sm text-muted-foreground mt-1">
-                      Slug: {category.slug}
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-2 ml-4">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleEditCategory(category)}
-                      className="h-8 sm:h-9"
-                    >
-                      <Pencil className="h-3 w-3 sm:h-4 sm:w-4" />
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleDeleteCategory(category)}
-                      className="h-8 sm:h-9 text-destructive hover:text-destructive"
-                    >
-                      <Trash2 className="h-3 w-3 sm:h-4 sm:w-4" />
-                    </Button>
-                  </div>
-                </div>
-              ))}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {filteredCategories.map((category) => {
+                const postCount = postsByCategory[category.id] || 0;
+                return (
+                  <Card
+                    key={category.id}
+                    className="hover:shadow-md transition-all duration-200 border-2 hover:border-primary/50"
+                  >
+                    <CardContent className="p-4 sm:p-5">
+                      <div className="flex items-start justify-between mb-3">
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-semibold text-base sm:text-lg mb-1 truncate">
+                            {category.name}
+                          </h3>
+                          <p className="text-xs text-muted-foreground truncate">
+                            {category.slug}
+                          </p>
+                        </div>
+                        <Badge 
+                          variant={postCount > 0 ? "default" : "secondary"}
+                          className="ml-2 flex-shrink-0"
+                        >
+                          {postCount} {postCount === 1 ? "post" : "posts"}
+                        </Badge>
+                      </div>
+                      
+                      <div className="flex items-center gap-2 mt-4 pt-4 border-t">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleEditCategory(category)}
+                          className="flex-1 h-9"
+                        >
+                          <Pencil className="h-3.5 w-3.5 mr-1.5" />
+                          Editar
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleDeleteCategory(category)}
+                          className="flex-1 h-9 text-destructive hover:text-destructive hover:bg-destructive/10"
+                          disabled={postCount > 0}
+                        >
+                          <Trash2 className="h-3.5 w-3.5 mr-1.5" />
+                          Apagar
+                        </Button>
+                      </div>
+                      {postCount > 0 && (
+                        <p className="text-xs text-muted-foreground mt-2 text-center">
+                          Remova os posts antes de apagar
+                        </p>
+                      )}
+                    </CardContent>
+                  </Card>
+                );
+              })}
             </div>
           )}
         </CardContent>
