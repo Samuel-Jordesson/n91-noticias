@@ -184,16 +184,34 @@ const AdminEditor = () => {
                 {isEditing ? "Editar Post" : "Criar Novo Post"}
               </h1>
             </div>
-            {!sidebarOpen && (
+            <div className="flex items-center gap-2">
+              {!sidebarOpen && (
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => setSidebarOpen(true)}
+                  className="flex-shrink-0"
+                >
+                  <Settings className="h-4 w-4" />
+                </Button>
+              )}
               <Button
+                type="button"
                 variant="outline"
-                size="icon"
-                onClick={() => setSidebarOpen(true)}
-                className="flex-shrink-0"
+                onClick={() => navigate("/admin/posts")}
               >
-                <Settings className="h-4 w-4" />
+                Cancelar
               </Button>
-            )}
+              <Button 
+                type="button"
+                onClick={handleSubmit}
+                disabled={createPostMutation.isPending || updatePostMutation.isPending}
+              >
+                {createPostMutation.isPending || updatePostMutation.isPending 
+                  ? (isEditing ? "Atualizando..." : "Publicando...") 
+                  : (isEditing ? "Atualizar Post" : "Publicar Post")}
+              </Button>
+            </div>
           </div>
 
           {/* Formulário Principal */}
@@ -223,23 +241,6 @@ const AdminEditor = () => {
                   </div>
                 </div>
 
-                <div className="flex justify-end gap-2 pt-4 border-t flex-shrink-0">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => navigate("/admin/posts")}
-                  >
-                    Cancelar
-                  </Button>
-                  <Button 
-                    type="submit" 
-                    disabled={createPostMutation.isPending || updatePostMutation.isPending}
-                  >
-                    {createPostMutation.isPending || updatePostMutation.isPending 
-                      ? (isEditing ? "Atualizando..." : "Publicando...") 
-                      : (isEditing ? "Atualizar Post" : "Publicar Post")}
-                  </Button>
-                </div>
               </form>
             </CardContent>
           </Card>
