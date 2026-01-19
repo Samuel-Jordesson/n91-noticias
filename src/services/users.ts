@@ -16,7 +16,7 @@ export const getAllProfiles = async () => {
 };
 
 // Criar novo usuário (admin)
-export const createUser = async (email: string, password: string, name: string, role: 'admin' | 'editor' | 'user' = 'user') => {
+export const createUser = async (email: string, password: string, name: string, role: 'admin' | 'editor' | 'user' | 'dev' = 'user') => {
   // Criar usuário no auth (confirmação de email desativada no Supabase)
   const { data: authData, error: authError } = await supabase.auth.signUp({
     email,

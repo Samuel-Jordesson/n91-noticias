@@ -37,8 +37,8 @@ const AdminLogin = () => {
             await queryClient.setQueryData(["profile", loginResult.user.id], profileData);
           }
           
-          // Verificar se é admin ou editor
-          if (profileData?.role === 'admin' || profileData?.role === 'editor') {
+          // Verificar se é admin, editor ou dev
+          if (profileData?.role === 'admin' || profileData?.role === 'editor' || profileData?.role === 'dev') {
             toast.success(`Login realizado com sucesso! Bem-vindo, ${profileData.name}`);
             navigate("/admin/dashboard");
           } else {

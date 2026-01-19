@@ -57,13 +57,13 @@ export const useProfile = () => {
 // Hook para verificar se é admin
 export const useIsAdmin = () => {
   const { data: profile } = useProfile();
-  return profile?.role === 'admin';
+  return profile?.role === 'admin' || profile?.role === 'dev';
 };
 
 // Hook para verificar se é editor
 export const useIsEditor = () => {
   const { data: profile } = useProfile();
-  return profile?.role === 'admin' || profile?.role === 'editor';
+  return profile?.role === 'admin' || profile?.role === 'editor' || profile?.role === 'dev';
 };
 
 // Hook para login

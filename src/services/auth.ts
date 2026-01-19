@@ -158,13 +158,13 @@ export const getCurrentProfile = async () => {
 // Verificar se usuário é admin
 export const isAdmin = async () => {
   const profile = await getCurrentProfile();
-  return profile?.role === 'admin';
+  return profile?.role === 'admin' || profile?.role === 'dev';
 };
 
 // Verificar se usuário é editor ou admin
 export const isEditor = async () => {
   const profile = await getCurrentProfile();
-  return profile?.role === 'admin' || profile?.role === 'editor';
+  return profile?.role === 'admin' || profile?.role === 'editor' || profile?.role === 'dev';
 };
 
 // Atualizar perfil

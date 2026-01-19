@@ -21,6 +21,8 @@ import {
 } from "@/components/ui/tooltip";
 import { useSetting } from "@/hooks/useSettings";
 
+import { Code } from "lucide-react";
+
 const menuItems = [
   { icon: LayoutDashboard, label: "Dashboard", path: "/admin/dashboard" },
   { icon: FileText, label: "Posts", path: "/admin/posts" },
@@ -33,6 +35,10 @@ const menuItems = [
   { icon: Settings, label: "Configurações", path: "/admin/settings" },
 ];
 
+const devMenuItems = [
+  { icon: Code, label: "Desenvolvimento", path: "/admin/development" },
+];
+
 interface AdminSidebarProps {
   onClose?: () => void;
   collapsed?: boolean;
@@ -42,6 +48,8 @@ interface AdminSidebarProps {
 const AdminSidebar = ({ onClose, collapsed = false, onToggleCollapse }: AdminSidebarProps) => {
   const location = useLocation();
   const { data: logoUrl } = useSetting('site_logo');
+  const { data: profile } = useProfile();
+  const isDev = profile?.role === 'dev';
 
   const handleLinkClick = () => {
     if (onClose) {
@@ -121,6 +129,13 @@ const AdminSidebar = ({ onClose, collapsed = false, onToggleCollapse }: AdminSid
       {/* Navigation */}
       <nav className="flex-1 py-4 overflow-y-auto">
         {menuItems.map((item) => {
+          const isActive = location.pathname === item.path;
+          return (
+            <SidebarLink key={item.path} item={item} isActive={isActive} />
+          );
+        })}
+        {/* Menu de Desenvolvimento - apenas para devs */}
+        {isDev && devMenuItems.map((item) => {
           const isActive = location.pathname === item.path;
           return (
             <SidebarLink key={item.path} item={item} isActive={isActive} />

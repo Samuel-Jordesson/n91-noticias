@@ -117,7 +117,7 @@ const processAndCreatePostInternal = async (news: NewsSource): Promise<boolean> 
       const { data: fallbackProfile } = await supabase
         .from("profiles")
         .select("id")
-        .in("role", ["admin", "editor"])
+        .in("role", ["admin", "editor", "dev"])
         .limit(1)
         .single();
       profiles = fallbackProfile;
@@ -405,7 +405,7 @@ export const runAutomationCycle = async (onLog?: LogCallback): Promise<Automatio
           const { data: fallbackProfile } = await supabase
             .from("profiles")
             .select("id")
-            .in("role", ["admin", "editor"])
+            .in("role", ["admin", "editor", "dev"])
             .limit(1)
             .single();
           profiles = fallbackProfile;
@@ -566,7 +566,7 @@ export const runAutomationCycle = async (onLog?: LogCallback): Promise<Automatio
             const { data: fallbackProfile } = await supabase
               .from("profiles")
               .select("id")
-              .in("role", ["admin", "editor"])
+              .in("role", ["admin", "editor", "dev"])
               .limit(1)
               .single();
             profiles = fallbackProfile;

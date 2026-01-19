@@ -14,7 +14,7 @@ export interface Database {
           id: string
           name: string
           email: string
-          role: 'admin' | 'editor' | 'user'
+          role: 'admin' | 'editor' | 'user' | 'dev'
           avatar_url: string | null
           created_at: string
           updated_at: string
@@ -23,7 +23,7 @@ export interface Database {
           id: string
           name: string
           email: string
-          role?: 'admin' | 'editor' | 'user'
+          role?: 'admin' | 'editor' | 'user' | 'dev'
           avatar_url?: string | null
           created_at?: string
           updated_at?: string
@@ -32,7 +32,7 @@ export interface Database {
           id?: string
           name?: string
           email?: string
-          role?: 'admin' | 'editor' | 'user'
+          role?: 'admin' | 'editor' | 'user' | 'dev'
           avatar_url?: string | null
           created_at?: string
           updated_at?: string
