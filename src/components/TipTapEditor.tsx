@@ -19,7 +19,10 @@ import {
   Heading2,
   Heading3,
   Minus,
-  Code
+  Code,
+  AlignLeft,
+  AlignCenter,
+  AlignRight
 } from "lucide-react";
 import { useRef, useEffect } from "react";
 
@@ -325,6 +328,66 @@ const TipTapEditor = ({ content = "", onChange, placeholder = "Escreva o conteú
     editor.chain().focus().extendMarkRange("link").setLink({ href: url }).run();
   };
 
+  const setAlignment = (alignment: 'left' | 'center' | 'right') => {
+    // Aplicar alinhamento usando CSS inline
+    const selection = window.getSelection();
+    if (!selection || selection.rangeCount === 0) return;
+    
+    const range = selection.getRangeAt(0);
+    const container = range.commonAncestorContainer;
+    
+    // Encontrar o elemento de bloco mais próximo
+    let element: HTMLElement | null = null;
+    if (container.nodeType === Node.TEXT_NODE) {
+      element = container.parentElement;
+    } else if (container.nodeType === Node.ELEMENT_NODE) {
+      element = container as HTMLElement;
+    }
+    
+    // Encontrar o parágrafo ou div mais próximo
+    while (element && !['P', 'DIV', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6'].includes(element.tagName)) {
+      element = element.parentElement;
+    }
+    
+    if (element) {
+      element.style.textAlign = alignment;
+    }
+  };
+
+  const alignImage = (alignment: 'left' | 'center' | 'right') => {
+    // Encontrar todas as imagens selecionadas ou próximas ao cursor
+    const { from } = editor.state.selection;
+    const node = editor.state.doc.nodeAt(from);
+    
+    if (node?.type.name === 'image') {
+      // Encontrar o wrapper da imagem no DOM
+      setTimeout(() => {
+        const editorElement = document.querySelector('.ProseMirror');
+        if (editorElement) {
+          const images = editorElement.querySelectorAll('img');
+          images.forEach((img) => {
+            const wrapper = img.closest('.resizable-image-wrapper') as HTMLElement;
+            if (wrapper) {
+              if (alignment === 'center') {
+                wrapper.style.display = 'block';
+                wrapper.style.marginLeft = 'auto';
+                wrapper.style.marginRight = 'auto';
+              } else if (alignment === 'right') {
+                wrapper.style.display = 'block';
+                wrapper.style.marginLeft = 'auto';
+                wrapper.style.marginRight = '0';
+              } else {
+                wrapper.style.display = 'block';
+                wrapper.style.marginLeft = '0';
+                wrapper.style.marginRight = 'auto';
+              }
+            }
+          });
+        }
+      }, 0);
+    }
+  };
+
   return (
     <div className="border border-border rounded-lg overflow-hidden bg-card">
       {/* Toolbar */}
@@ -438,6 +501,64 @@ const TipTapEditor = ({ content = "", onChange, placeholder = "Escreva o conteú
             title="Citação"
           >
             <Quote className="h-4 w-4" />
+          </Button>
+        </div>
+
+        {/* Alignment */}
+        <div className="flex items-center gap-1 pr-2 border-r border-border">
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8"
+            onClick={() => {
+              const { from, to } = editor.state.selection;
+              const node = editor.state.doc.nodeAt(from);
+              if (node?.type.name === 'image') {
+                alignImage('left');
+              } else {
+                setAlignment('left');
+              }
+            }}
+            title="Alinhar à esquerda"
+          >
+            <AlignLeft className="h-4 w-4" />
+          </Button>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8"
+            onClick={() => {
+              const { from, to } = editor.state.selection;
+              const node = editor.state.doc.nodeAt(from);
+              if (node?.type.name === 'image') {
+                alignImage('center');
+              } else {
+                setAlignment('center');
+              }
+            }}
+            title="Centralizar"
+          >
+            <AlignCenter className="h-4 w-4" />
+          </Button>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8"
+            onClick={() => {
+              const { from, to } = editor.state.selection;
+              const node = editor.state.doc.nodeAt(from);
+              if (node?.type.name === 'image') {
+                alignImage('right');
+              } else {
+                setAlignment('right');
+              }
+            }}
+            title="Alinhar à direita"
+          >
+            <AlignRight className="h-4 w-4" />
           </Button>
         </div>
 
