@@ -41,6 +41,7 @@ const AdminEditor = () => {
   const [isBreaking, setIsBreaking] = useState(false);
   const [isFeatured, setIsFeatured] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [toolbarElement, setToolbarElement] = useState<React.ReactNode>(null);
 
   const { data: post, isLoading: isLoadingPost } = usePost(id || "");
   const { data: categories } = useCategories();
