@@ -41,8 +41,6 @@ const AdminEditor = () => {
   const [isBreaking, setIsBreaking] = useState(false);
   const [isFeatured, setIsFeatured] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [toolbarElement, setToolbarElement] = useState<React.ReactNode>(null);
-  const [editorInstance, setEditorInstance] = useState<any>(null);
 
   const { data: post, isLoading: isLoadingPost } = usePost(id || "");
   const { data: categories } = useCategories();
@@ -220,9 +218,6 @@ const AdminEditor = () => {
           <Card className="flex-1 flex flex-col min-h-0">
             <CardContent className="p-4 sm:p-6 flex-1 flex flex-col min-h-0">
               <form id="post-form" onSubmit={handleSubmit} className="flex-1 flex flex-col space-y-4 min-h-0">
-                {/* Toolbar renderizada acima do título */}
-                {toolbarElement}
-                
                 <div className="space-y-2">
                   <Label htmlFor="title">Título *</Label>
                   <Input 
@@ -243,12 +238,6 @@ const AdminEditor = () => {
                       content={editorContent}
                       onChange={setEditorContent}
                       placeholder="Escreva o conteúdo completo da matéria..."
-                      showToolbar={false}
-                      onEditorReady={setEditorInstance}
-                      renderToolbar={(toolbar) => {
-                        setToolbarElement(toolbar);
-                        return null;
-                      }}
                     />
                   </div>
                 </div>
