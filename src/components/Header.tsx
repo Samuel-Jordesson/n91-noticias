@@ -87,7 +87,7 @@ const Header = () => {
           </Sheet>
 
           {/* Logo - Centralizada */}
-          <Link to="/" className="absolute left-1/2 -translate-x-1/2 flex items-center">
+          <Link to="/" className="absolute left-1/2 -translate-x-1/2 flex items-center py-2">
             <img 
               src={logoUrl || "/imagens/Logo.png"} 
               alt="N91" 
