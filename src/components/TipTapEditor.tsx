@@ -717,12 +717,24 @@ const TipTapEditor = ({ content = "", onChange, placeholder = "Escreva o conteú
       </div>
   );
 
+  // Hidden file input (usado pela toolbar)
+  const fileInput = (
+    <input
+      type="file"
+      ref={fileInputRef}
+      onChange={handleFileChange}
+      accept="image/*"
+      className="hidden"
+    />
+  );
+
   // Se renderToolbar está definido, sempre criar a toolbar (mesmo se showToolbar=false)
   if (renderToolbar) {
     const customToolbar = renderToolbar(toolbar);
     return (
       <>
         {customToolbar}
+        {fileInput}
         <div className="rounded-lg overflow-hidden bg-card">
           <EditorContent editor={editor} />
         </div>
@@ -733,9 +745,12 @@ const TipTapEditor = ({ content = "", onChange, placeholder = "Escreva o conteú
   // Se não mostrar toolbar, retornar apenas o editor
   if (!showToolbar) {
     return (
-      <div className="rounded-lg overflow-hidden bg-card">
-        <EditorContent editor={editor} />
-      </div>
+      <>
+        {fileInput}
+        <div className="rounded-lg overflow-hidden bg-card">
+          <EditorContent editor={editor} />
+        </div>
+      </>
     );
   }
 
@@ -744,6 +759,7 @@ const TipTapEditor = ({ content = "", onChange, placeholder = "Escreva o conteú
     return (
       <>
         {toolbar}
+        {fileInput}
         <div className="rounded-lg overflow-hidden bg-card">
           <EditorContent editor={editor} />
         </div>
@@ -755,6 +771,7 @@ const TipTapEditor = ({ content = "", onChange, placeholder = "Escreva o conteú
   return (
     <div className="rounded-lg overflow-hidden bg-card">
       {toolbar}
+      {fileInput}
       <EditorContent editor={editor} />
     </div>
   );
