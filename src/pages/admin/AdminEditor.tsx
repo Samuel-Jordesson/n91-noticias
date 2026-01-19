@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import AdminLayout from "@/layouts/AdminLayout";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -157,325 +157,204 @@ const AdminEditor = () => {
 
   return (
     <AdminLayout title={isEditing ? "Editar Post" : "Novo Post"}>
-      <div className="flex gap-4 min-h-[calc(100vh-180px)]">
-        {/* Conteúdo Principal */}
-        <div className="flex-1 flex flex-col min-w-0">
-          {/* Header com botão voltar e toggle sidebar */}
-          <div className="flex items-center justify-between gap-4 mb-4">
-            <div className="flex items-center gap-4">
-              <Button
-                variant="outline"
-                onClick={() => navigate("/admin/posts")}
-                className="flex items-center gap-2"
-              >
-                <ArrowLeft className="h-4 w-4" />
-                Voltar
-              </Button>
-              <h1 className="text-xl sm:text-2xl font-bold">
-                {isEditing ? "Editar Post" : "Criar Novo Post"}
-              </h1>
-            </div>
-            {!sidebarOpen && (
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={() => setSidebarOpen(true)}
-                className="flex-shrink-0"
-              >
-                <Settings className="h-4 w-4" />
-              </Button>
-            )}
-          </div>
-
-          {/* Formulário Principal */}
-          <Card className="flex-1 flex flex-col min-h-0">
-            <CardContent className="p-4 sm:p-6 flex-1 flex flex-col min-h-0">
-              <form onSubmit={handleSubmit} className="flex-1 flex flex-col space-y-4 min-h-0">
-                <div className="space-y-2">
-                  <Label htmlFor="title">Título *</Label>
-                  <Input 
-                    id="title" 
-                    placeholder="Título da notícia" 
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    required 
-                  />
-                </div>
-                
-                {/* Rich Text Editor */}
-                <div className="space-y-2 flex-1 flex flex-col min-h-0">
-                  <Label>Conteúdo *</Label>
-                  <div className="flex-1 min-h-0">
-                    <TipTapEditor
-                      content={editorContent}
-                      onChange={setEditorContent}
-                      placeholder="Escreva o conteúdo completo da matéria..."
-                    />
-                  </div>
-                </div>
-
-                <div className="flex justify-end gap-2 pt-4 border-t flex-shrink-0">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => navigate("/admin/posts")}
-                  >
-                    Cancelar
-                  </Button>
-                  <Button 
-                    type="submit" 
-                    disabled={createPostMutation.isPending || updatePostMutation.isPending}
-                  >
-                    {createPostMutation.isPending || updatePostMutation.isPending 
-                      ? (isEditing ? "Atualizando..." : "Publicando...") 
-                      : (isEditing ? "Atualizar Post" : "Publicar Post")}
-                  </Button>
-                </div>
-              </form>
-            </CardContent>
-          </Card>
+      <div className="space-y-4 md:space-y-6">
+        {/* Header com botão voltar */}
+        <div className="flex items-center gap-4">
+          <Button
+            variant="outline"
+            onClick={() => navigate("/admin/posts")}
+            className="flex items-center gap-2"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Voltar
+          </Button>
+          <h1 className="text-xl sm:text-2xl font-bold">
+            {isEditing ? "Editar Post" : "Criar Novo Post"}
+          </h1>
         </div>
 
-        {/* Menu Lateral - Lado Direito */}
-        <aside
-          className={`bg-card border-l border-border transition-all duration-300 overflow-y-auto ${
-            sidebarOpen ? "w-80" : "w-0"
-          } ${sidebarOpen ? "opacity-100" : "opacity-0 pointer-events-none"} flex-shrink-0`}
-        >
-          <div className="p-4 space-y-6">
-            <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold flex items-center gap-2">
-                <Settings className="h-5 w-5" />
-                Configurações
-              </h2>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setSidebarOpen(false)}
-                className="h-8 w-8"
-              >
-                <ChevronRight className="h-4 w-4" />
-              </Button>
-            </div>
+        {/* Formulário */}
+        <Card>
+          <CardContent className="p-4 sm:p-6">
+            <form onSubmit={handleSubmit} className="space-y-4 md:space-y-6">
+              <div className="space-y-2">
+                <Label htmlFor="title">Título *</Label>
+                <Input 
+                  id="title" 
+                  placeholder="Título da notícia" 
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  required 
+                />
+              </div>
 
-            {/* Resumo */}
-            <div className="space-y-2">
-              <Label htmlFor="excerpt">Resumo *</Label>
-              <Textarea
-                id="excerpt"
-                placeholder="Breve resumo da notícia..."
-                rows={4}
-                value={excerpt}
-                onChange={(e) => setExcerpt(e.target.value)}
-                required
-              />
-            </div>
+              <div className="space-y-2">
+                <Label htmlFor="excerpt">Resumo *</Label>
+                <Textarea
+                  id="excerpt"
+                  placeholder="Breve resumo da notícia..."
+                  rows={3}
+                  value={excerpt}
+                  onChange={(e) => setExcerpt(e.target.value)}
+                  required
+                />
+              </div>
+              
+              {/* Rich Text Editor */}
+              <div className="space-y-2">
+                <Label>Conteúdo *</Label>
+                <TipTapEditor
+                  content={editorContent}
+                  onChange={setEditorContent}
+                  placeholder="Escreva o conteúdo completo da matéria..."
+                />
+              </div>
 
-            {/* Categoria */}
-            <div className="space-y-2">
-              <Label htmlFor="category">Categoria *</Label>
-              <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecionar categoria" />
-                </SelectTrigger>
-                <SelectContent>
-                  {categories?.map((cat) => (
-                    <SelectItem key={cat.id} value={cat.name}>
-                      {cat.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* Autor */}
-            <div className="space-y-2">
-              <Label htmlFor="author">Autor *</Label>
-              <Select 
-                value={selectedAuthor || ""} 
-                onValueChange={(value) => {
-                  setSelectedAuthor(value);
-                }}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder={profile?.name || "Selecionar autor"} />
-                </SelectTrigger>
-                <SelectContent>
-                  {allProfiles.map((author) => (
-                    <SelectItem key={author.id} value={author.id}>
-                      {author.name} {author.id === profile?.id ? "(Você)" : ""}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <p className="text-xs text-muted-foreground">
-                {selectedAuthor 
-                  ? `Autor selecionado: ${allProfiles.find(p => p.id === selectedAuthor)?.name || "Desconhecido"}`
-                  : `Por padrão, será usado: ${profile?.name || "seu nome"}`}
-              </p>
-            </div>
-            
-            {/* Image Upload */}
-            <div className="space-y-2">
-              <Label>Imagem de Capa <span className="text-muted-foreground text-xs">(opcional)</span></Label>
-              <div className="flex gap-2">
-                <div className="flex-1">
-                  <Input
-                    id="imageUrl"
-                    type="url"
-                    placeholder="URL da imagem"
-                    value={imageUrl}
-                    onChange={(e) => setImageUrl(e.target.value)}
-                  />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="category">Categoria *</Label>
+                  <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecionar categoria" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {categories?.map((cat) => (
+                        <SelectItem key={cat.id} value={cat.name}>
+                          {cat.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
-                <div>
-                  <input
-                    type="file"
-                    ref={fileInputRef}
-                    onChange={handleImageUpload}
-                    accept="image/*"
-                    className="hidden"
-                  />
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="icon"
-                    onClick={() => fileInputRef.current?.click()}
+
+                <div className="space-y-2">
+                  <Label htmlFor="author">Autor *</Label>
+                  <Select 
+                    value={selectedAuthor || ""} 
+                    onValueChange={(value) => {
+                      setSelectedAuthor(value);
+                    }}
                   >
-                    <ImageIcon className="h-4 w-4" />
-                  </Button>
+                    <SelectTrigger>
+                      <SelectValue placeholder={profile?.name || "Selecionar autor"} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {allProfiles.map((author) => (
+                        <SelectItem key={author.id} value={author.id}>
+                          {author.name} {author.id === profile?.id ? "(Você)" : ""}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <p className="text-xs text-muted-foreground">
+                    {selectedAuthor 
+                      ? `Autor selecionado: ${allProfiles.find(p => p.id === selectedAuthor)?.name || "Desconhecido"}`
+                      : `Por padrão, será usado: ${profile?.name || "seu nome"}`}
+                  </p>
                 </div>
               </div>
               
-              {(imagePreview || (isEditing && post?.image_url && !imagePreview && !imageUrl)) && (
-                <div className="mt-2 relative">
-                  <img
-                    src={imagePreview || post?.image_url}
-                    alt="Preview"
-                    className="w-full max-h-48 object-cover rounded-lg border border-border"
-                  />
-                  {imagePreview && (
-                    <Button
-                      type="button"
-                      variant="destructive"
-                      size="sm"
-                      className="absolute top-2 right-2"
-                      onClick={() => setImagePreview("")}
-                    >
-                      Remover
-                    </Button>
-                  )}
-                </div>
-              )}
-            </div>
-
-            {/* Checkboxes */}
-            <div className="space-y-3 pt-2 border-t">
-              <div className="flex items-center gap-2">
-                <input 
-                  type="checkbox" 
-                  id="breaking" 
-                  className="rounded" 
-                  checked={isBreaking}
-                  onChange={(e) => setIsBreaking(e.target.checked)}
-                />
-                <Label htmlFor="breaking" className="cursor-pointer text-sm">
-                  Marcar como notícia urgente
-                </Label>
-              </div>
-              <div className="flex items-center gap-2">
-                <input 
-                  type="checkbox" 
-                  id="featured" 
-                  className="rounded" 
-                  checked={isFeatured}
-                  onChange={(e) => setIsFeatured(e.target.checked)}
-                />
-                <Label htmlFor="featured" className="cursor-pointer text-sm">
-                  Marcar como destaque (aparece na seção "Em Destaque")
-                </Label>
-              </div>
-            </div>
-          </div>
-        </aside>
-
-        {/* Conteúdo Principal */}
-        <div className="flex-1 flex flex-col min-w-0">
-          {/* Header com botão voltar e toggle sidebar */}
-          <div className="flex items-center justify-between gap-4 mb-4">
-            <div className="flex items-center gap-4">
-              <Button
-                variant="outline"
-                onClick={() => navigate("/admin/posts")}
-                className="flex items-center gap-2"
-              >
-                <ArrowLeft className="h-4 w-4" />
-                Voltar
-              </Button>
-              <h1 className="text-xl sm:text-2xl font-bold">
-                {isEditing ? "Editar Post" : "Criar Novo Post"}
-              </h1>
-            </div>
-            {!sidebarOpen && (
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={() => setSidebarOpen(true)}
-                className="flex-shrink-0"
-              >
-                <Settings className="h-4 w-4" />
-              </Button>
-            )}
-          </div>
-
-          {/* Formulário Principal */}
-          <Card className="flex-1 flex flex-col min-h-0">
-            <CardContent className="p-4 sm:p-6 flex-1 flex flex-col min-h-0">
-              <form onSubmit={handleSubmit} className="flex-1 flex flex-col space-y-4 min-h-0">
-                <div className="space-y-2">
-                  <Label htmlFor="title">Título *</Label>
-                  <Input 
-                    id="title" 
-                    placeholder="Título da notícia" 
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    required 
-                  />
-                </div>
-                
-                {/* Rich Text Editor */}
-                <div className="space-y-2 flex-1 flex flex-col min-h-0">
-                  <Label>Conteúdo *</Label>
-                  <div className="flex-1 min-h-0">
-                    <TipTapEditor
-                      content={editorContent}
-                      onChange={setEditorContent}
-                      placeholder="Escreva o conteúdo completo da matéria..."
+              {/* Image Upload */}
+              <div className="space-y-2">
+                <Label>Imagem de Capa <span className="text-muted-foreground text-xs">(opcional)</span></Label>
+                <div className="flex gap-4">
+                  <div className="flex-1">
+                    <Input
+                      id="imageUrl"
+                      type="url"
+                      placeholder="URL da imagem ou faça upload"
+                      value={imageUrl}
+                      onChange={(e) => setImageUrl(e.target.value)}
                     />
                   </div>
+                  <div>
+                    <input
+                      type="file"
+                      ref={fileInputRef}
+                      onChange={handleImageUpload}
+                      accept="image/*"
+                      className="hidden"
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => fileInputRef.current?.click()}
+                    >
+                      <ImageIcon className="h-4 w-4 mr-2" />
+                      Upload
+                    </Button>
+                  </div>
                 </div>
+                
+                {(imagePreview || (isEditing && post?.image_url && !imagePreview && !imageUrl)) && (
+                  <div className="mt-2 relative">
+                    <img
+                      src={imagePreview || post?.image_url}
+                      alt="Preview"
+                      className="w-full max-h-64 object-cover rounded-lg border border-border"
+                    />
+                    {imagePreview && (
+                      <Button
+                        type="button"
+                        variant="destructive"
+                        size="sm"
+                        className="absolute top-2 right-2"
+                        onClick={() => setImagePreview("")}
+                      >
+                        Remover
+                      </Button>
+                    )}
+                  </div>
+                )}
+              </div>
 
-                <div className="flex justify-end gap-2 pt-4 border-t flex-shrink-0">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => navigate("/admin/posts")}
-                  >
-                    Cancelar
-                  </Button>
-                  <Button 
-                    type="submit" 
-                    disabled={createPostMutation.isPending || updatePostMutation.isPending}
-                  >
-                    {createPostMutation.isPending || updatePostMutation.isPending 
-                      ? (isEditing ? "Atualizando..." : "Publicando...") 
-                      : (isEditing ? "Atualizar Post" : "Publicar Post")}
-                  </Button>
+              <div className="flex flex-col gap-3">
+                <div className="flex items-center gap-2">
+                  <input 
+                    type="checkbox" 
+                    id="breaking" 
+                    className="rounded" 
+                    checked={isBreaking}
+                    onChange={(e) => setIsBreaking(e.target.checked)}
+                  />
+                  <Label htmlFor="breaking" className="cursor-pointer">
+                    Marcar como notícia urgente
+                  </Label>
                 </div>
-              </form>
-            </CardContent>
-          </Card>
-        </div>
+                <div className="flex items-center gap-2">
+                  <input 
+                    type="checkbox" 
+                    id="featured" 
+                    className="rounded" 
+                    checked={isFeatured}
+                    onChange={(e) => setIsFeatured(e.target.checked)}
+                  />
+                  <Label htmlFor="featured" className="cursor-pointer">
+                    Marcar como destaque (aparece na seção "Em Destaque")
+                  </Label>
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-2 pt-4 border-t">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => navigate("/admin/posts")}
+                >
+                  Cancelar
+                </Button>
+                <Button 
+                  type="submit" 
+                  disabled={createPostMutation.isPending || updatePostMutation.isPending}
+                >
+                  {createPostMutation.isPending || updatePostMutation.isPending 
+                    ? (isEditing ? "Atualizando..." : "Publicando...") 
+                    : (isEditing ? "Atualizar Post" : "Publicar Post")}
+                </Button>
+              </div>
+            </form>
+          </CardContent>
+        </Card>
       </div>
     </AdminLayout>
   );
