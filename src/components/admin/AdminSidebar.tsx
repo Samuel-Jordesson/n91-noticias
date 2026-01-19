@@ -90,9 +90,13 @@ const AdminSidebar = ({ onClose, collapsed = false, onToggleCollapse }: AdminSid
       }`}>
         <div className="flex items-center justify-between">
           <Link to="/" className="inline-block" onClick={handleLinkClick}>
-            <h1 className={`font-serif font-black ${
-              collapsed ? "text-lg sm:text-xl" : "text-xl sm:text-2xl"
-            }`}>N91</h1>
+            <img 
+              src={logoUrl || "/imagens/Logo.png"} 
+              alt="N91" 
+              className={`object-contain ${
+                collapsed ? "h-8 w-auto mx-auto" : "h-10 w-auto"
+              }`}
+            />
           </Link>
           {onToggleCollapse && (
             <button
