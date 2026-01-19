@@ -41,6 +41,7 @@ interface AdminSidebarProps {
 
 const AdminSidebar = ({ onClose, collapsed = false, onToggleCollapse }: AdminSidebarProps) => {
   const location = useLocation();
+  const { data: logoUrl } = useSetting('site_logo');
 
   const handleLinkClick = () => {
     if (onClose) {
