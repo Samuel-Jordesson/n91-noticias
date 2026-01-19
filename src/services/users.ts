@@ -17,11 +17,14 @@ export const getAllProfiles = async () => {
 
 // Criar novo usuário (admin)
 export const createUser = async (email: string, password: string, name: string, role: 'admin' | 'editor' | 'user' | 'dev' = 'user') => {
-  // Criar usuário no auth (confirmação de email desativada no Supabase)
+  // Criar usuário no auth
+  // IMPORTANTE: Para que o email seja confirmado automaticamente, desative a confirmação de email
+  // no Supabase Dashboard: Authentication > Settings > Email Auth > "Enable email confirmations" = OFF
   const { data: authData, error: authError } = await supabase.auth.signUp({
     email,
     password,
     options: {
+      emailRedirectTo: undefined, // Não redirecionar para confirmação
       data: {
         name,
       },
