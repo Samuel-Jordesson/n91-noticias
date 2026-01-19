@@ -203,8 +203,8 @@ const AdminEditor = () => {
                 Cancelar
               </Button>
               <Button 
-                type="button"
-                onClick={handleSubmit}
+                type="submit"
+                form="post-form"
                 disabled={createPostMutation.isPending || updatePostMutation.isPending}
               >
                 {createPostMutation.isPending || updatePostMutation.isPending 
@@ -217,7 +217,7 @@ const AdminEditor = () => {
           {/* Formulário Principal */}
           <Card className="flex-1 flex flex-col min-h-0">
             <CardContent className="p-4 sm:p-6 flex-1 flex flex-col min-h-0">
-              <form onSubmit={handleSubmit} className="flex-1 flex flex-col space-y-4 min-h-0">
+              <form id="post-form" onSubmit={handleSubmit} className="flex-1 flex flex-col space-y-4 min-h-0">
                 <div className="space-y-2">
                   <Label htmlFor="title">Título *</Label>
                   <Input 
