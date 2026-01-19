@@ -722,8 +722,34 @@ const TipTapEditor = ({ content = "", onChange, placeholder = "Escreva o conteú
         accept="image/*"
         className="hidden"
       />
+    </div>
+  );
 
-      {/* Editor Content */}
+  // Se não mostrar toolbar, retornar apenas o editor
+  if (!showToolbar) {
+    return (
+      <div className="rounded-lg overflow-hidden bg-card">
+        <EditorContent editor={editor} />
+      </div>
+    );
+  }
+
+  // Se toolbar no topo, retornar toolbar separada e editor
+  if (toolbarPosition === 'top') {
+    return (
+      <>
+        {toolbar}
+        <div className="rounded-lg overflow-hidden bg-card">
+          <EditorContent editor={editor} />
+        </div>
+      </>
+    );
+  }
+
+  // Padrão: toolbar inline
+  return (
+    <div className="rounded-lg overflow-hidden bg-card">
+      {toolbar}
       <EditorContent editor={editor} />
     </div>
   );
