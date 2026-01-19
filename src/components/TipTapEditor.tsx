@@ -480,7 +480,7 @@ const TipTapEditor = ({ content = "", onChange, placeholder = "Escreva o conteú
   };
 
   return (
-    <div className="border border-border rounded-lg overflow-hidden bg-card">
+    <div className="rounded-lg overflow-hidden bg-card">
       {/* Toolbar */}
       <div className="flex flex-wrap items-center gap-1 p-2 border-b border-border bg-muted/50">
         {/* Text Formatting */}
