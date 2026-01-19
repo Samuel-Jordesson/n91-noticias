@@ -331,7 +331,7 @@ const AdminDashboard = () => {
                             Publicado
                           </span>
                         ) : (
-                          <span className="inline-flex items-center px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-medium bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300">
+                          <span className="inline-flex items-center px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-medium bg-[#47B354]/20 text-[#47B354] dark:bg-[#47B354]/30 dark:text-[#47B354]">
                             Rascunho
                           </span>
                         )}

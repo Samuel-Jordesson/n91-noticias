@@ -221,8 +221,8 @@ const AdminPosts = () => {
                               onClick={() => handleToggleFeatured(post)}
                               className={`group transition-colors ${
                                 post.is_featured 
-                                  ? "text-yellow-500" 
-                                  : "text-muted-foreground hover:text-yellow-500"
+                                  ? "text-[#47B354]" 
+                                  : "text-muted-foreground hover:text-[#47B354]"
                               }`}
                               title={post.is_featured ? "Remover dos destaques" : "Adicionar aos destaques"}
                             >
@@ -230,7 +230,7 @@ const AdminPosts = () => {
                                 className={`h-4 w-4 sm:h-5 sm:w-5 transition-all ${
                                   post.is_featured 
                                     ? "fill-current" 
-                                    : "group-hover:fill-yellow-500"
+                                    : "group-hover:fill-[#47B354]"
                                 }`}
                               />
                             </button>

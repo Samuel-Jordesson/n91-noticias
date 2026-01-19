@@ -173,7 +173,7 @@ const AdminUsers = () => {
             </DialogHeader>
             <form onSubmit={handleCreateUser} className="space-y-2 sm:space-y-3 md:space-y-4 mt-2 sm:mt-4">
               {createUserMutation.isError && (
-                <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-3 text-sm text-yellow-800 dark:text-yellow-200">
+                <div className="bg-[#47B354]/10 dark:bg-[#47B354]/20 border border-[#47B354]/30 dark:border-[#47B354]/40 rounded-lg p-3 text-sm text-[#47B354] dark:text-[#47B354]">
                   <p className="font-medium">Atenção: Limite de requisições</p>
                   <p className="mt-1">Se você receber um erro de "Too Many Requests", aguarde 30-60 segundos antes de tentar novamente.</p>
                 </div>

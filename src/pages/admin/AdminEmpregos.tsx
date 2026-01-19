@@ -447,7 +447,7 @@ const AdminEmpregos = () => {
                           <div className="flex items-center gap-2 mb-1">
                             <h3 className="font-bold text-lg line-clamp-1">{job.title}</h3>
                             {job.is_featured && (
-                              <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
+                              <Star className="h-4 w-4 text-[#47B354] fill-[#47B354]" />
                             )}
                           </div>
                           <p className="text-sm text-muted-foreground mb-2">
@@ -473,7 +473,7 @@ const AdminEmpregos = () => {
                           >
                             <Star
                               className={`h-4 w-4 ${
-                                job.is_featured ? "text-yellow-500 fill-yellow-500" : ""
+                                job.is_featured ? "text-[#47B354] fill-[#47B354]" : ""
                               }`}
                             />
                           </Button>
