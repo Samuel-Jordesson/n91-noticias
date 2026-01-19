@@ -42,9 +42,29 @@ const TipTapEditor = ({ content = "", onChange, placeholder = "Escreva o conteú
         ...this.parent?.(),
         width: {
           default: null,
+          parseHTML: element => element.getAttribute('width') || element.style.width?.replace('px', '') || null,
+          renderHTML: attributes => {
+            if (attributes.width) {
+              return {
+                width: attributes.width,
+                style: `width: ${attributes.width}px;`,
+              };
+            }
+            return {};
+          },
         },
         height: {
           default: null,
+          parseHTML: element => element.getAttribute('height') || element.style.height?.replace('px', '') || null,
+          renderHTML: attributes => {
+            if (attributes.height) {
+              return {
+                height: attributes.height,
+                style: `height: ${attributes.height}px;`,
+              };
+            }
+            return {};
+          },
         },
         align: {
           default: 'left',

@@ -239,6 +239,17 @@
     width: fit-content !important;
   }
 
+  /* Preservar tamanho das imagens redimensionadas */
+  .article-content img[width] {
+    max-width: 100% !important;
+    height: auto !important;
+  }
+
+  .article-content img[style*="width"] {
+    max-width: 100% !important;
+    height: auto !important;
+  }
+
   .article-content p:last-child {
     @apply mb-0;
   }
