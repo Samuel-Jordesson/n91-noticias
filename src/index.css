@@ -217,6 +217,28 @@
     line-height: 1.8;
   }
 
+  /* Alinhamento de imagens no conteúdo do artigo */
+  .article-content img[data-align="center"] {
+    display: block !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    width: fit-content !important;
+  }
+
+  .article-content img[data-align="right"] {
+    display: block !important;
+    margin-left: auto !important;
+    margin-right: 0 !important;
+    width: fit-content !important;
+  }
+
+  .article-content img[data-align="left"] {
+    display: block !important;
+    margin-left: 0 !important;
+    margin-right: auto !important;
+    width: fit-content !important;
+  }
+
   .article-content p:last-child {
     @apply mb-0;
   }
