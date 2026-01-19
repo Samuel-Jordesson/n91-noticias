@@ -225,7 +225,8 @@ const AdminEditor = () => {
                     placeholder="Título da notícia" 
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
-                    required 
+                    required
+                    className="border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
                   />
                 </div>
                 
