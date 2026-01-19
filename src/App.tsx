@@ -51,6 +51,7 @@ const App = () => (
           <Route path="/admin/comments" element={<AdminComments />} />
           <Route path="/admin/automation" element={<AdminAutomation />} />
           <Route path="/admin/settings" element={<AdminSettings />} />
+          <Route path="/admin/development" element={<AdminDevelopment />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

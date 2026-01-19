@@ -45,7 +45,7 @@ const AdminUsers = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState<"admin" | "editor" | "user">("user");
+  const [role, setRole] = useState<"admin" | "editor" | "user" | "dev">("user");
 
   const filteredUsers = users.filter((user) => {
     const matchesSearch =
@@ -219,12 +219,13 @@ const AdminUsers = () => {
               )}
               <div className="space-y-2">
                 <Label htmlFor="role">Função</Label>
-                <Select value={role} onValueChange={(value: "admin" | "editor" | "user") => setRole(value)}>
+                <Select value={role} onValueChange={(value: "admin" | "editor" | "user" | "dev") => setRole(value)}>
                   <SelectTrigger>
                     <SelectValue placeholder="Selecionar função" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="admin">Administrador</SelectItem>
+                    <SelectItem value="dev">Desenvolvedor</SelectItem>
                     <SelectItem value="editor">Editor</SelectItem>
                     <SelectItem value="user">Usuário</SelectItem>
                   </SelectContent>
