@@ -56,7 +56,7 @@ const Header = () => {
       </div>
 
       {/* Main header */}
-      <div className="container py-4">
+      <div className="container py-6">
         <div className="flex items-center justify-between relative">
           {/* Mobile menu */}
           <Sheet>
