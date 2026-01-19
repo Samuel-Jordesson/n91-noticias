@@ -46,14 +46,17 @@ const TipTapEditor = ({ content = "", onChange, placeholder = "Escreva o conteú
             const width = element.getAttribute('width');
             if (width) return parseInt(width);
             const styleWidth = element.style.width;
-            if (styleWidth) return parseInt(styleWidth.replace('px', ''));
+            if (styleWidth) {
+              const parsed = parseInt(styleWidth.replace('px', ''));
+              return isNaN(parsed) ? null : parsed;
+            }
             return null;
           },
           renderHTML: attributes => {
             if (attributes.width) {
               return {
                 width: attributes.width,
-                style: `width: ${attributes.width}px; height: auto;`,
+                style: `width: ${attributes.width}px;`,
               };
             }
             return {};
@@ -65,14 +68,17 @@ const TipTapEditor = ({ content = "", onChange, placeholder = "Escreva o conteú
             const height = element.getAttribute('height');
             if (height) return parseInt(height);
             const styleHeight = element.style.height;
-            if (styleHeight) return parseInt(styleHeight.replace('px', ''));
+            if (styleHeight) {
+              const parsed = parseInt(styleHeight.replace('px', ''));
+              return isNaN(parsed) ? null : parsed;
+            }
             return null;
           },
           renderHTML: attributes => {
             if (attributes.height) {
               return {
                 height: attributes.height,
-                style: `height: ${attributes.height}px; width: auto;`,
+                style: `height: ${attributes.height}px;`,
               };
             }
             return {};
@@ -177,8 +183,10 @@ const TipTapEditor = ({ content = "", onChange, placeholder = "Escreva o conteú
           if (resizeHandle) return;
           
           resizeHandle = document.createElement('div');
-          resizeHandle.className = 'resize-handle absolute bottom-0 right-0 w-4 h-4 bg-primary cursor-nwse-resize rounded-tl-lg border-2 border-background z-10';
-          resizeHandle.style.transform = 'translate(50%, 50%)';
+          resizeHandle.className = 'resize-handle absolute w-4 h-4 bg-primary cursor-nwse-resize rounded-tl-lg border-2 border-background z-10';
+          resizeHandle.style.position = 'absolute';
+          resizeHandle.style.bottom = '-2px';
+          resizeHandle.style.right = '-2px';
           resizeHandle.style.pointerEvents = 'auto';
           resizeHandle.title = 'Arraste para redimensionar';
           
