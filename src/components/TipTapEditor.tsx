@@ -49,12 +49,14 @@ const TipTapEditor = ({ content = "", onChange, placeholder = "Escreva o conteú
       return ({ node, HTMLAttributes, getPos, editor }) => {
         const dom = document.createElement('div');
         dom.className = 'resizable-image-wrapper relative inline-block my-4';
+        dom.style.userSelect = 'none';
         
         const img = document.createElement('img');
         img.src = node.attrs.src;
         img.alt = node.attrs.alt || '';
         img.className = 'rounded-lg max-w-full';
         img.style.display = 'block';
+        img.draggable = false;
         
         if (node.attrs.width) {
           img.style.width = `${node.attrs.width}px`;
@@ -65,9 +67,23 @@ const TipTapEditor = ({ content = "", onChange, placeholder = "Escreva o conteú
         
         dom.appendChild(img);
         
-        const updateImageSize = (newWidth: number, newHeight: number) => {
+        let resizeHandle: HTMLDivElement | null = null;
+        let isResizing = false;
+        let startX = 0;
+        let startWidth = 0;
+        let startHeight = 0;
+        let lastUpdateTime = 0;
+        
+        const updateImageSize = (newWidth: number, newHeight: number, immediate = false) => {
           const pos = getPos();
           if (typeof pos === 'number') {
+            const now = Date.now();
+            // Throttle updates durante o arrasto para melhor performance
+            if (!immediate && now - lastUpdateTime < 50) {
+              return;
+            }
+            lastUpdateTime = now;
+            
             editor.commands.updateAttributes('image', {
               width: newWidth,
               height: newHeight,
@@ -76,69 +92,99 @@ const TipTapEditor = ({ content = "", onChange, placeholder = "Escreva o conteú
         };
         
         const addResizeHandle = () => {
-          const handle = document.createElement('div');
-          handle.className = 'resize-handle absolute bottom-0 right-0 w-4 h-4 bg-primary cursor-nwse-resize rounded-tl-lg border-2 border-background z-10';
-          handle.style.transform = 'translate(50%, 50%)';
-          handle.title = 'Arraste para redimensionar';
+          if (resizeHandle) return;
           
-          let isResizing = false;
-          let startX = 0;
-          let startWidth = 0;
-          let startHeight = 0;
+          resizeHandle = document.createElement('div');
+          resizeHandle.className = 'resize-handle absolute bottom-0 right-0 w-4 h-4 bg-primary cursor-nwse-resize rounded-tl-lg border-2 border-background z-10';
+          resizeHandle.style.transform = 'translate(50%, 50%)';
+          resizeHandle.style.pointerEvents = 'auto';
+          resizeHandle.title = 'Arraste para redimensionar';
           
-          handle.addEventListener('mousedown', (e) => {
+          resizeHandle.addEventListener('mousedown', (e) => {
             e.preventDefault();
             e.stopPropagation();
+            e.stopImmediatePropagation();
+            
             isResizing = true;
             startX = e.clientX;
             startWidth = img.offsetWidth;
             startHeight = img.offsetHeight;
             
+            // Prevenir seleção de texto durante o redimensionamento
+            document.body.style.userSelect = 'none';
+            document.body.style.cursor = 'nwse-resize';
+            
             const handleMouseMove = (e: MouseEvent) => {
               if (!isResizing) return;
+              
+              e.preventDefault();
+              e.stopPropagation();
+              
               const diff = e.clientX - startX;
               const newWidth = Math.max(100, Math.min(1200, startWidth + diff));
               const aspectRatio = startHeight / startWidth;
               const newHeight = newWidth * aspectRatio;
               
+              // Atualizar visualmente primeiro
               img.style.width = `${newWidth}px`;
               img.style.height = `${newHeight}px`;
-              updateImageSize(newWidth, newHeight);
+              
+              // Atualizar no editor (throttled)
+              updateImageSize(newWidth, newHeight, false);
             };
             
             const handleMouseUp = () => {
+              if (!isResizing) return;
+              
               isResizing = false;
+              document.body.style.userSelect = '';
+              document.body.style.cursor = '';
+              
+              // Atualização final imediata
+              const finalWidth = img.offsetWidth;
+              const finalHeight = img.offsetHeight;
+              updateImageSize(finalWidth, finalHeight, true);
+              
               document.removeEventListener('mousemove', handleMouseMove);
               document.removeEventListener('mouseup', handleMouseUp);
             };
             
-            document.addEventListener('mousemove', handleMouseMove);
-            document.addEventListener('mouseup', handleMouseUp);
+            document.addEventListener('mousemove', handleMouseMove, { passive: false });
+            document.addEventListener('mouseup', handleMouseUp, { once: true });
           });
           
-          dom.appendChild(handle);
+          dom.appendChild(resizeHandle);
+        };
+        
+        const removeResizeHandle = () => {
+          if (resizeHandle) {
+            resizeHandle.remove();
+            resizeHandle = null;
+          }
         };
         
         // Adicionar handle quando a imagem estiver selecionada
         const checkSelection = () => {
+          if (isResizing) return; // Não atualizar durante o redimensionamento
+          
           const pos = getPos();
           if (typeof pos === 'number') {
             const { from, to } = editor.state.selection;
             const isSelected = from <= pos + node.nodeSize && to >= pos;
             
-            if (isSelected && !dom.querySelector('.resize-handle')) {
+            if (isSelected && !resizeHandle) {
               addResizeHandle();
-            } else if (!isSelected) {
-              const handle = dom.querySelector('.resize-handle');
-              if (handle) {
-                handle.remove();
-              }
+            } else if (!isSelected && resizeHandle) {
+              removeResizeHandle();
             }
           }
         };
         
-        editor.on('selectionUpdate', checkSelection);
-        checkSelection();
+        // Usar setTimeout para garantir que o editor está pronto
+        setTimeout(() => {
+          editor.on('selectionUpdate', checkSelection);
+          checkSelection();
+        }, 0);
         
         return {
           dom,
