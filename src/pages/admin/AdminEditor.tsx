@@ -13,7 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Image as ImageIcon, ArrowLeft, ChevronLeft, ChevronRight, Settings } from "lucide-react";
+import { Image as ImageIcon, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 import TipTapEditor from "@/components/TipTapEditor";
 import { usePost, useCreatePost, useUpdatePost } from "@/hooks/usePosts";
@@ -27,10 +27,6 @@ const AdminEditor = () => {
   const navigate = useNavigate();
   const isEditing = !!id;
 
-  const [sidebarOpen, setSidebarOpen] = useState(() => {
-    const saved = localStorage.getItem("editorSidebarOpen");
-    return saved !== "false"; // Default: aberto
-  });
   const [editorContent, setEditorContent] = useState("");
   const [imagePreview, setImagePreview] = useState<string>("");
   const [imageUrl, setImageUrl] = useState("");
@@ -48,11 +44,6 @@ const AdminEditor = () => {
   const { data: allProfiles = [] } = useAllProfiles();
   const createPostMutation = useCreatePost();
   const updatePostMutation = useUpdatePost();
-
-  // Salvar estado do sidebar no localStorage
-  useEffect(() => {
-    localStorage.setItem("editorSidebarOpen", String(sidebarOpen));
-  }, [sidebarOpen]);
 
   // Carregar dados do post quando estiver editando
   useEffect(() => {
