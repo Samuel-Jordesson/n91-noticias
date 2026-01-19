@@ -86,9 +86,11 @@ const Header = () => {
 
           {/* Logo */}
           <Link to="/" className="flex items-center">
-            <h1 className="text-3xl md:text-4xl font-serif font-black text-primary tracking-tight">
-              N91
-            </h1>
+            <img 
+              src="/imagens/Logo.png" 
+              alt="N91" 
+              className="h-12 md:h-16 w-auto object-contain"
+            />
           </Link>
 
           {/* Search */}
