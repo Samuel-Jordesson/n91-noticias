@@ -36,7 +36,7 @@ interface TipTapEditorProps {
   renderToolbar?: (toolbar: React.ReactNode) => React.ReactNode;
 }
 
-const TipTapEditor = ({ content = "", onChange, placeholder = "Escreva o conteúdo da matéria...", showToolbar = true, toolbarPosition = 'inline' }: TipTapEditorProps) => {
+const TipTapEditor = ({ content = "", onChange, placeholder = "Escreva o conteúdo da matéria...", showToolbar = true, toolbarPosition = 'inline', onEditorReady, renderToolbar }: TipTapEditorProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Extensão de imagem customizada com redimensionamento
