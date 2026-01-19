@@ -1,8 +1,9 @@
-import { useEditor, EditorContent } from "@tiptap/react";
+import { useEditor, EditorContent, ReactRenderer } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Image from "@tiptap/extension-image";
 import Link from "@tiptap/extension-link";
 import Placeholder from "@tiptap/extension-placeholder";
+import { NodeViewWrapper } from "@tiptap/react";
 import { Button } from "@/components/ui/button";
 import { 
   Bold, 
@@ -32,6 +33,126 @@ interface TipTapEditorProps {
 const TipTapEditor = ({ content = "", onChange, placeholder = "Escreva o conteúdo da matéria..." }: TipTapEditorProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // Extensão de imagem customizada com redimensionamento
+  const ResizableImageExtension = Image.extend({
+    addAttributes() {
+      return {
+        ...this.parent?.(),
+        width: {
+          default: null,
+        },
+        height: {
+          default: null,
+        },
+      };
+    },
+    addNodeView() {
+      return ({ node, HTMLAttributes, getPos, editor }) => {
+        const dom = document.createElement('div');
+        dom.className = 'resizable-image-wrapper relative inline-block my-4';
+        
+        const img = document.createElement('img');
+        img.src = node.attrs.src;
+        img.alt = node.attrs.alt || '';
+        img.className = 'rounded-lg max-w-full';
+        img.style.display = 'block';
+        
+        if (node.attrs.width) {
+          img.style.width = `${node.attrs.width}px`;
+        }
+        if (node.attrs.height) {
+          img.style.height = `${node.attrs.height}px`;
+        }
+        
+        dom.appendChild(img);
+        
+        const updateImageSize = (newWidth: number, newHeight: number) => {
+          const pos = getPos();
+          if (typeof pos === 'number') {
+            editor.commands.updateAttributes('image', {
+              width: newWidth,
+              height: newHeight,
+            });
+          }
+        };
+        
+        const addResizeHandle = () => {
+          const handle = document.createElement('div');
+          handle.className = 'resize-handle absolute bottom-0 right-0 w-4 h-4 bg-primary cursor-nwse-resize rounded-tl-lg border-2 border-background z-10';
+          handle.style.transform = 'translate(50%, 50%)';
+          handle.title = 'Arraste para redimensionar';
+          
+          let isResizing = false;
+          let startX = 0;
+          let startWidth = 0;
+          let startHeight = 0;
+          
+          handle.addEventListener('mousedown', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            isResizing = true;
+            startX = e.clientX;
+            startWidth = img.offsetWidth;
+            startHeight = img.offsetHeight;
+            
+            const handleMouseMove = (e: MouseEvent) => {
+              if (!isResizing) return;
+              const diff = e.clientX - startX;
+              const newWidth = Math.max(100, Math.min(1200, startWidth + diff));
+              const aspectRatio = startHeight / startWidth;
+              const newHeight = newWidth * aspectRatio;
+              
+              img.style.width = `${newWidth}px`;
+              img.style.height = `${newHeight}px`;
+              updateImageSize(newWidth, newHeight);
+            };
+            
+            const handleMouseUp = () => {
+              isResizing = false;
+              document.removeEventListener('mousemove', handleMouseMove);
+              document.removeEventListener('mouseup', handleMouseUp);
+            };
+            
+            document.addEventListener('mousemove', handleMouseMove);
+            document.addEventListener('mouseup', handleMouseUp);
+          });
+          
+          dom.appendChild(handle);
+        };
+        
+        // Adicionar handle quando a imagem estiver selecionada
+        const checkSelection = () => {
+          const pos = getPos();
+          if (typeof pos === 'number') {
+            const { from, to } = editor.state.selection;
+            const isSelected = from <= pos + node.nodeSize && to >= pos;
+            
+            if (isSelected && !dom.querySelector('.resize-handle')) {
+              addResizeHandle();
+            } else if (!isSelected) {
+              const handle = dom.querySelector('.resize-handle');
+              if (handle) {
+                handle.remove();
+              }
+            }
+          }
+        };
+        
+        editor.on('selectionUpdate', checkSelection);
+        checkSelection();
+        
+        return {
+          dom,
+          contentDOM: null,
+        };
+      };
+    },
+  }).configure({
+    HTMLAttributes: {
+      class: "rounded-lg max-w-full h-auto my-4",
+    },
+  });
+
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
@@ -39,11 +160,7 @@ const TipTapEditor = ({ content = "", onChange, placeholder = "Escreva o conteú
           levels: [1, 2, 3],
         },
       }),
-      Image.configure({
-        HTMLAttributes: {
-          class: "rounded-lg max-w-full h-auto my-4",
-        },
-      }),
+      ResizableImageExtension,
       Link.configure({
         openOnClick: false,
         HTMLAttributes: {
