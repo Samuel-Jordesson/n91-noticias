@@ -133,15 +133,24 @@ const TipTapEditor = ({ content = "", onChange, placeholder = "Escreva o conteú
             currentWidth = startWidth;
             currentHeight = startHeight;
             
-            // Prevenir seleção de texto
+            // Prevenir seleção de texto e scroll
             document.body.style.userSelect = 'none';
             document.body.style.cursor = 'nwse-resize';
+            document.body.style.overflow = 'hidden';
+            
+            // Desabilitar atualizações do editor durante o resize
+            const originalUpdate = editor.view.dispatch;
+            let updateBlocked = false;
             
             const handleMouseMove = (e: MouseEvent) => {
               if (!isResizing) return;
               
               e.preventDefault();
               e.stopPropagation();
+              e.stopImmediatePropagation();
+              
+              // Bloquear atualizações do editor temporariamente
+              updateBlocked = true;
               
               // Calcular diferença do mouse
               const diff = e.clientX - startX;
@@ -160,24 +169,31 @@ const TipTapEditor = ({ content = "", onChange, placeholder = "Escreva o conteú
               currentWidth = newWidth;
               currentHeight = newHeight;
               
-              // Atualizar visualmente IMEDIATAMENTE
+              // Atualizar visualmente IMEDIATAMENTE (sem atualizar o editor ainda)
               img.style.width = `${newWidth}px`;
               img.style.height = `${newHeight}px`;
               img.style.maxWidth = 'none';
               img.style.maxHeight = 'none';
+              
+              // Permitir atualizações novamente
+              updateBlocked = false;
             };
             
-            const handleMouseUp = () => {
+            const handleMouseUp = (e: MouseEvent) => {
               if (!isResizing) return;
+              
+              e.preventDefault();
+              e.stopPropagation();
               
               isResizing = false;
               document.body.style.userSelect = '';
               document.body.style.cursor = '';
+              document.body.style.overflow = '';
               
               // Restaurar max-width
               img.style.maxWidth = '100%';
               
-              // Salvar tamanho final no editor
+              // Salvar tamanho final no editor APENAS quando soltar
               updateImageSize(Math.round(currentWidth), Math.round(currentHeight));
               
               // Remover listeners
@@ -185,9 +201,9 @@ const TipTapEditor = ({ content = "", onChange, placeholder = "Escreva o conteú
               document.removeEventListener('mouseup', handleMouseUp);
             };
             
-            // Adicionar listeners no document
-            document.addEventListener('mousemove', handleMouseMove);
-            document.addEventListener('mouseup', handleMouseUp);
+            // Adicionar listeners no document com capture para garantir captura
+            document.addEventListener('mousemove', handleMouseMove, { capture: true, passive: false });
+            document.addEventListener('mouseup', handleMouseUp, { capture: true, once: true });
           });
           
           dom.appendChild(resizeHandle);
