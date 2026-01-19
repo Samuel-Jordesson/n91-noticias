@@ -42,12 +42,18 @@ const TipTapEditor = ({ content = "", onChange, placeholder = "Escreva o conteú
         ...this.parent?.(),
         width: {
           default: null,
-          parseHTML: element => element.getAttribute('width') || element.style.width?.replace('px', '') || null,
+          parseHTML: element => {
+            const width = element.getAttribute('width');
+            if (width) return parseInt(width);
+            const styleWidth = element.style.width;
+            if (styleWidth) return parseInt(styleWidth.replace('px', ''));
+            return null;
+          },
           renderHTML: attributes => {
             if (attributes.width) {
               return {
                 width: attributes.width,
-                style: `width: ${attributes.width}px;`,
+                style: `width: ${attributes.width}px; height: auto;`,
               };
             }
             return {};
@@ -55,12 +61,18 @@ const TipTapEditor = ({ content = "", onChange, placeholder = "Escreva o conteú
         },
         height: {
           default: null,
-          parseHTML: element => element.getAttribute('height') || element.style.height?.replace('px', '') || null,
+          parseHTML: element => {
+            const height = element.getAttribute('height');
+            if (height) return parseInt(height);
+            const styleHeight = element.style.height;
+            if (styleHeight) return parseInt(styleHeight.replace('px', ''));
+            return null;
+          },
           renderHTML: attributes => {
             if (attributes.height) {
               return {
                 height: attributes.height,
-                style: `height: ${attributes.height}px;`,
+                style: `height: ${attributes.height}px; width: auto;`,
               };
             }
             return {};
