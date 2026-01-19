@@ -24,7 +24,7 @@
     --popover: 0 0% 100%;
     --popover-foreground: 215 25% 15%;
 
-    --primary: 215 80% 35%;
+    --primary: 223 53% 27%;
     --primary-foreground: 0 0% 100%;
 
     --secondary: 210 15% 93%;
@@ -41,14 +41,14 @@
 
     --border: 214 20% 88%;
     --input: 214 20% 88%;
-    --ring: 215 80% 35%;
+    --ring: 223 53% 27%;
 
     --radius: 0.5rem;
 
     /* Custom N91 tokens */
-    --news-highlight: 215 90% 45%;
+    --news-highlight: 223 60% 35%;
     --news-breaking: 0 75% 50%;
-    --news-category: 215 60% 50%;
+    --news-category: 223 53% 40%;
     --news-date: 215 10% 55%;
     --ad-background: 40 20% 96%;
     --ad-border: 40 15% 85%;
@@ -73,7 +73,7 @@
     --popover: 215 25% 13%;
     --popover-foreground: 210 20% 95%;
 
-    --primary: 215 75% 55%;
+    --primary: 223 53% 40%;
     --primary-foreground: 0 0% 100%;
 
     --secondary: 215 20% 20%;
@@ -90,7 +90,7 @@
 
     --border: 215 20% 22%;
     --input: 215 20% 22%;
-    --ring: 215 75% 55%;
+    --ring: 223 53% 40%;
 
     --news-highlight: 215 80% 60%;
     --news-breaking: 0 70% 55%;
