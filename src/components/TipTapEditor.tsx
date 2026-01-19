@@ -727,6 +727,19 @@ const TipTapEditor = ({ content = "", onChange, placeholder = "Escreva o conteú
     </div>
   );
 
+  // Se renderToolbar está definido, sempre criar a toolbar (mesmo se showToolbar=false)
+  if (renderToolbar) {
+    const customToolbar = renderToolbar(toolbar);
+    return (
+      <>
+        {customToolbar}
+        <div className="rounded-lg overflow-hidden bg-card">
+          <EditorContent editor={editor} />
+        </div>
+      </>
+    );
+  }
+
   // Se não mostrar toolbar, retornar apenas o editor
   if (!showToolbar) {
     return (
@@ -738,16 +751,6 @@ const TipTapEditor = ({ content = "", onChange, placeholder = "Escreva o conteú
 
   // Se toolbar no topo, retornar toolbar separada e editor
   if (toolbarPosition === 'top') {
-    if (renderToolbar) {
-      return (
-        <>
-          {renderToolbar(toolbar)}
-          <div className="rounded-lg overflow-hidden bg-card">
-            <EditorContent editor={editor} />
-          </div>
-        </>
-      );
-    }
     return (
       <>
         {toolbar}
