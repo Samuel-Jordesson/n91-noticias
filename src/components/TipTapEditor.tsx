@@ -21,7 +21,7 @@ import {
   Minus,
   Code
 } from "lucide-react";
-import { useRef } from "react";
+import { useRef, useEffect } from "react";
 
 interface TipTapEditorProps {
   content?: string;
@@ -64,6 +64,17 @@ const TipTapEditor = ({ content = "", onChange, placeholder = "Escreva o conteú
       },
     },
   });
+
+  // Atualizar o conteúdo do editor quando a prop content mudar
+  useEffect(() => {
+    if (editor && content !== undefined) {
+      const currentContent = editor.getHTML();
+      // Só atualiza se o conteúdo for diferente para evitar loops
+      if (currentContent !== content) {
+        editor.commands.setContent(content || "");
+      }
+    }
+  }, [editor, content]);
 
   if (!editor) {
     return null;
