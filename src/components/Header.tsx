@@ -57,7 +57,7 @@ const Header = () => {
 
       {/* Main header */}
       <div className="container py-4">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between relative">
           {/* Mobile menu */}
           <Sheet>
             <SheetTrigger asChild className="lg:hidden">
@@ -86,8 +86,8 @@ const Header = () => {
             </SheetContent>
           </Sheet>
 
-          {/* Logo */}
-          <Link to="/" className="flex items-center">
+          {/* Logo - Centralizada */}
+          <Link to="/" className="absolute left-1/2 -translate-x-1/2 flex items-center">
             <img 
               src={logoUrl || "/imagens/Logo.png"} 
               alt="N91" 
@@ -96,7 +96,7 @@ const Header = () => {
           </Link>
 
           {/* Search */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 ml-auto">
             {searchOpen ? (
               <div className="relative animate-slide-in">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
