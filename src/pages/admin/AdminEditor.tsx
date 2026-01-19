@@ -218,6 +218,15 @@ const AdminEditor = () => {
           <Card className="flex-1 flex flex-col min-h-0">
             <CardContent className="p-4 sm:p-6 flex-1 flex flex-col min-h-0">
               <form id="post-form" onSubmit={handleSubmit} className="flex-1 flex flex-col space-y-4 min-h-0">
+                {/* Toolbar acima do título */}
+                <TipTapEditor
+                  content=""
+                  onChange={() => {}}
+                  placeholder=""
+                  showToolbar={true}
+                  toolbarPosition="top"
+                />
+                
                 <div className="space-y-2">
                   <Label htmlFor="title">Título *</Label>
                   <Input 
@@ -238,6 +247,7 @@ const AdminEditor = () => {
                       content={editorContent}
                       onChange={setEditorContent}
                       placeholder="Escreva o conteúdo completo da matéria..."
+                      showToolbar={false}
                     />
                   </div>
                 </div>

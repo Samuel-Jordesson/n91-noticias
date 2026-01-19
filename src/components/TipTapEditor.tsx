@@ -30,9 +30,11 @@ interface TipTapEditorProps {
   content?: string;
   onChange?: (content: string) => void;
   placeholder?: string;
+  showToolbar?: boolean;
+  toolbarPosition?: 'top' | 'inline';
 }
 
-const TipTapEditor = ({ content = "", onChange, placeholder = "Escreva o conteúdo da matéria..." }: TipTapEditorProps) => {
+const TipTapEditor = ({ content = "", onChange, placeholder = "Escreva o conteúdo da matéria...", showToolbar = true, toolbarPosition = 'inline' }: TipTapEditorProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Extensão de imagem customizada com redimensionamento
@@ -479,10 +481,8 @@ const TipTapEditor = ({ content = "", onChange, placeholder = "Escreva o conteú
     }).run();
   };
 
-  return (
-    <div className="rounded-lg overflow-hidden bg-card">
-      {/* Toolbar */}
-      <div className="flex flex-wrap items-center gap-1 p-2 border-b border-border bg-muted/50">
+  const toolbar = (
+    <div className="flex flex-wrap items-center gap-1 p-2 border-b border-border bg-muted/50 rounded-t-lg">
         {/* Text Formatting */}
         <div className="flex items-center gap-1 pr-2 border-r border-border">
           <Button
