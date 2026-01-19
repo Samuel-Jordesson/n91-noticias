@@ -46,6 +46,9 @@ const TipTapEditor = ({ content = "", onChange, placeholder = "Escreva o conteú
         height: {
           default: null,
         },
+        align: {
+          default: 'left',
+        },
       };
     },
     addNodeView() {
@@ -53,6 +56,22 @@ const TipTapEditor = ({ content = "", onChange, placeholder = "Escreva o conteú
         const dom = document.createElement('div');
         dom.className = 'resizable-image-wrapper relative inline-block my-4';
         dom.style.userSelect = 'none';
+        
+        // Aplicar alinhamento inicial
+        const alignment = node.attrs.align || 'left';
+        if (alignment === 'center') {
+          dom.style.display = 'block';
+          dom.style.marginLeft = 'auto';
+          dom.style.marginRight = 'auto';
+        } else if (alignment === 'right') {
+          dom.style.display = 'block';
+          dom.style.marginLeft = 'auto';
+          dom.style.marginRight = '0';
+        } else {
+          dom.style.display = 'block';
+          dom.style.marginLeft = '0';
+          dom.style.marginRight = 'auto';
+        }
         
         const img = document.createElement('img');
         img.src = node.attrs.src;
@@ -355,37 +374,53 @@ const TipTapEditor = ({ content = "", onChange, placeholder = "Escreva o conteú
   };
 
   const alignImage = (alignment: 'left' | 'center' | 'right') => {
-    // Encontrar todas as imagens selecionadas ou próximas ao cursor
-    const { from } = editor.state.selection;
-    const node = editor.state.doc.nodeAt(from);
+    const { from, to } = editor.state.selection;
     
-    if (node?.type.name === 'image') {
-      // Encontrar o wrapper da imagem no DOM
-      setTimeout(() => {
-        const editorElement = document.querySelector('.ProseMirror');
-        if (editorElement) {
-          const images = editorElement.querySelectorAll('img');
-          images.forEach((img) => {
-            const wrapper = img.closest('.resizable-image-wrapper') as HTMLElement;
-            if (wrapper) {
-              if (alignment === 'center') {
-                wrapper.style.display = 'block';
-                wrapper.style.marginLeft = 'auto';
-                wrapper.style.marginRight = 'auto';
-              } else if (alignment === 'right') {
-                wrapper.style.display = 'block';
-                wrapper.style.marginLeft = 'auto';
-                wrapper.style.marginRight = '0';
-              } else {
-                wrapper.style.display = 'block';
-                wrapper.style.marginLeft = '0';
-                wrapper.style.marginRight = 'auto';
-              }
-            }
+    // Encontrar a imagem na seleção
+    editor.chain().focus().command(({ tr, state }) => {
+      state.doc.nodesBetween(from, to, (node, pos) => {
+        if (node.type.name === 'image') {
+          // Atualizar atributo de alinhamento
+          tr.setNodeMarkup(pos, undefined, {
+            ...node.attrs,
+            align: alignment,
           });
+          
+          // Atualizar visualmente o wrapper
+          setTimeout(() => {
+            const editorElement = document.querySelector('.ProseMirror');
+            if (editorElement) {
+              // Encontrar o wrapper específico desta imagem
+              const allWrappers = editorElement.querySelectorAll('.resizable-image-wrapper');
+              allWrappers.forEach((wrapper, index) => {
+                // Verificar se este wrapper contém a imagem que estamos procurando
+                const img = wrapper.querySelector('img');
+                if (img && img.src === node.attrs.src) {
+                  const wrapperEl = wrapper as HTMLElement;
+                  if (alignment === 'center') {
+                    wrapperEl.style.display = 'block';
+                    wrapperEl.style.marginLeft = 'auto';
+                    wrapperEl.style.marginRight = 'auto';
+                    wrapperEl.style.width = 'fit-content';
+                  } else if (alignment === 'right') {
+                    wrapperEl.style.display = 'block';
+                    wrapperEl.style.marginLeft = 'auto';
+                    wrapperEl.style.marginRight = '0';
+                    wrapperEl.style.width = 'fit-content';
+                  } else {
+                    wrapperEl.style.display = 'block';
+                    wrapperEl.style.marginLeft = '0';
+                    wrapperEl.style.marginRight = 'auto';
+                    wrapperEl.style.width = 'fit-content';
+                  }
+                }
+              });
+            }
+          }, 10);
         }
-      }, 0);
-    }
+      });
+      return true;
+    }).run();
   };
 
   return (
