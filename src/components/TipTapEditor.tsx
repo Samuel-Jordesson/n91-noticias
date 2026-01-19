@@ -72,18 +72,11 @@ const TipTapEditor = ({ content = "", onChange, placeholder = "Escreva o conteú
         let startX = 0;
         let startWidth = 0;
         let startHeight = 0;
-        let lastUpdateTime = 0;
+        let rafId: number | null = null;
         
-        const updateImageSize = (newWidth: number, newHeight: number, immediate = false) => {
+        const updateImageSize = (newWidth: number, newHeight: number) => {
           const pos = getPos();
           if (typeof pos === 'number') {
-            const now = Date.now();
-            // Throttle updates durante o arrasto para melhor performance
-            if (!immediate && now - lastUpdateTime < 50) {
-              return;
-            }
-            lastUpdateTime = now;
-            
             editor.commands.updateAttributes('image', {
               width: newWidth,
               height: newHeight,
@@ -113,6 +106,10 @@ const TipTapEditor = ({ content = "", onChange, placeholder = "Escreva o conteú
             // Prevenir seleção de texto durante o redimensionamento
             document.body.style.userSelect = 'none';
             document.body.style.cursor = 'nwse-resize';
+            document.body.style.pointerEvents = 'none';
+            
+            // Permitir pointer events apenas no handle durante o resize
+            resizeHandle!.style.pointerEvents = 'auto';
             
             const handleMouseMove = (e: MouseEvent) => {
               if (!isResizing) return;
@@ -120,37 +117,58 @@ const TipTapEditor = ({ content = "", onChange, placeholder = "Escreva o conteú
               e.preventDefault();
               e.stopPropagation();
               
-              const diff = e.clientX - startX;
-              const newWidth = Math.max(100, Math.min(1200, startWidth + diff));
-              const aspectRatio = startHeight / startWidth;
-              const newHeight = newWidth * aspectRatio;
+              // Cancelar qualquer RAF pendente
+              if (rafId !== null) {
+                cancelAnimationFrame(rafId);
+              }
               
-              // Atualizar visualmente primeiro
-              img.style.width = `${newWidth}px`;
-              img.style.height = `${newHeight}px`;
-              
-              // Atualizar no editor (throttled)
-              updateImageSize(newWidth, newHeight, false);
+              // Usar requestAnimationFrame para atualizações suaves
+              rafId = requestAnimationFrame(() => {
+                if (!isResizing) return;
+                
+                const diff = e.clientX - startX;
+                const newWidth = Math.max(100, Math.min(1200, startWidth + diff));
+                const aspectRatio = startHeight / startWidth;
+                const newHeight = newWidth * aspectRatio;
+                
+                // Atualizar visualmente primeiro (instantâneo)
+                img.style.width = `${newWidth}px`;
+                img.style.height = `${newHeight}px`;
+                
+                // Atualizar no editor (de forma assíncrona para não bloquear)
+                updateImageSize(newWidth, newHeight);
+              });
             };
             
-            const handleMouseUp = () => {
+            const handleMouseUp = (e: MouseEvent) => {
               if (!isResizing) return;
+              
+              e.preventDefault();
+              e.stopPropagation();
+              
+              // Cancelar RAF pendente
+              if (rafId !== null) {
+                cancelAnimationFrame(rafId);
+                rafId = null;
+              }
               
               isResizing = false;
               document.body.style.userSelect = '';
               document.body.style.cursor = '';
+              document.body.style.pointerEvents = '';
               
               // Atualização final imediata
               const finalWidth = img.offsetWidth;
               const finalHeight = img.offsetHeight;
-              updateImageSize(finalWidth, finalHeight, true);
+              updateImageSize(finalWidth, finalHeight);
               
               document.removeEventListener('mousemove', handleMouseMove);
               document.removeEventListener('mouseup', handleMouseUp);
             };
             
-            document.addEventListener('mousemove', handleMouseMove, { passive: false });
-            document.addEventListener('mouseup', handleMouseUp, { once: true });
+            // Usar capture phase para garantir que capturamos o evento
+            document.addEventListener('mousemove', handleMouseMove, { capture: true, passive: false });
+            document.addEventListener('mouseup', handleMouseUp, { capture: true, once: true });
           });
           
           dom.appendChild(resizeHandle);
