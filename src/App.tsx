@@ -19,6 +19,7 @@ import AdminSettings from "./pages/admin/AdminSettings";
 import AdminAutomation from "./pages/admin/AdminAutomation";
 import AdminEmpregos from "./pages/admin/AdminEmpregos";
 import AdminCategories from "./pages/admin/AdminCategories";
+import AdminDevelopment from "./pages/admin/AdminDevelopment";
 import JobsPage from "./pages/JobsPage";
 import JobDetailPage from "./pages/JobDetailPage";
 import NotFound from "./pages/NotFound";
