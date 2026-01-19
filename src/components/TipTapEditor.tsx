@@ -72,7 +72,6 @@ const TipTapEditor = ({ content = "", onChange, placeholder = "Escreva o conteú
         let startX = 0;
         let startWidth = 0;
         let startHeight = 0;
-        let rafId: number | null = null;
         
         const updateImageSize = (newWidth: number, newHeight: number) => {
           const pos = getPos();
@@ -100,16 +99,12 @@ const TipTapEditor = ({ content = "", onChange, placeholder = "Escreva o conteú
             
             isResizing = true;
             startX = e.clientX;
-            startWidth = img.offsetWidth;
-            startHeight = img.offsetHeight;
+            startWidth = img.offsetWidth || img.naturalWidth || 500;
+            startHeight = img.offsetHeight || img.naturalHeight || 300;
             
             // Prevenir seleção de texto durante o redimensionamento
             document.body.style.userSelect = 'none';
             document.body.style.cursor = 'nwse-resize';
-            document.body.style.pointerEvents = 'none';
-            
-            // Permitir pointer events apenas no handle durante o resize
-            resizeHandle!.style.pointerEvents = 'auto';
             
             const handleMouseMove = (e: MouseEvent) => {
               if (!isResizing) return;
@@ -117,27 +112,26 @@ const TipTapEditor = ({ content = "", onChange, placeholder = "Escreva o conteú
               e.preventDefault();
               e.stopPropagation();
               
-              // Cancelar qualquer RAF pendente
-              if (rafId !== null) {
-                cancelAnimationFrame(rafId);
-              }
+              // Calcular nova largura baseada na diferença do mouse
+              const diff = e.clientX - startX;
+              let newWidth = startWidth + diff;
               
-              // Usar requestAnimationFrame para atualizações suaves
-              rafId = requestAnimationFrame(() => {
-                if (!isResizing) return;
-                
-                const diff = e.clientX - startX;
-                const newWidth = Math.max(100, Math.min(1200, startWidth + diff));
-                const aspectRatio = startHeight / startWidth;
-                const newHeight = newWidth * aspectRatio;
-                
-                // Atualizar visualmente primeiro (instantâneo)
-                img.style.width = `${newWidth}px`;
-                img.style.height = `${newHeight}px`;
-                
-                // Atualizar no editor (de forma assíncrona para não bloquear)
+              // Limitar tamanho
+              newWidth = Math.max(100, Math.min(1200, newWidth));
+              
+              // Calcular altura mantendo proporção
+              const aspectRatio = startHeight / startWidth;
+              const newHeight = newWidth * aspectRatio;
+              
+              // Atualizar visualmente IMEDIATAMENTE (sem RAF para resposta instantânea)
+              img.style.width = `${newWidth}px`;
+              img.style.height = `${newHeight}px`;
+              img.style.maxWidth = 'none'; // Remover max-width durante resize
+              
+              // Atualizar no editor (de forma assíncrona para não bloquear)
+              setTimeout(() => {
                 updateImageSize(newWidth, newHeight);
-              });
+              }, 0);
             };
             
             const handleMouseUp = (e: MouseEvent) => {
@@ -146,29 +140,25 @@ const TipTapEditor = ({ content = "", onChange, placeholder = "Escreva o conteú
               e.preventDefault();
               e.stopPropagation();
               
-              // Cancelar RAF pendente
-              if (rafId !== null) {
-                cancelAnimationFrame(rafId);
-                rafId = null;
-              }
-              
               isResizing = false;
               document.body.style.userSelect = '';
               document.body.style.cursor = '';
-              document.body.style.pointerEvents = '';
+              
+              // Restaurar max-width
+              img.style.maxWidth = '100%';
               
               // Atualização final imediata
-              const finalWidth = img.offsetWidth;
-              const finalHeight = img.offsetHeight;
+              const finalWidth = parseInt(img.style.width) || img.offsetWidth;
+              const finalHeight = parseInt(img.style.height) || img.offsetHeight;
               updateImageSize(finalWidth, finalHeight);
               
               document.removeEventListener('mousemove', handleMouseMove);
               document.removeEventListener('mouseup', handleMouseUp);
             };
             
-            // Usar capture phase para garantir que capturamos o evento
-            document.addEventListener('mousemove', handleMouseMove, { capture: true, passive: false });
-            document.addEventListener('mouseup', handleMouseUp, { capture: true, once: true });
+            // Adicionar listeners no document para capturar movimento mesmo fora da imagem
+            document.addEventListener('mousemove', handleMouseMove, { passive: false });
+            document.addEventListener('mouseup', handleMouseUp, { once: true });
           });
           
           dom.appendChild(resizeHandle);
