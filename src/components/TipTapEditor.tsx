@@ -715,16 +715,6 @@ const TipTapEditor = ({ content = "", onChange, placeholder = "Escreva o conteú
           </Button>
         </div>
       </div>
-
-      {/* Hidden file input */}
-      <input
-        type="file"
-        ref={fileInputRef}
-        onChange={handleFileChange}
-        accept="image/*"
-        className="hidden"
-      />
-    </div>
   );
 
   // Se renderToolbar está definido, sempre criar a toolbar (mesmo se showToolbar=false)
