@@ -167,9 +167,87 @@ const AdminEditor = () => {
   return (
     <AdminLayout title={isEditing ? "Editar Post" : "Novo Post"}>
       <div className="flex gap-4 min-h-[calc(100vh-180px)]">
-        {/* Menu Lateral */}
+        {/* Conteúdo Principal */}
+        <div className="flex-1 flex flex-col min-w-0">
+          {/* Header com botão voltar e toggle sidebar */}
+          <div className="flex items-center justify-between gap-4 mb-4">
+            <div className="flex items-center gap-4">
+              <Button
+                variant="outline"
+                onClick={() => navigate("/admin/posts")}
+                className="flex items-center gap-2"
+              >
+                <ArrowLeft className="h-4 w-4" />
+                Voltar
+              </Button>
+              <h1 className="text-xl sm:text-2xl font-bold">
+                {isEditing ? "Editar Post" : "Criar Novo Post"}
+              </h1>
+            </div>
+            {!sidebarOpen && (
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={() => setSidebarOpen(true)}
+                className="flex-shrink-0"
+              >
+                <Settings className="h-4 w-4" />
+              </Button>
+            )}
+          </div>
+
+          {/* Formulário Principal */}
+          <Card className="flex-1 flex flex-col min-h-0">
+            <CardContent className="p-4 sm:p-6 flex-1 flex flex-col min-h-0">
+              <form onSubmit={handleSubmit} className="flex-1 flex flex-col space-y-4 min-h-0">
+                <div className="space-y-2">
+                  <Label htmlFor="title">Título *</Label>
+                  <Input 
+                    id="title" 
+                    placeholder="Título da notícia" 
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    required 
+                  />
+                </div>
+                
+                {/* Rich Text Editor */}
+                <div className="space-y-2 flex-1 flex flex-col min-h-0">
+                  <Label>Conteúdo *</Label>
+                  <div className="flex-1 min-h-0">
+                    <TipTapEditor
+                      content={editorContent}
+                      onChange={setEditorContent}
+                      placeholder="Escreva o conteúdo completo da matéria..."
+                    />
+                  </div>
+                </div>
+
+                <div className="flex justify-end gap-2 pt-4 border-t flex-shrink-0">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => navigate("/admin/posts")}
+                  >
+                    Cancelar
+                  </Button>
+                  <Button 
+                    type="submit" 
+                    disabled={createPostMutation.isPending || updatePostMutation.isPending}
+                  >
+                    {createPostMutation.isPending || updatePostMutation.isPending 
+                      ? (isEditing ? "Atualizando..." : "Publicando...") 
+                      : (isEditing ? "Atualizar Post" : "Publicar Post")}
+                  </Button>
+                </div>
+              </form>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Menu Lateral - Lado Direito */}
         <aside
-          className={`bg-card border-r border-border transition-all duration-300 overflow-y-auto ${
+          className={`bg-card border-l border-border transition-all duration-300 overflow-y-auto ${
             sidebarOpen ? "w-80" : "w-0"
           } ${sidebarOpen ? "opacity-100" : "opacity-0 pointer-events-none"} flex-shrink-0`}
         >
@@ -185,7 +263,7 @@ const AdminEditor = () => {
                 onClick={() => setSidebarOpen(false)}
                 className="h-8 w-8"
               >
-                <ChevronLeft className="h-4 w-4" />
+                <ChevronRight className="h-4 w-4" />
               </Button>
             </div>
 
