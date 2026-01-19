@@ -32,6 +32,7 @@ interface TipTapEditorProps {
   placeholder?: string;
   showToolbar?: boolean;
   toolbarPosition?: 'top' | 'inline';
+  onEditorReady?: (editor: any) => void;
 }
 
 const TipTapEditor = ({ content = "", onChange, placeholder = "Escreva o conteúdo da matéria...", showToolbar = true, toolbarPosition = 'inline' }: TipTapEditorProps) => {
