@@ -54,15 +54,21 @@ const TipTapEditor = ({ content = "", onChange, placeholder = "Escreva o conteú
         const img = document.createElement('img');
         img.src = node.attrs.src;
         img.alt = node.attrs.alt || '';
-        img.className = 'rounded-lg max-w-full';
+        img.className = 'rounded-lg';
         img.style.display = 'block';
         img.draggable = false;
+        img.style.objectFit = 'contain';
         
+        // Aplicar tamanhos iniciais
         if (node.attrs.width) {
           img.style.width = `${node.attrs.width}px`;
+        } else {
+          img.style.width = 'auto';
         }
         if (node.attrs.height) {
           img.style.height = `${node.attrs.height}px`;
+        } else {
+          img.style.height = 'auto';
         }
         
         dom.appendChild(img);
@@ -72,6 +78,26 @@ const TipTapEditor = ({ content = "", onChange, placeholder = "Escreva o conteú
         let startX = 0;
         let startWidth = 0;
         let startHeight = 0;
+        let currentWidth = 0;
+        let currentHeight = 0;
+        
+        // Aguardar imagem carregar para pegar dimensões naturais
+        img.onload = () => {
+          if (!node.attrs.width && !node.attrs.height) {
+            currentWidth = img.naturalWidth;
+            currentHeight = img.naturalHeight;
+            img.style.width = `${currentWidth}px`;
+            img.style.height = `${currentHeight}px`;
+          } else {
+            currentWidth = node.attrs.width || img.naturalWidth;
+            currentHeight = node.attrs.height || img.naturalHeight;
+          }
+        };
+        
+        if (img.complete) {
+          currentWidth = node.attrs.width || img.naturalWidth || img.offsetWidth || 500;
+          currentHeight = node.attrs.height || img.naturalHeight || img.offsetHeight || 300;
+        }
         
         const updateImageSize = (newWidth: number, newHeight: number) => {
           const pos = getPos();
@@ -99,10 +125,15 @@ const TipTapEditor = ({ content = "", onChange, placeholder = "Escreva o conteú
             
             isResizing = true;
             startX = e.clientX;
-            startWidth = img.offsetWidth || img.naturalWidth || 500;
-            startHeight = img.offsetHeight || img.naturalHeight || 300;
             
-            // Prevenir seleção de texto durante o redimensionamento
+            // Pegar dimensões atuais da imagem
+            const rect = img.getBoundingClientRect();
+            startWidth = rect.width;
+            startHeight = rect.height;
+            currentWidth = startWidth;
+            currentHeight = startHeight;
+            
+            // Prevenir seleção de texto
             document.body.style.userSelect = 'none';
             document.body.style.cursor = 'nwse-resize';
             
@@ -112,33 +143,32 @@ const TipTapEditor = ({ content = "", onChange, placeholder = "Escreva o conteú
               e.preventDefault();
               e.stopPropagation();
               
-              // Calcular nova largura baseada na diferença do mouse
+              // Calcular diferença do mouse
               const diff = e.clientX - startX;
+              
+              // Calcular novo tamanho
               let newWidth = startWidth + diff;
               
-              // Limitar tamanho
+              // Limitar tamanho (mínimo 100px, máximo 1200px)
               newWidth = Math.max(100, Math.min(1200, newWidth));
               
-              // Calcular altura mantendo proporção
+              // Manter proporção
               const aspectRatio = startHeight / startWidth;
               const newHeight = newWidth * aspectRatio;
               
-              // Atualizar visualmente IMEDIATAMENTE (sem RAF para resposta instantânea)
+              // Atualizar dimensões atuais
+              currentWidth = newWidth;
+              currentHeight = newHeight;
+              
+              // Atualizar visualmente IMEDIATAMENTE
               img.style.width = `${newWidth}px`;
               img.style.height = `${newHeight}px`;
-              img.style.maxWidth = 'none'; // Remover max-width durante resize
-              
-              // Atualizar no editor (de forma assíncrona para não bloquear)
-              setTimeout(() => {
-                updateImageSize(newWidth, newHeight);
-              }, 0);
+              img.style.maxWidth = 'none';
+              img.style.maxHeight = 'none';
             };
             
-            const handleMouseUp = (e: MouseEvent) => {
+            const handleMouseUp = () => {
               if (!isResizing) return;
-              
-              e.preventDefault();
-              e.stopPropagation();
               
               isResizing = false;
               document.body.style.userSelect = '';
@@ -147,18 +177,17 @@ const TipTapEditor = ({ content = "", onChange, placeholder = "Escreva o conteú
               // Restaurar max-width
               img.style.maxWidth = '100%';
               
-              // Atualização final imediata
-              const finalWidth = parseInt(img.style.width) || img.offsetWidth;
-              const finalHeight = parseInt(img.style.height) || img.offsetHeight;
-              updateImageSize(finalWidth, finalHeight);
+              // Salvar tamanho final no editor
+              updateImageSize(Math.round(currentWidth), Math.round(currentHeight));
               
+              // Remover listeners
               document.removeEventListener('mousemove', handleMouseMove);
               document.removeEventListener('mouseup', handleMouseUp);
             };
             
-            // Adicionar listeners no document para capturar movimento mesmo fora da imagem
-            document.addEventListener('mousemove', handleMouseMove, { passive: false });
-            document.addEventListener('mouseup', handleMouseUp, { once: true });
+            // Adicionar listeners no document
+            document.addEventListener('mousemove', handleMouseMove);
+            document.addEventListener('mouseup', handleMouseUp);
           });
           
           dom.appendChild(resizeHandle);
@@ -171,9 +200,9 @@ const TipTapEditor = ({ content = "", onChange, placeholder = "Escreva o conteú
           }
         };
         
-        // Adicionar handle quando a imagem estiver selecionada
+        // Verificar seleção
         const checkSelection = () => {
-          if (isResizing) return; // Não atualizar durante o redimensionamento
+          if (isResizing) return;
           
           const pos = getPos();
           if (typeof pos === 'number') {
@@ -188,7 +217,7 @@ const TipTapEditor = ({ content = "", onChange, placeholder = "Escreva o conteú
           }
         };
         
-        // Usar setTimeout para garantir que o editor está pronto
+        // Configurar listener de seleção
         setTimeout(() => {
           editor.on('selectionUpdate', checkSelection);
           checkSelection();
