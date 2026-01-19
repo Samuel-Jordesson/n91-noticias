@@ -20,7 +20,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useSetting } from "@/hooks/useSettings";
-
+import { useProfile } from "@/hooks/useAuth";
 import { Code } from "lucide-react";
 
 const menuItems = [
