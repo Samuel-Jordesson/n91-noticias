@@ -6,6 +6,7 @@ import { useState } from "react";
 import { categories } from "@/data/mockData";
 import { useAuth } from "@/hooks/useAuth";
 import { normalizeSlug } from "@/lib/utils";
+import { useSetting } from "@/hooks/useSettings";
 import {
   Sheet,
   SheetContent,
@@ -15,6 +16,7 @@ import {
 const Header = () => {
   const [searchOpen, setSearchOpen] = useState(false);
   const { user } = useAuth();
+  const { data: logoUrl } = useSetting('site_logo');
 
   // Category links
   const getCategoryLink = (category: string) => {
@@ -87,7 +89,7 @@ const Header = () => {
           {/* Logo */}
           <Link to="/" className="flex items-center">
             <img 
-              src="/imagens/Logo.png" 
+              src={logoUrl || "/imagens/Logo.png"} 
               alt="N91" 
               className="h-12 md:h-16 w-auto object-contain"
             />

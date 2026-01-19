@@ -6,8 +6,49 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
+import { useSetting, useUploadLogo } from "@/hooks/useSettings";
+import { useRef, useState } from "react";
+import { ImageIcon, Upload } from "lucide-react";
 
 const AdminSettings = () => {
+  const { data: logoUrl, isLoading: isLoadingLogo } = useSetting('site_logo');
+  const uploadLogoMutation = useUploadLogo();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [logoPreview, setLogoPreview] = useState<string>("");
+
+  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validar tipo de arquivo
+    if (!file.type.startsWith('image/')) {
+      toast.error("Por favor, selecione um arquivo de imagem");
+      return;
+    }
+
+    // Validar tamanho (máximo 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("A imagem deve ter no máximo 5MB");
+      return;
+    }
+
+    // Criar preview
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      setLogoPreview(event.target?.result as string);
+    };
+    reader.readAsDataURL(file);
+
+    // Fazer upload
+    try {
+      await uploadLogoMutation.mutateAsync(file);
+      toast.success("Logo atualizada com sucesso!");
+    } catch (error: any) {
+      toast.error(error.message || "Erro ao fazer upload da logo");
+      setLogoPreview("");
+    }
+  };
+
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
     toast.success("Configurações salvas com sucesso!");
@@ -26,6 +67,69 @@ const AdminSettings = () => {
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSave} className="space-y-4">
+              {/* Logo Upload */}
+              <div className="space-y-2">
+                <Label>Logo do Site</Label>
+                <div className="flex flex-col gap-4">
+                  {/* Preview da logo atual */}
+                  <div className="flex items-center gap-4">
+                    {(logoPreview || logoUrl) && (
+                      <div className="relative">
+                        <img
+                          src={logoPreview || logoUrl || '/imagens/Logo.png'}
+                          alt="Logo do site"
+                          className="h-16 w-auto object-contain border border-border rounded p-2 bg-muted"
+                        />
+                      </div>
+                    )}
+                    {!logoPreview && !logoUrl && !isLoadingLogo && (
+                      <div className="h-16 w-32 border border-border rounded p-2 bg-muted flex items-center justify-center">
+                        <ImageIcon className="h-8 w-8 text-muted-foreground" />
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* Botão de upload */}
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="file"
+                      ref={fileInputRef}
+                      onChange={handleLogoUpload}
+                      accept="image/*"
+                      className="hidden"
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => fileInputRef.current?.click()}
+                      disabled={uploadLogoMutation.isPending}
+                      className="flex items-center gap-2"
+                    >
+                      <Upload className="h-4 w-4" />
+                      {uploadLogoMutation.isPending ? "Enviando..." : "Escolher Nova Logo"}
+                    </Button>
+                    {logoPreview && (
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          setLogoPreview("");
+                          if (fileInputRef.current) {
+                            fileInputRef.current.value = "";
+                          }
+                        }}
+                      >
+                        Cancelar
+                      </Button>
+                    )}
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Formatos aceitos: PNG, JPG, SVG. Tamanho máximo: 5MB
+                  </p>
+                </div>
+              </div>
+
               <div className="space-y-2">
                 <Label htmlFor="siteName">Nome do Site</Label>
                 <Input id="siteName" defaultValue="N91" />
