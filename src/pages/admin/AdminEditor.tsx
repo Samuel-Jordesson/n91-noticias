@@ -240,6 +240,12 @@ const AdminEditor = () => {
                       placeholder="Escreva o conteúdo completo da matéria..."
                       showToolbar={true}
                       toolbarPosition="top"
+                      onEditorReady={setEditorInstance}
+                      renderToolbar={(toolbar) => (
+                        <div className="mb-4">
+                          {toolbar}
+                        </div>
+                      )}
                     />
                   </div>
                 </div>

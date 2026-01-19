@@ -33,6 +33,7 @@ interface TipTapEditorProps {
   showToolbar?: boolean;
   toolbarPosition?: 'top' | 'inline';
   onEditorReady?: (editor: any) => void;
+  renderToolbar?: (toolbar: React.ReactNode) => React.ReactNode;
 }
 
 const TipTapEditor = ({ content = "", onChange, placeholder = "Escreva o conteúdo da matéria...", showToolbar = true, toolbarPosition = 'inline' }: TipTapEditorProps) => {
@@ -737,6 +738,16 @@ const TipTapEditor = ({ content = "", onChange, placeholder = "Escreva o conteú
 
   // Se toolbar no topo, retornar toolbar separada e editor
   if (toolbarPosition === 'top') {
+    if (renderToolbar) {
+      return (
+        <>
+          {renderToolbar(toolbar)}
+          <div className="rounded-lg overflow-hidden bg-card">
+            <EditorContent editor={editor} />
+          </div>
+        </>
+      );
+    }
     return (
       <>
         {toolbar}
