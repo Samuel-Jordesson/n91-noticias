@@ -1,10 +1,9 @@
-import { useState, useRef } from "react";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import AdminLayout from "@/layouts/AdminLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -12,45 +11,21 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Plus, Pencil, Trash2, Search, Image as ImageIcon, Star } from "lucide-react";
+import { Plus, Pencil, Trash2, Search, Star } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import TipTapEditor from "@/components/TipTapEditor";
-import { usePosts, useCreatePost, useUpdatePost, useDeletePost } from "@/hooks/usePosts";
+import { usePosts, useUpdatePost, useDeletePost } from "@/hooks/usePosts";
 import { useCategories } from "@/hooks/useCategories";
-import { useProfile } from "@/hooks/useAuth";
-import { useAllProfiles } from "@/hooks/useUsers";
 import { Skeleton } from "@/components/ui/skeleton";
 
 const AdminPosts = () => {
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [filterCategory, setFilterCategory] = useState("all");
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [editorContent, setEditorContent] = useState("");
-  const [imagePreview, setImagePreview] = useState<string>("");
-  const [imageUrl, setImageUrl] = useState("");
-  const [title, setTitle] = useState("");
-  const [excerpt, setExcerpt] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("");
-  const [selectedAuthor, setSelectedAuthor] = useState<string>("");
-  const [isBreaking, setIsBreaking] = useState(false);
-  const [isFeatured, setIsFeatured] = useState(false);
-  const [editingPost, setEditingPost] = useState<any>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const { data: posts, isLoading: isLoadingPosts } = usePosts();
   const { data: categories } = useCategories();
-  const { data: profile } = useProfile();
-  const { data: allProfiles = [] } = useAllProfiles();
-  const createPostMutation = useCreatePost();
   const updatePostMutation = useUpdatePost();
   const deletePostMutation = useDeletePost();
 
@@ -65,102 +40,8 @@ const AdminPosts = () => {
     return matchesSearch && matchesCategory;
   }) || [];
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        setImagePreview(event.target?.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleCreatePost = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!title || !excerpt || !editorContent || !selectedCategory) {
-      toast.error("Preencha todos os campos obrigatórios");
-      return;
-    }
-
-    // Buscar category_id pelo nome ou slug
-    const category = categories?.find(
-      (cat) => cat.name === selectedCategory || cat.slug === selectedCategory.toLowerCase()
-    );
-
-    if (!category) {
-      toast.error("Categoria não encontrada");
-      return;
-    }
-
-    // Usar o autor selecionado ou o usuário logado como padrão
-    const authorId = selectedAuthor || profile?.id;
-    
-    if (!authorId) {
-      toast.error("Erro: Selecione um autor ou faça login novamente.");
-      return;
-    }
-
-    try {
-      const postData: any = {
-        title,
-        excerpt,
-        content: editorContent,
-        category_id: category.id,
-        author_id: authorId, // Usar o autor selecionado ou o usuário logado
-        is_breaking: isBreaking,
-        is_featured: isFeatured,
-        is_published: true,
-      };
-
-      // Só adiciona published_at se for um novo post
-      if (!editingPost) {
-        postData.published_at = new Date().toISOString();
-      }
-
-      // Só adiciona image_url se houver valor
-      if (imageUrl || imagePreview) {
-        const finalImageUrl = imageUrl || imagePreview;
-        console.log("Salvando imagem:", {
-          hasImageUrl: !!imageUrl,
-          hasImagePreview: !!imagePreview,
-          finalImageUrlLength: finalImageUrl?.length,
-          finalImageUrlStart: finalImageUrl?.substring(0, 50),
-        });
-        postData.image_url = finalImageUrl;
-      } else if (editingPost && !imageUrl && !imagePreview) {
-        // Se estiver editando e não houver nova imagem, manter a imagem existente
-        postData.image_url = editingPost.image_url || null;
-      }
-
-      if (editingPost) {
-        await updatePostMutation.mutateAsync({ id: editingPost.id, post: postData });
-        toast.success("Post atualizado com sucesso!");
-      } else {
-        await createPostMutation.mutateAsync(postData);
-        toast.success("Post criado com sucesso!");
-      }
-
-      setIsDialogOpen(false);
-      handleCancel();
-    } catch (error: any) {
-      toast.error(error.message || `Erro ao ${editingPost ? 'atualizar' : 'criar'} post`);
-    }
-  };
-
   const handleEdit = (post: any) => {
-    setEditingPost(post);
-    setTitle(post.title);
-    setExcerpt(post.excerpt);
-    setEditorContent(post.content);
-    setImageUrl(post.image_url || "");
-    setImagePreview("");
-    setSelectedCategory(post.categories?.name || "");
-    setSelectedAuthor(post.author_id || "");
-    setIsBreaking(post.is_breaking || false);
-    setIsFeatured(post.is_featured || false);
-    setIsDialogOpen(true);
+    navigate(`/admin/editor/${post.id}`);
   };
 
   const handleDelete = async (id: string) => {
@@ -220,204 +101,10 @@ const AdminPosts = () => {
             ))}
           </SelectContent>
         </Select>
-        <Dialog 
-          open={isDialogOpen} 
-          onOpenChange={(open) => {
-            setIsDialogOpen(open);
-            if (!open) {
-              // Resetar quando fechar
-              handleCancel();
-            } else {
-              // Quando abrir, inicializar com o perfil do usuário logado (apenas se não estiver editando)
-              if (!editingPost && profile?.id && !selectedAuthor) {
-                setSelectedAuthor(profile.id);
-              }
-            }
-          }}
-        >
-          <DialogTrigger asChild>
-            <Button>
-              <Plus className="h-4 w-4 mr-2" />
-              Novo Post
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto p-3 sm:p-4 md:p-6 w-[95vw] sm:w-full">
-            <DialogHeader className="pb-2">
-              <DialogTitle className="text-base sm:text-lg md:text-xl">
-                {editingPost ? "Editar Post" : "Criar Novo Post"}
-              </DialogTitle>
-            </DialogHeader>
-            <form onSubmit={handleCreatePost} className="space-y-2 sm:space-y-3 md:space-y-4 mt-2 sm:mt-4">
-              <div className="space-y-2">
-                <Label htmlFor="title">Título</Label>
-                <Input 
-                  id="title" 
-                  placeholder="Título da notícia" 
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  required 
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="excerpt">Resumo</Label>
-                <Textarea
-                  id="excerpt"
-                  placeholder="Breve resumo da notícia..."
-                  rows={2}
-                  value={excerpt}
-                  onChange={(e) => setExcerpt(e.target.value)}
-                  required
-                />
-              </div>
-              
-              {/* Rich Text Editor */}
-              <div className="space-y-2">
-                <Label>Conteúdo</Label>
-                <TipTapEditor
-                  content={editorContent}
-                  onChange={setEditorContent}
-                  placeholder="Escreva o conteúdo completo da matéria..."
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="category">Categoria</Label>
-                <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecionar categoria" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {categories?.map((cat) => (
-                      <SelectItem key={cat.id} value={cat.name}>
-                        {cat.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="author">Autor</Label>
-                <Select 
-                  value={selectedAuthor || ""} 
-                  onValueChange={(value) => {
-                    setSelectedAuthor(value);
-                  }}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder={profile?.name || "Selecionar autor"} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {allProfiles.map((author) => (
-                      <SelectItem key={author.id} value={author.id}>
-                        {author.name} {author.id === profile?.id ? "(Você)" : ""}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <p className="text-xs text-muted-foreground">
-                  {selectedAuthor 
-                    ? `Autor selecionado: ${allProfiles.find(p => p.id === selectedAuthor)?.name || "Desconhecido"}`
-                    : `Por padrão, será usado: ${profile?.name || "seu nome"}`}
-                </p>
-              </div>
-              
-              {/* Image Upload */}
-              <div className="space-y-2">
-                <Label>Imagem de Capa <span className="text-muted-foreground text-xs">(opcional)</span></Label>
-                <div className="flex gap-4">
-                  <div className="flex-1">
-                    <Input
-                      id="imageUrl"
-                      type="url"
-                      placeholder="URL da imagem ou faça upload"
-                      value={imageUrl}
-                      onChange={(e) => setImageUrl(e.target.value)}
-                    />
-                  </div>
-                  <div>
-                    <input
-                      type="file"
-                      ref={fileInputRef}
-                      onChange={handleImageUpload}
-                      accept="image/*"
-                      className="hidden"
-                    />
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => fileInputRef.current?.click()}
-                    >
-                      <ImageIcon className="h-4 w-4 mr-2" />
-                      Upload
-                    </Button>
-                  </div>
-                </div>
-                
-                {imagePreview && (
-                  <div className="mt-2 relative">
-                    <img
-                      src={imagePreview}
-                      alt="Preview"
-                      className="w-full max-h-48 object-cover rounded-lg border border-border"
-                    />
-                    <Button
-                      type="button"
-                      variant="destructive"
-                      size="sm"
-                      className="absolute top-2 right-2"
-                      onClick={() => setImagePreview("")}
-                    >
-                      Remover
-                    </Button>
-                  </div>
-                )}
-              </div>
-
-              <div className="flex flex-col gap-3">
-                <div className="flex items-center gap-2">
-                  <input 
-                    type="checkbox" 
-                    id="breaking" 
-                    className="rounded" 
-                    checked={isBreaking}
-                    onChange={(e) => setIsBreaking(e.target.checked)}
-                  />
-                  <Label htmlFor="breaking">Marcar como notícia urgente</Label>
-                </div>
-                <div className="flex items-center gap-2">
-                  <input 
-                    type="checkbox" 
-                    id="featured" 
-                    className="rounded" 
-                    checked={isFeatured}
-                    onChange={(e) => setIsFeatured(e.target.checked)}
-                  />
-                  <Label htmlFor="featured">
-                    Marcar como destaque (aparece na seção "Em Destaque")
-                  </Label>
-                </div>
-              </div>
-              <div className="flex justify-end gap-2">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => {
-                    setIsDialogOpen(false);
-                    handleCancel();
-                  }}
-                >
-                  Cancelar
-                </Button>
-                <Button type="submit" disabled={createPostMutation.isPending || updatePostMutation.isPending}>
-                  {createPostMutation.isPending || updatePostMutation.isPending 
-                    ? (editingPost ? "Atualizando..." : "Publicando...") 
-                    : (editingPost ? "Atualizar" : "Publicar")}
-                </Button>
-              </div>
-            </form>
-          </DialogContent>
-        </Dialog>
+        <Button onClick={() => navigate("/admin/editor")}>
+          <Plus className="h-4 w-4 mr-2" />
+          Novo Post
+        </Button>
       </div>
 
       {/* Posts Table */}

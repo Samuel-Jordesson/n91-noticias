@@ -11,6 +11,7 @@ import WeatherPage from "./pages/WeatherPage";
 import AdminLogin from "./pages/admin/AdminLogin";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminPosts from "./pages/admin/AdminPosts";
+import AdminEditor from "./pages/admin/AdminEditor";
 import AdminUsers from "./pages/admin/AdminUsers";
 import AdminAds from "./pages/admin/AdminAds";
 import AdminComments from "./pages/admin/AdminComments";
@@ -41,6 +42,8 @@ const App = () => (
           <Route path="/admin/login" element={<AdminLogin />} />
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="/admin/posts" element={<AdminPosts />} />
+          <Route path="/admin/editor" element={<AdminEditor />} />
+          <Route path="/admin/editor/:id" element={<AdminEditor />} />
           <Route path="/admin/empregos" element={<AdminEmpregos />} />
           <Route path="/admin/categories" element={<AdminCategories />} />
           <Route path="/admin/users" element={<AdminUsers />} />
