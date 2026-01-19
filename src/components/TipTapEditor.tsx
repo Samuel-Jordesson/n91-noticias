@@ -1,9 +1,8 @@
-import { useEditor, EditorContent, ReactRenderer } from "@tiptap/react";
+import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Image from "@tiptap/extension-image";
 import Link from "@tiptap/extension-link";
 import Placeholder from "@tiptap/extension-placeholder";
-import { NodeViewWrapper } from "@tiptap/react";
 import { Button } from "@/components/ui/button";
 import { 
   Bold, 
