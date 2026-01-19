@@ -185,16 +185,6 @@ const AdminEditor = () => {
               </h1>
             </div>
             <div className="flex items-center gap-2">
-              {!sidebarOpen && (
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={() => setSidebarOpen(true)}
-                  className="flex-shrink-0"
-                >
-                  <Settings className="h-4 w-4" />
-                </Button>
-              )}
               <Button
                 type="button"
                 variant="outline"
@@ -211,6 +201,16 @@ const AdminEditor = () => {
                   ? (isEditing ? "Atualizando..." : "Publicando...") 
                   : (isEditing ? "Atualizar Post" : "Publicar Post")}
               </Button>
+              {!sidebarOpen && (
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => setSidebarOpen(true)}
+                  className="flex-shrink-0"
+                >
+                  <Settings className="h-4 w-4" />
+                </Button>
+              )}
             </div>
           </div>
 
