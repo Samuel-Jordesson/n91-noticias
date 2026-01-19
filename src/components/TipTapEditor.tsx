@@ -54,11 +54,8 @@ const TipTapEditor = ({ content = "", onChange, placeholder = "Escreva o conteú
             return wrapper?.getAttribute('data-align') || element.getAttribute('data-align') || 'left';
           },
           renderHTML: attributes => {
-            if (!attributes.align || attributes.align === 'left') {
-              return {};
-            }
             return {
-              'data-align': attributes.align,
+              'data-align': attributes.align || 'left',
             };
           },
         },
