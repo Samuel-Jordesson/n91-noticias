@@ -157,6 +157,7 @@ const AdminUsers = () => {
           <SelectContent>
             <SelectItem value="all">Todas as funções</SelectItem>
             <SelectItem value="admin">Administrador</SelectItem>
+            <SelectItem value="dev">Desenvolvedor</SelectItem>
             <SelectItem value="editor">Editor</SelectItem>
             <SelectItem value="user">Usuário</SelectItem>
           </SelectContent>
@@ -326,7 +327,7 @@ const AdminUsers = () => {
                             roleLabels[user.role as keyof typeof roleLabels].className
                           }`}
                         >
-                          {user.role === "admin" && <Shield className="h-3 w-3" />}
+                          {(user.role === "admin" || user.role === "dev") && <Shield className="h-3 w-3" />}
                           {roleLabels[user.role as keyof typeof roleLabels].label}
                         </span>
                       </td>
@@ -351,7 +352,7 @@ const AdminUsers = () => {
                             size="icon"
                             className="text-destructive hover:text-destructive h-7 w-7 sm:h-9 sm:w-9"
                             onClick={() => handleDelete(user.id)}
-                            disabled={user.role === "admin" || deleteUserMutation.isPending}
+                            disabled={(user.role === "admin" || user.role === "dev") || deleteUserMutation.isPending}
                             title="Excluir usuário"
                           >
                             <Trash2 className="h-3 w-3 sm:h-4 sm:w-4" />
