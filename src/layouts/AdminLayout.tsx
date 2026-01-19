@@ -16,6 +16,11 @@ const AdminLayout = ({ children, title }: AdminLayoutProps) => {
   const { data: profile, isLoading, error } = useProfile();
   const queryClient = useQueryClient();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
+    // Carregar estado do localStorage
+    const saved = localStorage.getItem("sidebarCollapsed");
+    return saved === "true";
+  });
 
   // Forçar atualização do perfil quando o componente montar
   useEffect(() => {
@@ -32,6 +37,15 @@ const AdminLayout = ({ children, title }: AdminLayoutProps) => {
 
     return () => clearInterval(interval);
   }, [queryClient]);
+
+  // Salvar estado de collapsed no localStorage
+  useEffect(() => {
+    localStorage.setItem("sidebarCollapsed", String(sidebarCollapsed));
+  }, [sidebarCollapsed]);
+
+  const handleToggleCollapse = () => {
+    setSidebarCollapsed(!sidebarCollapsed);
+  };
 
   // Garantir que o nome seja exibido corretamente
   // Prioridade: name > email (sem @) > "Admin"
@@ -65,10 +79,16 @@ const AdminLayout = ({ children, title }: AdminLayoutProps) => {
       <div className={`fixed lg:static inset-y-0 left-0 z-50 transition-transform duration-300 ${
         sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
       }`}>
-        <AdminSidebar onClose={() => setSidebarOpen(false)} />
+        <AdminSidebar 
+          onClose={() => setSidebarOpen(false)} 
+          collapsed={sidebarCollapsed}
+          onToggleCollapse={handleToggleCollapse}
+        />
       </div>
       
-      <div className="flex-1 flex flex-col lg:ml-0">
+      <div className={`flex-1 flex flex-col transition-all duration-300 ${
+        sidebarCollapsed ? 'lg:ml-0' : 'lg:ml-0'
+      }`}>
         {/* Top bar */}
         <header className="bg-card border-b border-border px-3 sm:px-4 md:px-6 py-2 sm:py-3 md:py-4 flex items-center justify-between gap-2 min-w-0">
           <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
