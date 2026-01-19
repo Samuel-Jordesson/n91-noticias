@@ -54,9 +54,15 @@ const TipTapEditor = ({ content = "", onChange, placeholder = "Escreva o conteú
           },
           renderHTML: attributes => {
             if (attributes.width) {
+              const styleParts = [`width: ${attributes.width}px`];
+              if (attributes.height) {
+                styleParts.push(`height: ${attributes.height}px`);
+              } else {
+                styleParts.push('height: auto');
+              }
               return {
                 width: attributes.width,
-                style: `width: ${attributes.width}px;`,
+                style: styleParts.join('; '),
               };
             }
             return {};
@@ -75,10 +81,10 @@ const TipTapEditor = ({ content = "", onChange, placeholder = "Escreva o conteú
             return null;
           },
           renderHTML: attributes => {
-            if (attributes.height) {
+            if (attributes.height && !attributes.width) {
               return {
                 height: attributes.height,
-                style: `height: ${attributes.height}px;`,
+                style: `height: ${attributes.height}px; width: auto;`,
               };
             }
             return {};
