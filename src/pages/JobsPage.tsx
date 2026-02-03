@@ -64,7 +64,7 @@ const JobsPage = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {jobs.map((job) => (
                 <Link key={job.id} to={`/empregos/${generateSlug(job.title)}`}>
-                  <Card className="overflow-hidden hover:shadow-lg transition-all cursor-pointer h-full flex flex-col max-w-xs mx-auto">
+                  <Card className="overflow-hidden transition-all cursor-pointer h-full flex flex-col max-w-xs mx-auto">
                     {job.image_url && (
                       <div className="w-full bg-muted aspect-[3/4] overflow-hidden">
                         <img

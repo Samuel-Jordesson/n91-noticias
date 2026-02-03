@@ -152,7 +152,7 @@ const WeatherPage = () => {
           </div>
 
           {/* Current Weather Card */}
-          <div className="bg-card border border-border rounded-lg p-6 mb-6">
+          <div className="bg-card p-6 mb-6">
             {isLoadingCurrent ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div className="flex items-center gap-6">
@@ -202,17 +202,17 @@ const WeatherPage = () => {
 
                 {/* Weather Details */}
                 <div className="grid grid-cols-3 gap-4">
-                  <div className="bg-muted/50 rounded-lg p-4 text-center border border-border">
+                  <div className="bg-muted/50 p-4 text-center">
                     <Thermometer className="h-5 w-5 mx-auto mb-2 text-muted-foreground" />
                     <p className="text-xs text-muted-foreground mb-1">Sensação</p>
                     <p className="text-xl font-bold text-foreground">{currentWeather.feelsLike}°</p>
                   </div>
-                  <div className="bg-muted/50 rounded-lg p-4 text-center border border-border">
+                  <div className="bg-muted/50 p-4 text-center">
                     <Droplets className="h-5 w-5 mx-auto mb-2 text-muted-foreground" />
                     <p className="text-xs text-muted-foreground mb-1">Umidade</p>
                     <p className="text-xl font-bold text-foreground">{currentWeather.humidity}%</p>
                   </div>
-                  <div className="bg-muted/50 rounded-lg p-4 text-center border border-border">
+                  <div className="bg-muted/50 p-4 text-center">
                     <Wind className="h-5 w-5 mx-auto mb-2 text-muted-foreground" />
                     <p className="text-xs text-muted-foreground mb-1">Vento</p>
                     <p className="text-xl font-bold text-foreground">{currentWeather.wind} km/h</p>
@@ -223,7 +223,7 @@ const WeatherPage = () => {
           </div>
 
           {/* 7-Day Forecast */}
-          <div className="bg-card border border-border rounded-lg p-5">
+          <div className="bg-card p-5">
             <h2 className="text-lg font-serif font-bold mb-4 pb-2 border-b border-border">Previsão 7 Dias</h2>
             {isLoadingForecast ? (
               <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3">
@@ -236,10 +236,10 @@ const WeatherPage = () => {
                 {forecast.map((day, index) => (
                   <div
                     key={index}
-                    className={`text-center p-4 rounded-lg border transition-all ${
+                    className={`text-center p-4 transition-all ${
                       index === 0 
-                        ? "bg-primary/5 border-primary/20" 
-                        : "border-border hover:border-primary/30 hover:bg-muted/30"
+                        ? "bg-primary/5" 
+                        : "hover:bg-muted/30"
                     }`}
                   >
                     <p className="text-sm font-medium mb-2 text-foreground">{day.day}</p>
@@ -292,7 +292,7 @@ const WeatherPage = () => {
           {/* Sidebar */}
           <aside className="space-y-6">
             {/* Other Cities */}
-            <div className="bg-card rounded-lg border border-border p-5">
+            <div className="bg-card p-5">
               <h3 className="font-serif font-bold mb-4 pb-2 border-b border-border flex items-center gap-2">
                 <MapPin className="h-5 w-5 text-muted-foreground" />
                 Outras Cidades

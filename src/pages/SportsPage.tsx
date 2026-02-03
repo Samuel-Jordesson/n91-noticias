@@ -79,7 +79,7 @@ const SportsPage = () => {
           </div>
 
           {/* Live Scores Ticker */}
-          <div className="bg-card border border-border rounded-lg p-5 mb-8">
+          <div className="bg-card p-5 mb-8">
             <div className="flex items-center gap-2 mb-4">
               <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
               <span className="text-sm font-semibold uppercase tracking-wider text-foreground">Ao Vivo</span>
@@ -88,7 +88,7 @@ const SportsPage = () => {
               {liveScores.map((match, index) => (
                 <div
                   key={index}
-                  className="bg-muted/50 rounded-lg p-4 border border-border hover:border-primary/50 transition-colors"
+                  className="bg-muted/50 p-4 hover:bg-muted transition-colors"
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex-1 space-y-1.5">

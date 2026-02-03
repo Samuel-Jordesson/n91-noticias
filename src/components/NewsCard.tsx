@@ -23,7 +23,7 @@ const NewsCard = ({ article, variant = "default" }: NewsCardProps) => {
   if (variant === "featured") {
     return (
       <Link to={`/noticia/${articleSlug}`} className="block group">
-        <article className="relative overflow-hidden rounded-lg news-card-hover">
+        <article className="relative overflow-hidden news-card-hover">
           <div className="aspect-[16/9] md:aspect-[4/3] lg:aspect-[3/2] overflow-hidden bg-muted">
             {hasImage ? (
               <img
@@ -84,7 +84,7 @@ const NewsCard = ({ article, variant = "default" }: NewsCardProps) => {
       <Link to={`/noticia/${articleSlug}`} className="block group">
         <article className="flex flex-col sm:flex-row gap-3 md:gap-4 py-3 md:py-4 px-3 md:px-0 border-b border-border last:border-0 hover:bg-muted/30 transition-colors">
           {hasImage && (
-            <div className="w-full sm:w-32 md:w-48 h-40 sm:h-24 md:h-32 flex-shrink-0 overflow-hidden rounded-md">
+            <div className="w-full sm:w-32 md:w-48 h-40 sm:h-24 md:h-32 flex-shrink-0 overflow-hidden">
               <img
                 src={imageUrl}
                 alt={article.title}
@@ -126,7 +126,7 @@ const NewsCard = ({ article, variant = "default" }: NewsCardProps) => {
       <Link to={`/noticia/${articleSlug}`} className="block group">
         <article className="flex gap-4 py-4 border-b border-border last:border-0 news-card-hover">
           {hasImage && (
-            <div className="w-24 h-24 flex-shrink-0 overflow-hidden rounded-md">
+            <div className="w-24 h-24 flex-shrink-0 overflow-hidden">
               <img
                 src={imageUrl}
                 alt={article.title}
@@ -181,7 +181,7 @@ const NewsCard = ({ article, variant = "default" }: NewsCardProps) => {
 
   return (
     <Link to={`/noticia/${articleSlug}`} className="block group">
-      <article className="bg-card rounded-lg overflow-hidden shadow-sm border border-border news-card-hover">
+      <article className="bg-card overflow-hidden news-card-hover">
         {hasImage && (
           <div className="aspect-[4.7/3] overflow-hidden">
             <img

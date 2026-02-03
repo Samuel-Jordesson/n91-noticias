@@ -312,7 +312,7 @@ const ArticlePage = () => {
             {/* Featured Image */}
             {article.imageUrl && (
               <figure className="mb-8">
-                <div className="w-full aspect-video overflow-hidden rounded-lg bg-muted relative">
+                <div className="w-full aspect-video overflow-hidden bg-muted relative">
                   <img
                     src={article.imageUrl}
                     alt={article.title}
@@ -376,7 +376,7 @@ const ArticlePage = () => {
 
             {/* Related News */}
             {relatedNews.length > 0 && (
-              <div className="bg-card rounded-lg border border-border p-4">
+              <div className="bg-card p-4">
                 <h3 className="font-serif font-bold mb-4 pb-2 border-b border-border">
                   Notícias Relacionadas
                 </h3>
@@ -390,7 +390,7 @@ const ArticlePage = () => {
 
             {/* More from category */}
             {relatedNews.length > 3 && (
-              <div className="bg-card rounded-lg border border-border p-4">
+              <div className="bg-card p-4">
                 <h3 className="font-serif font-bold mb-4 pb-2 border-b border-border">
                   Mais em {article.category}
                 </h3>

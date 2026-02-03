@@ -86,7 +86,7 @@ const CommentSection = ({ comments: initialComments, articleId }: CommentSection
       </h3>
 
       {/* Comment form */}
-      <form onSubmit={handleSubmit} className="mb-8 p-4 bg-muted rounded-lg">
+      <form onSubmit={handleSubmit} className="mb-8 p-4 bg-muted">
         <h4 className="font-semibold mb-4">Deixe seu comentário</h4>
         <div className="space-y-4">
           <Input

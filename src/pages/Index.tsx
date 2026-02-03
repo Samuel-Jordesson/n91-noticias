@@ -124,7 +124,7 @@ const Index = () => {
                   .map((article, index) => (
                     <div key={article.id} className="animate-fade-in" style={{ animationDelay: `${index * 50}ms` }}>
                       <Link to={`/noticia/${generateSlug(article.title)}`} className="block group h-full">
-                        <article className="h-full p-3 md:p-4 border border-border rounded-lg hover:border-primary/50 hover:bg-muted/30 transition-all">
+                        <article className="h-full p-3 md:p-4 hover:bg-muted/30 transition-all">
                           <div className="flex items-center gap-2 mb-2 flex-wrap">
                             <span className="news-category-badge text-[10px] px-2 py-0.5">
                               {article.category}
@@ -180,7 +180,7 @@ const Index = () => {
                 <h2 className="text-lg md:text-xl font-serif font-bold mb-3 md:mb-4 pb-2 border-b border-border">
                   Últimas Notícias
                 </h2>
-                <div className="bg-card rounded-lg border border-border overflow-hidden">
+                <div className="bg-card overflow-hidden">
                   {latestNews.map((article, index) => (
                     <div key={article.id} className="animate-fade-in" style={{ animationDelay: `${index * 100}ms` }}>
                       <NewsCard article={article} variant="list" />
@@ -220,10 +220,10 @@ const Index = () => {
             <div className="grid grid-cols-2 gap-2 md:gap-3">
               <Link
                 to="/esportes"
-                className="group bg-card border border-border rounded-lg p-3 md:p-4 hover:border-primary/50 hover:shadow-sm transition-all duration-200"
+                className="group bg-card p-3 md:p-4 hover:bg-muted/30 transition-all duration-200"
               >
                 <div className="flex flex-col items-center text-center space-y-1.5 md:space-y-2">
-                  <div className="p-1.5 md:p-2 rounded-md bg-emerald-50 dark:bg-emerald-950/20 group-hover:bg-emerald-100 dark:group-hover:bg-emerald-950/30 transition-colors">
+                  <div className="p-1.5 md:p-2 bg-emerald-50 dark:bg-emerald-950/20 group-hover:bg-emerald-100 dark:group-hover:bg-emerald-950/30 transition-colors">
                     <Trophy className="h-4 w-4 md:h-5 md:w-5 text-emerald-600 dark:text-emerald-500" />
                   </div>
                   <span className="text-xs md:text-sm font-medium text-foreground group-hover:text-primary transition-colors">Esportes</span>
@@ -231,10 +231,10 @@ const Index = () => {
               </Link>
               <Link
                 to="/clima"
-                className="group bg-card border border-border rounded-lg p-3 md:p-4 hover:border-primary/50 hover:shadow-sm transition-all duration-200"
+                className="group bg-card p-3 md:p-4 hover:bg-muted/30 transition-all duration-200"
               >
                 <div className="flex flex-col items-center text-center space-y-1.5 md:space-y-2">
-                  <div className="p-1.5 md:p-2 rounded-md bg-sky-50 dark:bg-sky-950/20 group-hover:bg-sky-100 dark:group-hover:bg-sky-950/30 transition-colors">
+                  <div className="p-1.5 md:p-2 bg-sky-50 dark:bg-sky-950/20 group-hover:bg-sky-100 dark:group-hover:bg-sky-950/30 transition-colors">
                     <Cloud className="h-4 w-4 md:h-5 md:w-5 text-sky-600 dark:text-sky-500" />
                   </div>
                   <span className="text-xs md:text-sm font-medium text-foreground group-hover:text-primary transition-colors">Clima</span>
@@ -244,7 +244,7 @@ const Index = () => {
 
             {/* Categories */}
             {categories && categories.length > 0 && (
-              <div className="bg-card rounded-lg border border-border p-3 md:p-4">
+              <div className="bg-card p-3 md:p-4">
                 <h3 className="font-serif font-bold text-sm md:text-base mb-3 md:mb-4 pb-2 border-b border-border">
                   Categorias
                 </h3>
@@ -259,7 +259,7 @@ const Index = () => {
                           ? "/clima"
                           : `/categoria/${category.slug}`
                       }
-                      className="block py-1.5 md:py-2 px-2 md:px-3 text-xs md:text-sm text-muted-foreground hover:text-primary hover:bg-muted rounded-md transition-colors"
+                      className="block py-1.5 md:py-2 px-2 md:px-3 text-xs md:text-sm text-muted-foreground hover:text-primary hover:bg-muted transition-colors"
                     >
                       {category.name}
                     </Link>
@@ -277,7 +277,7 @@ const Index = () => {
 
             {/* Most Read */}
             {mostViewedArticles.length > 0 && (
-              <div className="bg-card rounded-lg border border-border p-3 md:p-4">
+              <div className="bg-card p-3 md:p-4">
                 <h3 className="font-serif font-bold text-sm md:text-base mb-3 md:mb-4 pb-2 border-b border-border">
                   Mais Lidas
                 </h3>

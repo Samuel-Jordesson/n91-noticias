@@ -108,7 +108,7 @@ const AuthorProfilePage = () => {
           </Link>
 
           {/* Perfil do Autor */}
-          <div className="bg-card rounded-lg border border-border shadow-sm mb-6 md:mb-8 p-6 md:p-8">
+          <div className="bg-card mb-6 md:mb-8 p-6 md:p-8">
             <div className="flex flex-col sm:flex-row gap-6 md:gap-8">
               {/* Avatar */}
               <div className="flex-shrink-0 mx-auto sm:mx-0">
@@ -143,7 +143,7 @@ const AuthorProfilePage = () => {
                         href={url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center gap-2 px-3 py-2 rounded-lg bg-muted hover:bg-primary/10 hover:text-primary transition-all border border-border hover:border-primary/30"
+                        className="flex items-center gap-2 px-3 py-2 bg-muted hover:bg-primary/10 hover:text-primary transition-all"
                         title={label}
                       >
                         <Icon className="h-4 w-4" />
@@ -169,7 +169,7 @@ const AuthorProfilePage = () => {
                 ))}
               </div>
             ) : authorNews.length === 0 ? (
-              <div className="bg-card rounded-lg border border-border p-8 md:p-12 text-center">
+              <div className="bg-card p-8 md:p-12 text-center">
                 <p className="text-muted-foreground">
                   Este autor ainda não publicou nenhum post.
                 </p>

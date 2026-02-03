@@ -143,7 +143,7 @@ const CategoryPage = () => {
           <aside className="space-y-6">
             {/* Categories */}
             {categories && categories.length > 0 && (
-              <div className="bg-card rounded-lg border border-border p-4">
+              <div className="bg-card p-4">
                 <h3 className="font-serif font-bold mb-4 pb-2 border-b border-border">
                   Categorias
                 </h3>
@@ -159,7 +159,7 @@ const CategoryPage = () => {
                       <Link
                         key={cat.id}
                         to={linkPath}
-                        className={`block py-2 px-3 text-sm rounded-md transition-colors ${
+                        className={`block py-2 px-3 text-sm transition-colors ${
                           cat.slug === category?.toLowerCase()
                             ? "bg-primary text-primary-foreground"
                             : "text-muted-foreground hover:text-primary hover:bg-muted"
@@ -180,7 +180,7 @@ const CategoryPage = () => {
 
             {/* Most Read */}
             {mostViewedArticles.length > 0 && (
-              <div className="bg-card rounded-lg border border-border p-4">
+              <div className="bg-card p-4">
                 <h3 className="font-serif font-bold mb-4 pb-2 border-b border-border">
                   Mais Lidas
                 </h3>
