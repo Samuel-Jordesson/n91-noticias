@@ -29,15 +29,17 @@ const AdBanner = ({ ad, position = "sidebar" }: AdBannerProps) => {
   if (position === "inline") {
     return (
       <div className="my-4">
-        <a href={ad?.link || "#"} target="_blank" rel="noopener noreferrer">
+        <a href={ad?.link || "#"} target="_blank" rel="noopener noreferrer" className="block">
           {ad?.imageUrl ? (
-            <img
-              src={ad.imageUrl}
-              alt={ad.title || "Anúncio"}
-              className="w-full h-[300px] object-cover"
-            />
+            <div className="w-full aspect-[4/1] overflow-hidden">
+              <img
+                src={ad.imageUrl}
+                alt={ad.title || "Anúncio"}
+                className="w-full h-full object-cover"
+              />
+            </div>
           ) : (
-            <div className="bg-muted h-[300px] flex items-center justify-center">
+            <div className="bg-muted aspect-[4/1] flex items-center justify-center">
               <span className="text-muted-foreground">Anúncio</span>
             </div>
           )}
@@ -48,15 +50,17 @@ const AdBanner = ({ ad, position = "sidebar" }: AdBannerProps) => {
 
   return (
     <div>
-      <a href={ad?.link || "#"} target="_blank" rel="noopener noreferrer">
+      <a href={ad?.link || "#"} target="_blank" rel="noopener noreferrer" className="block">
         {ad?.imageUrl ? (
-          <img
-            src={ad.imageUrl}
-            alt={ad.title || "Anúncio"}
-            className="w-full h-[400px] object-cover"
-          />
+          <div className="w-full aspect-[3/4] overflow-hidden">
+            <img
+              src={ad.imageUrl}
+              alt={ad.title || "Anúncio"}
+              className="w-full h-full object-cover"
+            />
+          </div>
         ) : (
-          <div className="bg-muted h-[400px] flex items-center justify-center">
+          <div className="bg-muted aspect-[3/4] flex items-center justify-center">
             <span className="text-muted-foreground">Espaço Publicitário</span>
           </div>
         )}

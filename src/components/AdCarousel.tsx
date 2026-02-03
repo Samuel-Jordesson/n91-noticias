@@ -8,9 +8,9 @@ interface AdCarouselProps {
 }
 
 const positionStyles = {
-  sidebar: "h-[400px]",
+  sidebar: "aspect-[3/4]",
   banner: "h-24 md:h-28",
-  inline: "h-[300px]",
+  inline: "aspect-[4/1]",
 };
 
 const AdCarousel = ({ ads, position, autoPlayInterval = 5000 }: AdCarouselProps) => {
@@ -30,7 +30,7 @@ const AdCarousel = ({ ads, position, autoPlayInterval = 5000 }: AdCarouselProps)
   if (activeAds.length === 0) {
     return (
       <div className="my-4">
-        <div className={`bg-muted flex items-center justify-center ${positionStyles[position]}`}>
+        <div className={`bg-muted flex items-center justify-center w-full ${positionStyles[position]}`}>
           <span className="text-muted-foreground text-sm">Espaço Publicitário</span>
         </div>
       </div>
@@ -42,7 +42,7 @@ const AdCarousel = ({ ads, position, autoPlayInterval = 5000 }: AdCarouselProps)
   return (
     <div className="my-4 relative">
       <a href={currentAd.link} target="_blank" rel="noopener noreferrer" className="block">
-        <div className={`relative overflow-hidden ${positionStyles[position]}`}>
+        <div className={`relative overflow-hidden w-full ${positionStyles[position]}`}>
           <img
             src={currentAd.imageUrl}
             alt={currentAd.title}
