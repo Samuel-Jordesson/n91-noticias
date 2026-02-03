@@ -98,93 +98,89 @@ const AuthorProfilePage = () => {
         description={profile.bio || `Perfil de ${profile.name} no Portal Barcarena`}
       />
       <MainLayout>
-        <div className="container py-6">
-          <div className="max-w-4xl mx-auto">
-            {/* Botão Voltar */}
-            <Link to="/">
-              <Button variant="ghost" className="mb-6">
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Voltar
-              </Button>
-            </Link>
+        <div className="container py-4 md:py-6 px-4 md:px-6">
+          {/* Botão Voltar */}
+          <Link to="/" className="inline-block mb-4 md:mb-6">
+            <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Voltar
+            </Button>
+          </Link>
 
-            {/* Perfil do Autor */}
-            <Card className="mb-8">
-              <CardContent className="p-6">
-                <div className="flex flex-col sm:flex-row gap-6">
-                  {/* Avatar */}
-                  <div className="flex-shrink-0">
-                    {profile.avatar_url ? (
-                      <img
-                        src={profile.avatar_url}
-                        alt={profile.name}
-                        className="h-32 w-32 rounded-full object-cover border-4 border-primary/20"
-                      />
-                    ) : (
-                      <div className="h-32 w-32 rounded-full bg-primary flex items-center justify-center text-primary-foreground text-4xl font-bold border-4 border-primary/20">
-                        {profile.name.charAt(0).toUpperCase()}
-                      </div>
-                    )}
+          {/* Perfil do Autor */}
+          <div className="bg-card rounded-lg border border-border shadow-sm mb-6 md:mb-8 p-6 md:p-8">
+            <div className="flex flex-col sm:flex-row gap-6 md:gap-8">
+              {/* Avatar */}
+              <div className="flex-shrink-0 mx-auto sm:mx-0">
+                {profile.avatar_url ? (
+                  <img
+                    src={profile.avatar_url}
+                    alt={profile.name}
+                    className="h-24 w-24 md:h-32 md:w-32 rounded-full object-cover border-4 border-primary/20 shadow-md"
+                  />
+                ) : (
+                  <div className="h-24 w-24 md:h-32 md:w-32 rounded-full bg-primary flex items-center justify-center text-primary-foreground text-3xl md:text-4xl font-bold border-4 border-primary/20 shadow-md">
+                    {profile.name.charAt(0).toUpperCase()}
                   </div>
+                )}
+              </div>
 
-                  {/* Informações */}
-                  <div className="flex-1">
-                    <h1 className="text-3xl font-bold mb-2">{profile.name}</h1>
-                    {profile.bio && (
-                      <p className="text-muted-foreground mb-4 leading-relaxed">{profile.bio}</p>
-                    )}
-                    
-                    {/* Redes Sociais */}
-                    {activeSocialLinks.length > 0 && (
-                      <div className="flex items-center gap-3 flex-wrap">
-                        {activeSocialLinks.map(({ platform, url, icon: Icon, label }) => (
-                          <a
-                            key={platform}
-                            href={url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="flex items-center gap-2 px-3 py-2 rounded-lg bg-muted hover:bg-muted/80 transition-colors"
-                            title={label}
-                          >
-                            <Icon className="h-4 w-4" />
-                            <span className="text-sm hidden sm:inline">{label}</span>
-                          </a>
-                        ))}
-                      </div>
-                    )}
+              {/* Informações */}
+              <div className="flex-1 text-center sm:text-left">
+                <h1 className="text-2xl md:text-3xl font-bold mb-3 font-serif">{profile.name}</h1>
+                {profile.bio && (
+                  <p className="text-muted-foreground mb-4 md:mb-6 leading-relaxed text-sm md:text-base max-w-2xl mx-auto sm:mx-0">
+                    {profile.bio}
+                  </p>
+                )}
+                
+                {/* Redes Sociais */}
+                {activeSocialLinks.length > 0 && (
+                  <div className="flex items-center justify-center sm:justify-start gap-2 md:gap-3 flex-wrap">
+                    {activeSocialLinks.map(({ platform, url, icon: Icon, label }) => (
+                      <a
+                        key={platform}
+                        href={url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-2 px-3 py-2 rounded-lg bg-muted hover:bg-primary/10 hover:text-primary transition-all border border-border hover:border-primary/30"
+                        title={label}
+                      >
+                        <Icon className="h-4 w-4" />
+                        <span className="text-xs md:text-sm">{label}</span>
+                      </a>
+                    ))}
                   </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Posts do Autor */}
-            <div>
-              <h2 className="text-2xl font-bold mb-6">
-                Posts de {profile.name} ({authorNews.length})
-              </h2>
-
-              {isLoadingPosts ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {[...Array(4)].map((_, i) => (
-                    <Skeleton key={i} className="h-64 w-full" />
-                  ))}
-                </div>
-              ) : authorNews.length === 0 ? (
-                <Card>
-                  <CardContent className="p-8 text-center">
-                    <p className="text-muted-foreground">
-                      Este autor ainda não publicou nenhum post.
-                    </p>
-                  </CardContent>
-                </Card>
-              ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {authorNews.map((article) => (
-                    <NewsCard key={article.id} article={article} variant="default" />
-                  ))}
-                </div>
-              )}
+                )}
+              </div>
             </div>
+          </div>
+
+          {/* Posts do Autor */}
+          <div>
+            <h2 className="text-xl md:text-2xl font-bold mb-4 md:mb-6 font-serif">
+              Posts de {profile.name} <span className="text-muted-foreground font-normal">({authorNews.length})</span>
+            </h2>
+
+            {isLoadingPosts ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+                {[...Array(6)].map((_, i) => (
+                  <Skeleton key={i} className="h-64 w-full" />
+                ))}
+              </div>
+            ) : authorNews.length === 0 ? (
+              <div className="bg-card rounded-lg border border-border p-8 md:p-12 text-center">
+                <p className="text-muted-foreground">
+                  Este autor ainda não publicou nenhum post.
+                </p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+                {authorNews.map((article) => (
+                  <NewsCard key={article.id} article={article} variant="default" />
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </MainLayout>
