@@ -34,10 +34,10 @@ const AdBanner = ({ ad, position = "sidebar" }: AdBannerProps) => {
             <img
               src={ad.imageUrl}
               alt={ad.title || "Anúncio"}
-              className="w-full max-h-32 object-cover"
+              className="w-full h-[300px] object-cover"
             />
           ) : (
-            <div className="bg-muted h-32 flex items-center justify-center">
+            <div className="bg-muted h-[300px] flex items-center justify-center">
               <span className="text-muted-foreground">Anúncio</span>
             </div>
           )}
@@ -53,10 +53,10 @@ const AdBanner = ({ ad, position = "sidebar" }: AdBannerProps) => {
           <img
             src={ad.imageUrl}
             alt={ad.title || "Anúncio"}
-            className="w-full h-60 object-cover"
+            className="w-full h-[400px] object-cover"
           />
         ) : (
-          <div className="bg-muted h-60 flex items-center justify-center">
+          <div className="bg-muted h-[400px] flex items-center justify-center">
             <span className="text-muted-foreground">Espaço Publicitário</span>
           </div>
         )}

@@ -8,9 +8,9 @@ interface AdCarouselProps {
 }
 
 const positionStyles = {
-  sidebar: "h-60",
+  sidebar: "h-[400px]",
   banner: "h-24 md:h-28",
-  inline: "h-32 md:h-40",
+  inline: "h-[300px]",
 };
 
 const AdCarousel = ({ ads, position, autoPlayInterval = 5000 }: AdCarouselProps) => {

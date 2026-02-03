@@ -28,7 +28,7 @@ const adPositionSpecs = {
   sidebar: {
     label: "Sidebar",
     width: 300,
-    height: 250,
+    height: 400,
     description: "Exibido na barra lateral direita das páginas",
   },
   banner: {
@@ -39,8 +39,8 @@ const adPositionSpecs = {
   },
   inline: {
     label: "Inline",
-    width: 728,
-    height: 90,
+    width: 1200,
+    height: 300,
     description: "Exibido entre o conteúdo dos artigos",
   },
 };
