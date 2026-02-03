@@ -44,6 +44,7 @@ const convertPostToNewsArticle = (post: PostWithCategory): NewsArticle => {
     imageUrl: post.image_url && post.image_url.trim() !== "" ? post.image_url : undefined,
     category: post.categories?.name || "Geral",
     author: post.profiles?.name || "Desconhecido",
+    authorId: post.author_id || undefined,
     publishedAt: post.published_at ? new Date(post.published_at) : new Date(post.created_at),
     isBreaking: post.is_breaking,
     views: post.views,
@@ -261,10 +262,20 @@ const ArticlePage = () => {
               </p>
 
               <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground pb-6 border-b border-border">
-                <span className="flex items-center gap-1">
-                  <User className="h-4 w-4" />
-                  {article.author}
-                </span>
+                {article.authorId ? (
+                  <Link
+                    to={`/autor/${article.authorId}`}
+                    className="flex items-center gap-1 hover:text-primary transition-colors"
+                  >
+                    <User className="h-4 w-4" />
+                    {article.author}
+                  </Link>
+                ) : (
+                  <span className="flex items-center gap-1">
+                    <User className="h-4 w-4" />
+                    {article.author}
+                  </span>
+                )}
                 <span className="flex items-center gap-1">
                   <Clock className="h-4 w-4" />
                   {format(article.publishedAt, "dd 'de' MMMM 'de' yyyy 'às' HH:mm", {

@@ -18,12 +18,14 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Plus, Pencil, Trash2, Search, Shield } from "lucide-react";
+import { Plus, Pencil, Trash2, Search, Shield, Image as ImageIcon, Facebook, Twitter, Instagram, Linkedin, Youtube, Globe } from "lucide-react";
 import { toast } from "sonner";
-import { useAllProfiles, useCreateUser, useUpdateUserProfile, useDeleteUser } from "@/hooks/useUsers";
+import { useAllProfiles, useCreateUser, useUpdateUserProfile, useDeleteUser, useUploadAvatar } from "@/hooks/useUsers";
 import { Skeleton } from "@/components/ui/skeleton";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { Textarea } from "@/components/ui/textarea";
+import { useRef } from "react";
 
 const roleLabels = {
   admin: { label: "Administrador", className: "bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary" },
@@ -46,6 +48,16 @@ const AdminUsers = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState<"admin" | "editor" | "user" | "dev">("user");
+  const [bio, setBio] = useState("");
+  const [avatarUrl, setAvatarUrl] = useState("");
+  const [avatarPreview, setAvatarPreview] = useState("");
+  const [socialLinks, setSocialLinks] = useState<{ platform: string; url: string }[]>([
+    { platform: "", url: "" },
+    { platform: "", url: "" },
+    { platform: "", url: "" },
+  ]);
+  const avatarFileInputRef = useRef<HTMLInputElement>(null);
+  const uploadAvatarMutation = useUploadAvatar();
 
   const filteredUsers = users.filter((user) => {
     const matchesSearch =
@@ -54,6 +66,42 @@ const AdminUsers = () => {
     const matchesRole = filterRole === "all" || user.role === filterRole;
     return matchesSearch && matchesRole;
   });
+
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      toast.error("Por favor, selecione um arquivo de imagem");
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("A imagem deve ter no máximo 5MB");
+      return;
+    }
+
+    // Criar preview
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      setAvatarPreview(event.target?.result as string);
+    };
+    reader.readAsDataURL(file);
+
+    // Se estiver editando, fazer upload imediatamente
+    if (editingUser) {
+      try {
+        const uploadedUrl = await uploadAvatarMutation.mutateAsync({
+          userId: editingUser.id,
+          file,
+        });
+        setAvatarUrl(uploadedUrl);
+        toast.success("Avatar atualizado!");
+      } catch (error: any) {
+        toast.error(error.message || "Erro ao fazer upload do avatar");
+      }
+    }
+  };
 
   const handleCreateUser = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -64,7 +112,30 @@ const AdminUsers = () => {
     }
 
     try {
+      // Preparar links de redes sociais (filtrar vazios e converter para JSON)
+      const validSocialLinks = socialLinks
+        .filter(link => link.platform && link.url)
+        .reduce((acc, link) => {
+          acc[link.platform] = link.url;
+          return acc;
+        }, {} as Record<string, string>);
+
+      const socialLinksJson = Object.keys(validSocialLinks).length > 0 ? validSocialLinks : null;
+
       if (editingUser) {
+        // Upload de avatar se houver preview novo
+        let finalAvatarUrl = avatarUrl;
+        if (avatarPreview && avatarFileInputRef.current?.files?.[0]) {
+          try {
+            finalAvatarUrl = await uploadAvatarMutation.mutateAsync({
+              userId: editingUser.id,
+              file: avatarFileInputRef.current.files[0],
+            });
+          } catch (error) {
+            console.error("Erro ao fazer upload do avatar:", error);
+          }
+        }
+
         // Atualizar usuário existente
         await updateUserMutation.mutateAsync({
           userId: editingUser.id,
@@ -72,17 +143,50 @@ const AdminUsers = () => {
             name,
             email,
             role,
+            bio: bio || null,
+            avatar_url: finalAvatarUrl || null,
+            social_links: socialLinksJson,
           },
         });
         toast.success("Usuário atualizado com sucesso!");
       } else {
         // Criar novo usuário
-        await createUserMutation.mutateAsync({
+        const newUser = await createUserMutation.mutateAsync({
           email,
           password,
           name,
           role,
         });
+
+        // Se houver avatar, fazer upload após criar o usuário
+        if (avatarPreview && avatarFileInputRef.current?.files?.[0]) {
+          try {
+            const uploadedUrl = await uploadAvatarMutation.mutateAsync({
+              userId: newUser.id,
+              file: avatarFileInputRef.current.files[0],
+            });
+            await updateUserMutation.mutateAsync({
+              userId: newUser.id,
+              updates: {
+                avatar_url: uploadedUrl,
+                bio: bio || null,
+                social_links: socialLinksJson,
+              },
+            });
+          } catch (error) {
+            console.error("Erro ao fazer upload do avatar:", error);
+          }
+        } else if (bio || socialLinksJson) {
+          // Atualizar bio e redes sociais mesmo sem avatar
+          await updateUserMutation.mutateAsync({
+            userId: newUser.id,
+            updates: {
+              bio: bio || null,
+              social_links: socialLinksJson,
+            },
+          });
+        }
+
         toast.success("Usuário criado com sucesso!");
       }
 
@@ -125,6 +229,28 @@ const AdminUsers = () => {
     setEmail(user.email);
     setPassword("");
     setRole(user.role);
+    setBio(user.bio || "");
+    setAvatarUrl(user.avatar_url || "");
+    setAvatarPreview("");
+    
+    // Carregar redes sociais
+    if (user.social_links && typeof user.social_links === 'object') {
+      const links = Object.entries(user.social_links as Record<string, string>)
+        .slice(0, 3)
+        .map(([platform, url]) => ({ platform, url }));
+      // Preencher com objetos vazios se necessário
+      while (links.length < 3) {
+        links.push({ platform: "", url: "" });
+      }
+      setSocialLinks(links);
+    } else {
+      setSocialLinks([
+        { platform: "", url: "" },
+        { platform: "", url: "" },
+        { platform: "", url: "" },
+      ]);
+    }
+    
     setIsDialogOpen(true);
   };
 
@@ -134,6 +260,32 @@ const AdminUsers = () => {
     setEmail("");
     setPassword("");
     setRole("user");
+    setBio("");
+    setAvatarUrl("");
+    setAvatarPreview("");
+    setSocialLinks([
+      { platform: "", url: "" },
+      { platform: "", url: "" },
+      { platform: "", url: "" },
+    ]);
+    if (avatarFileInputRef.current) {
+      avatarFileInputRef.current.value = "";
+    }
+  };
+
+  const socialPlatforms = [
+    { value: "facebook", label: "Facebook", icon: Facebook },
+    { value: "twitter", label: "Twitter/X", icon: Twitter },
+    { value: "instagram", label: "Instagram", icon: Instagram },
+    { value: "linkedin", label: "LinkedIn", icon: Linkedin },
+    { value: "youtube", label: "YouTube", icon: Youtube },
+    { value: "website", label: "Website", icon: Globe },
+  ];
+
+  const updateSocialLink = (index: number, field: 'platform' | 'url', value: string) => {
+    const newLinks = [...socialLinks];
+    newLinks[index] = { ...newLinks[index], [field]: value };
+    setSocialLinks(newLinks);
   };
 
   return (
@@ -232,6 +384,101 @@ const AdminUsers = () => {
                   </SelectContent>
                 </Select>
               </div>
+
+              {/* Avatar Upload */}
+              <div className="space-y-2">
+                <Label>Foto de Perfil</Label>
+                <div className="flex items-center gap-4">
+                  <div className="flex-shrink-0">
+                    {(avatarPreview || avatarUrl) ? (
+                      <img
+                        src={avatarPreview || avatarUrl}
+                        alt="Preview"
+                        className="h-20 w-20 rounded-full object-cover border-2 border-border"
+                      />
+                    ) : (
+                      <div className="h-20 w-20 rounded-full bg-muted flex items-center justify-center border-2 border-border">
+                        <ImageIcon className="h-8 w-8 text-muted-foreground" />
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex-1">
+                    <input
+                      type="file"
+                      ref={avatarFileInputRef}
+                      onChange={handleAvatarUpload}
+                      accept="image/*"
+                      className="hidden"
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => avatarFileInputRef.current?.click()}
+                    >
+                      <ImageIcon className="h-4 w-4 mr-2" />
+                      {avatarPreview || avatarUrl ? "Alterar Foto" : "Adicionar Foto"}
+                    </Button>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      JPG, PNG ou GIF. Máximo 5MB
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Biografia */}
+              <div className="space-y-2">
+                <Label htmlFor="bio">Biografia</Label>
+                <Textarea
+                  id="bio"
+                  placeholder="Breve biografia do autor..."
+                  rows={4}
+                  value={bio}
+                  onChange={(e) => setBio(e.target.value)}
+                />
+                <p className="text-xs text-muted-foreground">
+                  Uma breve descrição sobre o autor
+                </p>
+              </div>
+
+              {/* Redes Sociais */}
+              <div className="space-y-3">
+                <Label>Redes Sociais (até 3)</Label>
+                {socialLinks.map((link, index) => (
+                  <div key={index} className="flex gap-2">
+                    <Select
+                      value={link.platform}
+                      onValueChange={(value) => updateSocialLink(index, 'platform', value)}
+                    >
+                      <SelectTrigger className="w-[140px]">
+                        <SelectValue placeholder="Rede" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="">Selecionar...</SelectItem>
+                        {socialPlatforms.map((platform) => (
+                          <SelectItem key={platform.value} value={platform.value}>
+                            <div className="flex items-center gap-2">
+                              <platform.icon className="h-4 w-4" />
+                              {platform.label}
+                            </div>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <Input
+                      type="url"
+                      placeholder="URL da rede social"
+                      value={link.url}
+                      onChange={(e) => updateSocialLink(index, 'url', e.target.value)}
+                      className="flex-1"
+                    />
+                  </div>
+                ))}
+                <p className="text-xs text-muted-foreground">
+                  Adicione até 3 redes sociais que aparecerão no perfil do autor
+                </p>
+              </div>
+
               <div className="flex justify-end gap-2">
                 <Button
                   type="button"
@@ -309,9 +556,17 @@ const AdminUsers = () => {
                     >
                       <td className="py-2 sm:py-3 px-2 sm:px-4">
                         <div className="flex items-center gap-1.5 sm:gap-2 md:gap-3">
-                          <div className="h-7 w-7 sm:h-8 sm:w-8 md:h-10 md:w-10 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-semibold text-xs sm:text-sm flex-shrink-0">
-                            {user.name.charAt(0).toUpperCase()}
-                          </div>
+                          {user.avatar_url ? (
+                            <img
+                              src={user.avatar_url}
+                              alt={user.name}
+                              className="h-7 w-7 sm:h-8 sm:w-8 md:h-10 md:w-10 rounded-full object-cover flex-shrink-0"
+                            />
+                          ) : (
+                            <div className="h-7 w-7 sm:h-8 sm:w-8 md:h-10 md:w-10 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-semibold text-xs sm:text-sm flex-shrink-0">
+                              {user.name.charAt(0).toUpperCase()}
+                            </div>
+                          )}
                           <div className="min-w-0 flex-1">
                             <span className="font-medium text-xs sm:text-sm truncate block">{user.name}</span>
                             <span className="text-[10px] sm:text-xs text-muted-foreground md:hidden truncate block">{user.email}</span>

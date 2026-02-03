@@ -22,6 +22,7 @@ import AdminCategories from "./pages/admin/AdminCategories";
 import AdminDevelopment from "./pages/admin/AdminDevelopment";
 import JobsPage from "./pages/JobsPage";
 import JobDetailPage from "./pages/JobDetailPage";
+import AuthorProfilePage from "./pages/AuthorProfilePage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -40,6 +41,7 @@ const App = () => (
           <Route path="/clima" element={<WeatherPage />} />
           <Route path="/empregos" element={<JobsPage />} />
           <Route path="/empregos/:slug" element={<JobDetailPage />} />
+          <Route path="/autor/:id" element={<AuthorProfilePage />} />
           <Route path="/admin/login" element={<AdminLogin />} />
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="/admin/posts" element={<AdminPosts />} />

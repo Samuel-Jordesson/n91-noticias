@@ -6,6 +6,7 @@ export interface NewsArticle {
   imageUrl?: string;
   category: string;
   author: string;
+  authorId?: string;
   publishedAt: Date;
   isBreaking?: boolean;
   views: number;

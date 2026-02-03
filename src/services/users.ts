@@ -132,3 +132,49 @@ export const updateUserPassword = async (userId: string, newPassword: string) =>
   // Por enquanto, vamos retornar um aviso
   throw new Error('Atualização de senha deve ser feita via Supabase Dashboard ou função RPC');
 };
+
+// Upload de avatar do usuário
+export const uploadUserAvatar = async (userId: string, file: File): Promise<string> => {
+  const fileExt = file.name.split('.').pop();
+  const fileName = `${userId}-${Date.now()}.${fileExt}`;
+  const filePath = `avatars/${fileName}`;
+
+  // Fazer upload no bucket 'images'
+  const { data, error } = await supabase.storage
+    .from('images')
+    .upload(filePath, file, {
+      cacheControl: '3600',
+      upsert: false,
+    });
+
+  if (error) {
+    // Se o bucket não existir, usar data URL como fallback
+    const reader = new FileReader();
+    return new Promise((resolve, reject) => {
+      reader.onload = (e) => {
+        resolve(e.target?.result as string);
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
+  // Obter URL pública
+  const { data: { publicUrl } } = supabase.storage
+    .from('images')
+    .getPublicUrl(filePath);
+
+  return publicUrl;
+};
+
+// Buscar perfil por ID
+export const getProfileById = async (userId: string) => {
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('id', userId)
+    .single();
+
+  if (error) throw error;
+  return data as Profile;
+};

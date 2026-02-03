@@ -15,6 +15,7 @@ export interface PostWithCategory extends Post {
     name: string;
     email: string;
   } | null;
+  author_id: string | null;
 }
 
 // Buscar todos os posts (admin - inclui não publicados)

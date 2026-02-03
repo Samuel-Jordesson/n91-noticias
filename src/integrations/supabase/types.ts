@@ -16,6 +16,8 @@ export interface Database {
           email: string
           role: 'admin' | 'editor' | 'user' | 'dev'
           avatar_url: string | null
+          bio: string | null
+          social_links: Json | null
           created_at: string
           updated_at: string
         }
@@ -25,6 +27,8 @@ export interface Database {
           email: string
           role?: 'admin' | 'editor' | 'user' | 'dev'
           avatar_url?: string | null
+          bio?: string | null
+          social_links?: Json | null
           created_at?: string
           updated_at?: string
         }
@@ -34,6 +38,8 @@ export interface Database {
           email?: string
           role?: 'admin' | 'editor' | 'user' | 'dev'
           avatar_url?: string | null
+          bio?: string | null
+          social_links?: Json | null
           created_at?: string
           updated_at?: string
         }

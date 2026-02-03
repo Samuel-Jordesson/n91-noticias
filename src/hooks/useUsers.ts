@@ -4,6 +4,8 @@ import {
   createUser,
   updateUserProfile,
   deleteUser,
+  getProfileById,
+  uploadUserAvatar,
 } from "@/services/users";
 
 // Hook para buscar todos os perfis (admin)
@@ -48,6 +50,29 @@ export const useDeleteUser = () => {
     mutationFn: deleteUser,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["profiles"] });
+    },
+  });
+};
+
+// Hook para buscar perfil por ID
+export const useProfileById = (userId: string | undefined) => {
+  return useQuery({
+    queryKey: ["profile", userId],
+    queryFn: () => getProfileById(userId!),
+    enabled: !!userId,
+  });
+};
+
+// Hook para upload de avatar
+export const useUploadAvatar = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ userId, file }: { userId: string; file: File }) =>
+      uploadUserAvatar(userId, file),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["profiles"] });
+      queryClient.invalidateQueries({ queryKey: ["profile"] });
     },
   });
 };

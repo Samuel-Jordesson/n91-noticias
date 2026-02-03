@@ -25,6 +25,7 @@ const convertPostToNewsArticle = (post: PostWithCategory): NewsArticle => {
     imageUrl: post.image_url,
     category: post.categories?.name || "Geral",
     author: post.profiles?.name || "Desconhecido",
+    authorId: post.author_id || undefined,
     publishedAt: post.published_at ? new Date(post.published_at) : new Date(post.created_at),
     isBreaking: post.is_breaking,
     views: post.views,
