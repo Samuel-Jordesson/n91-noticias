@@ -97,9 +97,21 @@ export const createUser = async (email: string, password: string, name: string, 
 
 // Atualizar perfil de usuário (admin)
 export const updateUserProfile = async (userId: string, updates: ProfileUpdate) => {
+  // Garantir que social_links seja um objeto JSON válido
+  const cleanUpdates = { ...updates };
+  if (cleanUpdates.social_links !== null && cleanUpdates.social_links !== undefined) {
+    // Se for um objeto, garantir que seja válido
+    if (typeof cleanUpdates.social_links === 'object') {
+      // Se estiver vazio, definir como null
+      if (Object.keys(cleanUpdates.social_links).length === 0) {
+        cleanUpdates.social_links = null;
+      }
+    }
+  }
+
   const { data, error } = await supabase
     .from('profiles')
-    .update(updates)
+    .update(cleanUpdates)
     .eq('id', userId)
     .select()
     .single();

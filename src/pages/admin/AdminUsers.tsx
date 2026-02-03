@@ -114,13 +114,16 @@ const AdminUsers = () => {
     try {
       // Preparar links de redes sociais (filtrar vazios e converter para JSON)
       const validSocialLinks = socialLinks
-        .filter(link => link.platform && link.url)
+        .filter(link => link.platform && link.url && link.url.trim() !== '')
         .reduce((acc, link) => {
-          acc[link.platform] = link.url;
+          acc[link.platform] = link.url.trim();
           return acc;
         }, {} as Record<string, string>);
 
-      const socialLinksJson = Object.keys(validSocialLinks).length > 0 ? validSocialLinks : null;
+      // Garantir que social_links seja um objeto JSON válido ou null
+      const socialLinksJson = Object.keys(validSocialLinks).length > 0 
+        ? (validSocialLinks as any) 
+        : null;
 
       if (editingUser) {
         // Upload de avatar se houver preview novo
