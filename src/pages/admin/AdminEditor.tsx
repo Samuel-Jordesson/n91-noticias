@@ -269,6 +269,60 @@ const AdminEditor = () => {
               </Button>
             </div>
 
+            {/* Image Upload */}
+            <div className="space-y-2">
+              <Label>Imagem de Capa <span className="text-muted-foreground text-xs">(opcional)</span></Label>
+              <div className="flex gap-2">
+                <div className="flex-1">
+                  <Input
+                    id="imageUrl"
+                    type="url"
+                    placeholder="URL da imagem"
+                    value={imageUrl}
+                    onChange={(e) => setImageUrl(e.target.value)}
+                  />
+                </div>
+                <div>
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleImageUpload}
+                    accept="image/*"
+                    className="hidden"
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon"
+                    onClick={() => fileInputRef.current?.click()}
+                  >
+                    <ImageIcon className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+              
+              {(imagePreview || (isEditing && post?.image_url && !imagePreview && !imageUrl)) && (
+                <div className="mt-2 relative">
+                  <img
+                    src={imagePreview || post?.image_url}
+                    alt="Preview"
+                    className="w-full max-h-48 object-cover rounded-lg border border-border"
+                  />
+                  {imagePreview && (
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="sm"
+                      className="absolute top-2 right-2"
+                      onClick={() => setImagePreview("")}
+                    >
+                      Remover
+                    </Button>
+                  )}
+                </div>
+              )}
+            </div>
+
             {/* Resumo */}
             <div className="space-y-2">
               <Label htmlFor="excerpt">Resumo *</Label>
@@ -324,60 +378,6 @@ const AdminEditor = () => {
                   ? `Autor selecionado: ${allProfiles.find(p => p.id === selectedAuthor)?.name || "Desconhecido"}`
                   : `Por padrão, será usado: ${profile?.name || "seu nome"}`}
               </p>
-            </div>
-            
-            {/* Image Upload */}
-            <div className="space-y-2">
-              <Label>Imagem de Capa <span className="text-muted-foreground text-xs">(opcional)</span></Label>
-              <div className="flex gap-2">
-                <div className="flex-1">
-                  <Input
-                    id="imageUrl"
-                    type="url"
-                    placeholder="URL da imagem"
-                    value={imageUrl}
-                    onChange={(e) => setImageUrl(e.target.value)}
-                  />
-                </div>
-                <div>
-                  <input
-                    type="file"
-                    ref={fileInputRef}
-                    onChange={handleImageUpload}
-                    accept="image/*"
-                    className="hidden"
-                  />
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="icon"
-                    onClick={() => fileInputRef.current?.click()}
-                  >
-                    <ImageIcon className="h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
-              
-              {(imagePreview || (isEditing && post?.image_url && !imagePreview && !imageUrl)) && (
-                <div className="mt-2 relative">
-                  <img
-                    src={imagePreview || post?.image_url}
-                    alt="Preview"
-                    className="w-full max-h-48 object-cover rounded-lg border border-border"
-                  />
-                  {imagePreview && (
-                    <Button
-                      type="button"
-                      variant="destructive"
-                      size="sm"
-                      className="absolute top-2 right-2"
-                      onClick={() => setImagePreview("")}
-                    >
-                      Remover
-                    </Button>
-                  )}
-                </div>
-              )}
             </div>
 
             {/* Checkboxes */}
