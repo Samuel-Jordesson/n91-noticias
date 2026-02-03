@@ -4,9 +4,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useAllComments, useModerateComment, useDeleteComment } from "@/hooks/useComments";
+import { useAllComments, useDeleteComment } from "@/hooks/useComments";
 import { usePost } from "@/hooks/usePosts";
-import { Search, Trash2, CheckCircle, XCircle } from "lucide-react";
+import { Search, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { formatDistanceToNow, format } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -16,7 +16,6 @@ import { generateSlug } from "@/lib/utils";
 const AdminComments = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const { data: commentsData, isLoading } = useAllComments();
-  const moderateMutation = useModerateComment();
   const deleteMutation = useDeleteComment();
 
   const comments = commentsData || [];
@@ -33,24 +32,6 @@ const AdminComments = () => {
       return postData.title;
     }
     return "Artigo não encontrado";
-  };
-
-  const handleApprove = async (id: string) => {
-    try {
-      await moderateMutation.mutateAsync({ id, isApproved: true });
-      toast.success("Comentário aprovado!");
-    } catch (error: any) {
-      toast.error(error.message || "Erro ao aprovar comentário");
-    }
-  };
-
-  const handleReject = async (id: string) => {
-    try {
-      await moderateMutation.mutateAsync({ id, isApproved: false });
-      toast.success("Comentário rejeitado!");
-    } catch (error: any) {
-      toast.error(error.message || "Erro ao rejeitar comentário");
-    }
   };
 
   const handleDelete = async (id: string) => {
@@ -157,30 +138,6 @@ const AdminComments = () => {
                         </div>
                       </div>
                       <div className="flex items-center gap-0.5 sm:gap-1 flex-shrink-0">
-                        {!isApproved && (
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="text-green-600 hover:text-green-600 hover:bg-green-50 h-7 w-7 sm:h-9 sm:w-9"
-                            onClick={() => handleApprove(comment.id)}
-                            disabled={moderateMutation.isPending}
-                            title="Aprovar comentário"
-                          >
-                            <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4" />
-                          </Button>
-                        )}
-                        {isApproved && (
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="text-orange-600 hover:text-orange-600 hover:bg-orange-50 h-7 w-7 sm:h-9 sm:w-9"
-                            onClick={() => handleReject(comment.id)}
-                            disabled={moderateMutation.isPending}
-                            title="Rejeitar comentário"
-                          >
-                            <XCircle className="h-3 w-3 sm:h-4 sm:w-4" />
-                          </Button>
-                        )}
                         <Button
                           variant="ghost"
                           size="icon"
