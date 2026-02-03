@@ -29,7 +29,7 @@ const AdCarousel = ({ ads, position, autoPlayInterval = 5000 }: AdCarouselProps)
 
   if (activeAds.length === 0) {
     return (
-      <div className="my-4">
+      <div className={`my-4 ${position === 'sidebar' ? 'max-w-[250px] mx-auto' : ''}`}>
         <div className={`bg-muted flex items-center justify-center w-full ${positionStyles[position]}`}>
           <span className="text-muted-foreground text-sm">Espaço Publicitário</span>
         </div>
@@ -40,7 +40,7 @@ const AdCarousel = ({ ads, position, autoPlayInterval = 5000 }: AdCarouselProps)
   const currentAd = activeAds[currentIndex];
 
   return (
-    <div className="my-4 relative">
+    <div className={`my-4 relative ${position === 'sidebar' ? 'max-w-[250px] mx-auto' : ''}`}>
       <a href={currentAd.link} target="_blank" rel="noopener noreferrer" className="block">
         <div className={`relative overflow-hidden w-full ${positionStyles[position]}`}>
           <img

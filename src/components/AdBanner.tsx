@@ -49,7 +49,7 @@ const AdBanner = ({ ad, position = "sidebar" }: AdBannerProps) => {
   }
 
   return (
-    <div>
+    <div className="max-w-[250px] mx-auto">
       <a href={ad?.link || "#"} target="_blank" rel="noopener noreferrer" className="block">
         {ad?.imageUrl ? (
           <div className="w-full aspect-[3/4] overflow-hidden">
