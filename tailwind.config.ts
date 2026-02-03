@@ -20,6 +20,7 @@ export default {
       fontFamily: {
         sans: ['Open Sans', 'system-ui', 'sans-serif'],
         serif: ['Merriweather', 'Georgia', 'serif'],
+        roboto: ['Roboto', 'sans-serif'],
       },
       colors: {
         border: "hsl(var(--border))",

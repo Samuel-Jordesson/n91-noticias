@@ -66,7 +66,7 @@ const AdminLayout = ({ children, title }: AdminLayoutProps) => {
   }, [profile, userName, userInitial]);
 
   return (
-    <div className="flex min-h-screen">
+    <div className="flex min-h-screen font-roboto">
       {/* Mobile Sidebar Overlay */}
       {sidebarOpen && (
         <div 

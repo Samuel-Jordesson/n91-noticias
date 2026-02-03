@@ -78,7 +78,7 @@ const AdminLogin = () => {
   };
 
   return (
-    <div className="min-h-screen bg-muted flex items-center justify-center p-4">
+    <div className="min-h-screen bg-muted flex items-center justify-center p-4 font-roboto">
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="text-center mb-8">
