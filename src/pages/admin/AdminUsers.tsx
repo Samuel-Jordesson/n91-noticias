@@ -447,14 +447,13 @@ const AdminUsers = () => {
                 {socialLinks.map((link, index) => (
                   <div key={index} className="flex gap-2">
                     <Select
-                      value={link.platform}
+                      value={link.platform || undefined}
                       onValueChange={(value) => updateSocialLink(index, 'platform', value)}
                     >
                       <SelectTrigger className="w-[140px]">
                         <SelectValue placeholder="Rede" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="">Selecionar...</SelectItem>
                         {socialPlatforms.map((platform) => (
                           <SelectItem key={platform.value} value={platform.value}>
                             <div className="flex items-center gap-2">
