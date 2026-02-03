@@ -1,6 +1,7 @@
 import { ReactNode, useEffect, useState } from "react";
 import AdminSidebar from "@/components/admin/AdminSidebar";
-import { Bell, Search, Menu, X } from "lucide-react";
+import NotificationDropdown from "@/components/admin/NotificationDropdown";
+import { Search, Menu, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useProfile } from "@/hooks/useAuth";
@@ -113,10 +114,9 @@ const AdminLayout = ({ children, title }: AdminLayoutProps) => {
               />
             </div>
             
-            <Button variant="ghost" size="icon" className="relative hidden sm:flex h-8 w-8 sm:h-9 sm:w-9">
-              <Bell className="h-4 w-4 sm:h-5 sm:w-5" />
-              <span className="absolute top-0.5 right-0.5 sm:top-1 sm:right-1 h-1.5 w-1.5 sm:h-2 sm:w-2 bg-accent rounded-full" />
-            </Button>
+            <div className="hidden sm:block">
+              <NotificationDropdown />
+            </div>
             
             <div className="flex items-center gap-1 sm:gap-2">
               {isLoading ? (
