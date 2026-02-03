@@ -149,9 +149,7 @@
   }
 
   .ad-container {
-    background: hsl(var(--ad-background));
-    border: 1px solid hsl(var(--ad-border));
-    @apply rounded-lg p-2 text-center;
+    /* Container invisível - sem background, border ou padding */
   }
 
   /* TipTap Editor Styles */

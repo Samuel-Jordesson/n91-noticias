@@ -8,7 +8,7 @@ interface AdBannerProps {
 const AdBanner = ({ ad, position = "sidebar" }: AdBannerProps) => {
   if (position === "banner") {
     return (
-      <div className="ad-container my-6">
+      <div className="my-6">
         <a href={ad?.link || "#"} target="_blank" rel="noopener noreferrer">
           {ad?.imageUrl ? (
             <img
@@ -28,7 +28,7 @@ const AdBanner = ({ ad, position = "sidebar" }: AdBannerProps) => {
 
   if (position === "inline") {
     return (
-      <div className="ad-container my-4">
+      <div className="my-4">
         <a href={ad?.link || "#"} target="_blank" rel="noopener noreferrer">
           {ad?.imageUrl ? (
             <img
@@ -47,7 +47,7 @@ const AdBanner = ({ ad, position = "sidebar" }: AdBannerProps) => {
   }
 
   return (
-    <div className="ad-container">
+    <div>
       <a href={ad?.link || "#"} target="_blank" rel="noopener noreferrer">
         {ad?.imageUrl ? (
           <img
