@@ -1,21 +1,38 @@
 import AdminLayout from "@/layouts/AdminLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { FileText, MessageSquare, Eye, TrendingUp } from "lucide-react";
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import { FileText, MessageSquare, Eye, TrendingUp, Calendar } from "lucide-react";
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from "recharts";
 import { useAllPosts } from "@/hooks/usePosts";
 import { useAllComments } from "@/hooks/useComments";
 import { useAllAds } from "@/hooks/useAds";
 import { Skeleton } from "@/components/ui/skeleton";
-import { format } from "date-fns";
+import { format, startOfWeek, endOfWeek, startOfMonth, endOfMonth, startOfYear, endOfYear, subDays, isWithinInterval } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Link } from "react-router-dom";
 import { generateSlug } from "@/lib/utils";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+
+type DateFilterType = 'week' | 'month' | 'year' | 'custom';
 
 const AdminDashboard = () => {
   const { data: allPosts, isLoading: isLoadingPosts } = useAllPosts();
   const { data: allComments, isLoading: isLoadingComments } = useAllComments();
   const { data: allAds, isLoading: isLoadingAds } = useAllAds();
+
+  // Estado para filtros de data
+  const [dateFilter, setDateFilter] = useState<DateFilterType>('week');
+  const [customStartDate, setCustomStartDate] = useState('');
+  const [customEndDate, setCustomEndDate] = useState('');
 
   // Calcular estatísticas
   const totalPosts = allPosts?.length || 0;
@@ -25,46 +42,122 @@ const AdminDashboard = () => {
   const totalAds = allAds?.length || 0;
   const activeAds = allAds?.filter(ad => ad.is_active).length || 0;
 
-  // Calcular visualizações dos últimos 7 dias com memoização
+  // Calcular intervalo de datas baseado no filtro
+  const dateRange = useMemo(() => {
+    const today = new Date();
+    today.setHours(23, 59, 59, 999);
+    
+    switch (dateFilter) {
+      case 'week': {
+        const weekStart = startOfWeek(today, { weekStartsOn: 0 }); // Domingo
+        const weekEnd = endOfWeek(today, { weekStartsOn: 0 });
+        return { start: weekStart, end: weekEnd };
+      }
+      case 'month': {
+        const monthStart = startOfMonth(today);
+        const monthEnd = endOfMonth(today);
+        return { start: monthStart, end: monthEnd };
+      }
+      case 'year': {
+        const yearStart = startOfYear(today);
+        const yearEnd = endOfYear(today);
+        return { start: yearStart, end: yearEnd };
+      }
+      case 'custom': {
+        if (customStartDate && customEndDate) {
+          return {
+            start: new Date(customStartDate),
+            end: new Date(customEndDate + 'T23:59:59'),
+          };
+        }
+        // Fallback para semana se não houver datas customizadas
+        const weekStart = startOfWeek(today, { weekStartsOn: 0 });
+        const weekEnd = endOfWeek(today, { weekStartsOn: 0 });
+        return { start: weekStart, end: weekEnd };
+      }
+      default:
+        const weekStart = startOfWeek(today, { weekStartsOn: 0 });
+        const weekEnd = endOfWeek(today, { weekStartsOn: 0 });
+        return { start: weekStart, end: weekEnd };
+    }
+  }, [dateFilter, customStartDate, customEndDate]);
+
+  // Calcular dados do gráfico de visualizações
   const chartData = useMemo(() => {
     if (!allPosts || allPosts.length === 0) {
-      // Retornar dados vazios se não houver posts
-      const days = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
-      return days.map(day => ({ name: day, views: 0 }));
+      return [];
     }
+
+    const { start, end } = dateRange;
+    const days: { date: Date; name: string; views: number; posts: number }[] = [];
     
-    const days = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const last7Days = [];
+    // Criar array de dias no intervalo
+    let currentDate = new Date(start);
+    currentDate.setHours(0, 0, 0, 0);
     
-    // Calcular os últimos 7 dias em ordem cronológica
-    for (let i = 6; i >= 0; i--) {
-      const date = new Date(today);
-      date.setDate(date.getDate() - i);
-      const dayStart = new Date(date);
-      dayStart.setHours(0, 0, 0, 0);
-      const dayEnd = new Date(date);
+    while (currentDate <= end) {
+      const dayEnd = new Date(currentDate);
       dayEnd.setHours(23, 59, 59, 999);
       
-      // Somar views de posts publicados nesse dia específico
-      const dayViews = allPosts
-        .filter(post => {
-          if (!post.is_published || !post.published_at) return false;
-          const postDate = new Date(post.published_at);
-          postDate.setHours(0, 0, 0, 0);
-          return postDate.getTime() === dayStart.getTime();
-        })
-        .reduce((sum, post) => sum + (post.views || 0), 0);
-      
-      last7Days.push({
-        name: days[date.getDay()],
-        views: dayViews,
+      // Filtrar posts publicados neste dia e somar visualizações
+      const dayPosts = allPosts.filter(post => {
+        if (!post.is_published || !post.published_at) return false;
+        const postDate = new Date(post.published_at);
+        return postDate >= currentDate && postDate <= dayEnd;
       });
+      
+      const dayViews = dayPosts.reduce((sum, post) => sum + (post.views || 0), 0);
+      
+      days.push({
+        date: new Date(currentDate),
+        name: format(currentDate, 'dd/MM', { locale: ptBR }),
+        views: dayViews,
+        posts: dayPosts.length,
+      });
+      
+      currentDate.setDate(currentDate.getDate() + 1);
     }
     
-    return last7Days;
-  }, [allPosts]);
+    return days;
+  }, [allPosts, dateRange]);
+
+  // Calcular dados do gráfico de posts
+  const postsChartData = useMemo(() => {
+    if (!allPosts || allPosts.length === 0) {
+      return [];
+    }
+
+    const { start, end } = dateRange;
+    const days: { date: Date; name: string; published: number; drafts: number }[] = [];
+    
+    let currentDate = new Date(start);
+    currentDate.setHours(0, 0, 0, 0);
+    
+    while (currentDate <= end) {
+      const dayEnd = new Date(currentDate);
+      dayEnd.setHours(23, 59, 59, 999);
+      
+      const dayPosts = allPosts.filter(post => {
+        if (!post.created_at) return false;
+        const postDate = new Date(post.created_at);
+        return postDate >= currentDate && postDate <= dayEnd;
+      });
+      
+      const published = dayPosts.filter(p => p.is_published).length;
+      const drafts = dayPosts.filter(p => !p.is_published).length;
+      
+      days.push({
+        date: new Date(currentDate),
+        name: format(currentDate, 'dd/MM', { locale: ptBR }),
+        published,
+        drafts,
+      });
+      
+      currentDate.setDate(currentDate.getDate() + 1);
+    }
+    
+    return days;
+  }, [allPosts, dateRange]);
 
   // Posts recentes (últimos 5)
   const recentPosts = allPosts?.slice(0, 5) || [];
@@ -193,40 +286,118 @@ const AdminDashboard = () => {
           {/* Chart Card */}
           <Card className="w-full lg:col-span-2 overflow-hidden">
             <CardHeader className="pb-2 p-3 sm:p-4 md:p-6">
-              <CardTitle className="text-sm sm:text-base md:text-lg">Visualizações por Dia</CardTitle>
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                <CardTitle className="text-sm sm:text-base md:text-lg">Visualizações por Dia</CardTitle>
+                <div className="flex flex-col sm:flex-row gap-2">
+                  <Select value={dateFilter} onValueChange={(value) => setDateFilter(value as DateFilterType)}>
+                    <SelectTrigger className="w-full sm:w-[140px]">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="week">Semana Atual</SelectItem>
+                      <SelectItem value="month">Mês Atual</SelectItem>
+                      <SelectItem value="year">Ano Atual</SelectItem>
+                      <SelectItem value="custom">Período Customizado</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  {dateFilter === 'custom' && (
+                    <div className="flex gap-2">
+                      <div className="flex-1">
+                        <Input
+                          type="date"
+                          value={customStartDate}
+                          onChange={(e) => setCustomStartDate(e.target.value)}
+                          placeholder="Data inicial"
+                          className="text-xs"
+                        />
+                      </div>
+                      <div className="flex-1">
+                        <Input
+                          type="date"
+                          value={customEndDate}
+                          onChange={(e) => setCustomEndDate(e.target.value)}
+                          placeholder="Data final"
+                          className="text-xs"
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
             </CardHeader>
             <CardContent className="p-3 sm:p-4 md:p-6 pt-0">
-              <div className="h-[180px] sm:h-[220px] md:h-[280px] lg:h-[320px] w-full">
-                <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={chartData} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--muted))" />
-                    <XAxis 
-                      dataKey="name" 
-                      tick={{ fontSize: 10 }}
-                      interval="preserveStartEnd"
-                    />
-                    <YAxis 
-                      tick={{ fontSize: 10 }}
-                      width={35}
-                    />
-                    <Tooltip />
-                    <Area
-                      type="monotone"
-                      dataKey="views"
-                      stroke="hsl(var(--primary))"
-                      fill="hsl(var(--primary) / 0.2)"
-                    />
-                  </AreaChart>
-                </ResponsiveContainer>
-              </div>
+              {chartData.length === 0 ? (
+                <div className="h-[180px] sm:h-[220px] md:h-[280px] lg:h-[320px] flex items-center justify-center text-muted-foreground">
+                  <p className="text-sm">Nenhum dado disponível para o período selecionado</p>
+                </div>
+              ) : (
+                <div className="h-[180px] sm:h-[220px] md:h-[280px] lg:h-[320px] w-full">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart data={chartData} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--muted))" />
+                      <XAxis 
+                        dataKey="name" 
+                        tick={{ fontSize: 10 }}
+                        interval={chartData.length > 14 ? 1 : 0}
+                      />
+                      <YAxis 
+                        tick={{ fontSize: 10 }}
+                        width={35}
+                      />
+                      <Tooltip />
+                      <Area
+                        type="monotone"
+                        dataKey="views"
+                        stroke="hsl(var(--primary))"
+                        fill="hsl(var(--primary) / 0.2)"
+                      />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </div>
+              )}
             </CardContent>
           </Card>
 
-          {/* Recent Activity */}
+          {/* Posts Chart */}
           <Card className="w-full overflow-hidden">
             <CardHeader className="pb-2 p-3 sm:p-4 md:p-6">
-              <CardTitle className="text-sm sm:text-base md:text-lg">Atividade Recente</CardTitle>
+              <CardTitle className="text-sm sm:text-base md:text-lg">Posts por Dia</CardTitle>
             </CardHeader>
+            <CardContent className="p-3 sm:p-4 md:p-6 pt-0">
+              {postsChartData.length === 0 ? (
+                <div className="h-[180px] sm:h-[220px] md:h-[280px] lg:h-[320px] flex items-center justify-center text-muted-foreground">
+                  <p className="text-sm">Nenhum dado disponível</p>
+                </div>
+              ) : (
+                <div className="h-[180px] sm:h-[220px] md:h-[280px] lg:h-[320px] w-full">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={postsChartData} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--muted))" />
+                      <XAxis 
+                        dataKey="name" 
+                        tick={{ fontSize: 10 }}
+                        interval={postsChartData.length > 14 ? 1 : 0}
+                      />
+                      <YAxis 
+                        tick={{ fontSize: 10 }}
+                        width={35}
+                      />
+                      <Tooltip />
+                      <Bar dataKey="published" fill="hsl(var(--primary))" name="Publicados" />
+                      <Bar dataKey="drafts" fill="hsl(var(--muted-foreground) / 0.5)" name="Rascunhos" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Recent Activity */}
+        <Card className="w-full overflow-hidden">
+          <CardHeader className="pb-2 p-3 sm:p-4 md:p-6">
+            <CardTitle className="text-sm sm:text-base md:text-lg">Atividade Recente</CardTitle>
+          </CardHeader>
             <CardContent className="p-3 sm:p-4 md:p-6 pt-0">
             <div className="space-y-2 sm:space-y-3 md:space-y-4">
               {recentPosts.length === 0 ? (
