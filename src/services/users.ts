@@ -46,20 +46,32 @@ export const createUser = async (email: string, password: string, name: string, 
   // Mas se não estiver, vamos tentar confirmar manualmente (requer service_role)
   // Por enquanto, vamos apenas aguardar e continuar
 
-  // Aguardar um pouco para garantir que o trigger de criação de perfil tenha executado
-  await new Promise(resolve => setTimeout(resolve, 500));
-
-  // Verificar se o perfil já foi criado pelo trigger
-  const { data: existingProfile } = await supabase
-    .from('profiles')
-    .select('*')
-    .eq('id', authData.user.id)
-    .single();
+  // Aguardar e tentar várias vezes para garantir que o trigger de criação de perfil tenha executado
+  let existingProfile = null;
+  let attempts = 0;
+  const maxAttempts = 5;
+  
+  while (attempts < maxAttempts && !existingProfile) {
+    await new Promise(resolve => setTimeout(resolve, 1000)); // Aguardar 1 segundo entre tentativas
+    
+    const { data: profile, error: profileError } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', authData.user.id)
+      .single();
+    
+    if (profile && !profileError) {
+      existingProfile = profile;
+      break;
+    }
+    
+    attempts++;
+  }
 
   let profileData;
   
   if (existingProfile) {
-    // Se o perfil já existe (criado pelo trigger), apenas atualizar o role
+    // Se o perfil já existe (criado pelo trigger), atualizar o role, name e email
     const { data: updatedProfile, error: updateError } = await supabase
       .from('profiles')
       .update({ role, name, email })
@@ -67,10 +79,23 @@ export const createUser = async (email: string, password: string, name: string, 
       .select()
       .single();
 
-    if (updateError) throw updateError;
-    profileData = updatedProfile;
+    if (updateError) {
+      // Se não conseguir atualizar, tentar novamente após um tempo
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      const { data: retryProfile, error: retryError } = await supabase
+        .from('profiles')
+        .update({ role, name, email })
+        .eq('id', authData.user.id)
+        .select()
+        .single();
+      
+      if (retryError) throw retryError;
+      profileData = retryProfile;
+    } else {
+      profileData = updatedProfile;
+    }
   } else {
-    // Se o perfil não existe, criar manualmente
+    // Se o perfil não existe após várias tentativas, criar manualmente
     const { data: newProfile, error: profileError } = await supabase
       .from('profiles')
       .insert({
@@ -83,13 +108,39 @@ export const createUser = async (email: string, password: string, name: string, 
       .single();
 
     if (profileError) {
-      // Se der erro ao criar perfil, informar sobre RLS
-      if (profileError.message?.includes('row-level security') || profileError.message?.includes('RLS')) {
-        throw new Error('Erro de permissão: Verifique se as políticas RLS estão configuradas corretamente para admins criarem perfis.');
+      // Se der erro ao criar perfil, informar sobre RLS e o problema
+      if (profileError.message?.includes('row-level security') || profileError.message?.includes('RLS') || profileError.code === '42501') {
+        throw new Error('Erro de permissão: Verifique se as políticas RLS estão configuradas corretamente para admins/devs criarem perfis. Execute o script fix_profiles_policies.sql no Supabase.');
       }
-      throw profileError;
+      // Se o erro for de duplicação, tentar buscar o perfil novamente
+      if (profileError.code === '23505') {
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        const { data: retryProfile } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', authData.user.id)
+          .single();
+        
+        if (retryProfile) {
+          // Atualizar o perfil existente
+          const { data: updatedProfile, error: updateError } = await supabase
+            .from('profiles')
+            .update({ role, name, email })
+            .eq('id', authData.user.id)
+            .select()
+            .single();
+          
+          if (updateError) throw updateError;
+          profileData = updatedProfile;
+        } else {
+          throw profileError;
+        }
+      } else {
+        throw profileError;
+      }
+    } else {
+      profileData = newProfile;
     }
-    profileData = newProfile;
   }
 
   return profileData as Profile;
