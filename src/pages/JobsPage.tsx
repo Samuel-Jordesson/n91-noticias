@@ -15,9 +15,9 @@ const JobsPage = () => {
   return (
     <>
       <SEO
-        title="Empregos | N91 - Portal de Notícias"
+        title="Empregos | Portal Barcarena - Últimas notícias de Barcarena"
         description="Encontre as melhores oportunidades de emprego. Vagas atualizadas diariamente em diversas áreas e localidades."
-        keywords="empregos, vagas, oportunidades, trabalho, carreira, N91"
+        keywords="empregos, vagas, oportunidades, trabalho, carreira, Barcarena"
         type="website"
       />
       <MainLayout>

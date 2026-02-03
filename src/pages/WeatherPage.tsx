@@ -101,7 +101,7 @@ const WeatherPage = () => {
   return (
     <>
       <SEO
-        title="Previsão do Tempo | N91 - Clima e Meteorologia"
+        title="Previsão do Tempo | Portal Barcarena - Clima e Meteorologia"
         description="Previsão do tempo atualizada para cidades do Brasil. Temperatura, umidade, vento e previsão para os próximos 7 dias. Clima em tempo real."
         keywords="previsão do tempo, clima, meteorologia, temperatura, chuva, brasil, belém, barcarena, manaus, previsão climática"
         type="website"

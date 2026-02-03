@@ -98,8 +98,8 @@ const Index = () => {
   return (
     <>
       <SEO
-        title="N91 - Portal de Notícias | Notícias do Brasil 24h"
-        description="N91 - O portal de notícias mais completo do Brasil. Notícias atualizadas 24 horas sobre economia, política, esportes, tecnologia, ciência, cultura e muito mais. Informação confiável e em tempo real."
+        title="Portal Barcarena - Últimas notícias de Barcarena"
+        description="Portal Barcarena - Últimas notícias de Barcarena. Informação de qualidade, atualizada 24 horas sobre política, economia, esportes, tecnologia, ciência, cultura e muito mais."
         keywords="notícias, brasil, economia, política, esportes, tecnologia, ciência, cultura, educação, saúde, internacional, notícias 24h, jornalismo brasileiro"
         type="website"
       />

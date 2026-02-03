@@ -166,7 +166,7 @@ const ArticlePage = () => {
   return (
     <>
       <SEO
-        title={`${article.title} | N91`}
+        title={`${article.title} | Portal Barcarena`}
         description={article.excerpt || article.title}
         image={articleImage}
         type="article"
@@ -200,13 +200,13 @@ const ArticlePage = () => {
                 "@type": "ListItem",
                 position: 1,
                 name: "Início",
-                item: typeof window !== "undefined" ? window.location.origin : "https://n91.com.br",
+                item: typeof window !== "undefined" ? window.location.origin : "https://portalbarcarena.com.br",
               },
               {
                 "@type": "ListItem",
                 position: 2,
                 name: article.category,
-                item: `${typeof window !== "undefined" ? window.location.origin : "https://n91.com.br"}/categoria/${normalizeSlug(article.category)}`,
+                item: `${typeof window !== "undefined" ? window.location.origin : "https://portalbarcarena.com.br"}/categoria/${normalizeSlug(article.category)}`,
               },
               {
                 "@type": "ListItem",

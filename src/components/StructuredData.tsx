@@ -28,14 +28,14 @@ const StructuredData = ({
   modifiedTime,
   author,
   publisher = {
-    name: "N91",
-    logo: typeof window !== "undefined" ? `${window.location.origin}/logo.png` : "https://n91.com.br/logo.png",
+    name: "Portal Barcarena",
+    logo: typeof window !== "undefined" ? `${window.location.origin}/logo.png` : "https://portalbarcarena.com.br/logo.png",
   },
   category,
   keywords,
 }: StructuredDataProps) => {
   const location = useLocation();
-  const siteUrl = typeof window !== "undefined" ? window.location.origin : "https://n91.com.br";
+  const siteUrl = typeof window !== "undefined" ? window.location.origin : "https://portalbarcarena.com.br";
   const currentUrl = `${siteUrl}${location.pathname}`;
   const fullImageUrl = image?.startsWith("http") ? image : image ? `${siteUrl}${image}` : undefined;
 
@@ -106,7 +106,7 @@ const StructuredData = ({
         "@id": currentUrl,
       };
     } else if (type === "WebSite") {
-      baseData.name = title || "N91 - Portal de Notícias";
+      baseData.name = title || "Portal Barcarena - Últimas notícias de Barcarena";
       baseData.url = siteUrl;
       baseData.description = description;
       baseData.inLanguage = "pt-BR";

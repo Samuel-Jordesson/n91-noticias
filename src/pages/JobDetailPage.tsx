@@ -27,7 +27,7 @@ const JobDetailPage = () => {
   // Funções de compartilhamento
   const jobUrl = typeof window !== "undefined" 
     ? `${window.location.origin}/empregos/${slug}` 
-    : `https://n91.com.br/empregos/${slug}`;
+    : `https://portalbarcarena.com.br/empregos/${slug}`;
 
   const handleShare = async () => {
     try {
@@ -92,7 +92,7 @@ const JobDetailPage = () => {
   return (
     <>
       <SEO
-        title={`${job.title} - ${job.company_name} | N91 - Empregos`}
+        title={`${job.title} - ${job.company_name} | Portal Barcarena - Empregos`}
         description={job.description.replace(/<[^>]*>/g, '').substring(0, 160)}
         keywords={`${job.title}, ${job.company_name}, emprego, vaga, ${job.location || ''}`}
         type="article"

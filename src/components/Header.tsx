@@ -90,7 +90,7 @@ const Header = () => {
           <Link to="/" className="absolute left-1/2 -translate-x-1/2 flex items-center py-2">
             <img 
               src={logoUrl || "/imagens/Logo.png"} 
-              alt="N91" 
+              alt="Portal Barcarena" 
               className="h-12 md:h-16 w-auto object-contain"
             />
           </Link>

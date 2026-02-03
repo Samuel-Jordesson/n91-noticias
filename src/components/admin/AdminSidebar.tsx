@@ -101,7 +101,7 @@ const AdminSidebar = ({ onClose, collapsed = false, onToggleCollapse }: AdminSid
           <Link to="/" className="inline-block" onClick={handleLinkClick}>
             <img 
               src={logoUrl || "/imagens/Logo.png"} 
-              alt="N91" 
+              alt="Portal Barcarena" 
               className={`object-contain ${
                 collapsed ? "h-8 w-auto mx-auto" : "h-10 w-auto"
               }`}

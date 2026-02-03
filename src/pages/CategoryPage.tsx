@@ -71,12 +71,12 @@ const CategoryPage = () => {
   const sidebarAdsConverted = convertAds(sidebarAds || []);
 
   const categoryName = currentCategory?.name || category || "Categoria";
-  const categoryDescription = `Notícias sobre ${categoryName} no N91. Acompanhe as últimas novidades e informações sobre ${categoryName.toLowerCase()}.`;
+  const categoryDescription = `Notícias sobre ${categoryName} em Barcarena. Acompanhe as últimas novidades e informações sobre ${categoryName.toLowerCase()}.`;
 
   return (
     <>
       <SEO
-        title={`${categoryName} | N91 - Portal de Notícias`}
+        title={`${categoryName} | Portal Barcarena - Últimas notícias de Barcarena`}
         description={categoryDescription}
         keywords={`${categoryName}, notícias, brasil, ${categoryName.toLowerCase()}`}
         type="website"

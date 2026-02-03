@@ -15,8 +15,8 @@ interface SEOProps {
 }
 
 const SEO = ({
-  title = "N91 - Portal de Notícias",
-  description = "N91 - O portal de notícias mais completo do Brasil. Notícias atualizadas 24 horas sobre economia, política, esportes, tecnologia e muito mais.",
+  title = "Portal Barcarena - Últimas notícias de Barcarena",
+  description = "Portal Barcarena - Últimas notícias de Barcarena. Informação de qualidade, atualizada 24 horas sobre política, economia, esportes, tecnologia e muito mais.",
   image = "/og-image.jpg",
   type = "website",
   publishedTime,
@@ -27,7 +27,7 @@ const SEO = ({
   canonicalUrl,
 }: SEOProps) => {
   const location = useLocation();
-  const siteUrl = typeof window !== "undefined" ? window.location.origin : "https://n91.com.br";
+  const siteUrl = typeof window !== "undefined" ? window.location.origin : "https://portalbarcarena.com.br";
   const currentUrl = canonicalUrl || `${siteUrl}${location.pathname}`;
   const fullImageUrl = image.startsWith("http") ? image : `${siteUrl}${image}`;
 
@@ -38,7 +38,7 @@ const SEO = ({
     // Meta tags básicas
     updateMetaTag("name", "description", description);
     updateMetaTag("name", "keywords", keywords);
-    updateMetaTag("name", "author", "N91");
+    updateMetaTag("name", "author", "Portal Barcarena");
     updateMetaTag("name", "robots", "index, follow");
     updateMetaTag("name", "googlebot", "index, follow");
     updateMetaTag("name", "news_keywords", keywords);
@@ -49,7 +49,7 @@ const SEO = ({
     updateMetaTag("property", "og:type", type);
     updateMetaTag("property", "og:url", currentUrl);
     updateMetaTag("property", "og:image", fullImageUrl);
-    updateMetaTag("property", "og:site_name", "N91");
+    updateMetaTag("property", "og:site_name", "Portal Barcarena");
     updateMetaTag("property", "og:locale", "pt_BR");
 
     // Twitter Card

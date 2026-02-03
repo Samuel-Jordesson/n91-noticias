@@ -62,7 +62,7 @@ const SportsPage = () => {
   return (
     <>
       <SEO
-        title="Esportes | N91 - Portal de Notícias"
+        title="Esportes | Portal Barcarena - Últimas notícias de Barcarena"
         description="Acompanhe as últimas notícias de esportes no Brasil e no mundo. Futebol, basquete, vôlei, tênis e muito mais. Notícias esportivas atualizadas 24 horas."
         keywords="esportes, futebol, basquete, vôlei, tênis, notícias esportivas, brasil, copa do mundo, campeonato brasileiro"
         type="website"

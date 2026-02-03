@@ -132,13 +132,13 @@ const AdminSettings = () => {
 
               <div className="space-y-2">
                 <Label htmlFor="siteName">Nome do Site</Label>
-                <Input id="siteName" defaultValue="N91" />
+                <Input id="siteName" defaultValue="Portal Barcarena" />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="siteDescription">Descrição</Label>
                 <Textarea
                   id="siteDescription"
-                  defaultValue="O portal de notícias mais completo do Brasil"
+                  defaultValue="Últimas notícias de Barcarena"
                   rows={3}
                 />
               </div>
@@ -147,7 +147,7 @@ const AdminSettings = () => {
                 <Input
                   id="contactEmail"
                   type="email"
-                  defaultValue="contato@n91.com"
+                  defaultValue="contato@portalbarcarena.com.br"
                 />
               </div>
               <Button type="submit">Salvar Alterações</Button>
@@ -217,7 +217,7 @@ const AdminSettings = () => {
                 <Label htmlFor="metaTitle">Título Meta</Label>
                 <Input
                   id="metaTitle"
-                  defaultValue="N91 - Portal de Notícias"
+                  defaultValue="Portal Barcarena - Últimas notícias de Barcarena"
                   maxLength={60}
                 />
                 <p className="text-xs text-muted-foreground">

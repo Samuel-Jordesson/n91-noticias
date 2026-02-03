@@ -83,7 +83,7 @@ const AdminLogin = () => {
         {/* Logo */}
         <div className="text-center mb-8">
           <Link to="/">
-            <h1 className="text-4xl font-roboto font-black text-primary">N91</h1>
+            <h1 className="text-4xl font-roboto font-black text-primary">Portal Barcarena</h1>
           </Link>
           <p className="text-muted-foreground mt-2">Área Administrativa</p>
         </div>

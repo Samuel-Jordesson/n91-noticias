@@ -10,10 +10,10 @@ const Footer = () => {
           {/* Logo and description */}
           <div className="lg:col-span-2">
             <Link to="/" className="inline-block">
-              <h2 className="text-3xl font-serif font-black mb-4">N91</h2>
+              <h2 className="text-3xl font-serif font-black mb-4">Portal Barcarena</h2>
             </Link>
             <p className="text-primary-foreground/80 max-w-md">
-              O portal de notícias mais completo do Brasil. Informação de qualidade, 
+              Últimas notícias de Barcarena. Informação de qualidade, 
               24 horas por dia, 7 dias por semana.
             </p>
           </div>
@@ -64,7 +64,7 @@ const Footer = () => {
         </div>
 
         <div className="border-t border-primary-foreground/20 mt-8 pt-8 text-center text-primary-foreground/60 text-sm">
-          <p>© {new Date().getFullYear()} N91. Todos os direitos reservados.</p>
+          <p>© {new Date().getFullYear()} Portal Barcarena. Todos os direitos reservados.</p>
         </div>
       </div>
     </footer>
