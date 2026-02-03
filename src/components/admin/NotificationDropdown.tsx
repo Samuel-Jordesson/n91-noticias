@@ -1,12 +1,19 @@
-import { Bell, Clock, User } from "lucide-react";
+import { useState } from "react";
+import { Bell, Clock, User, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { useUnreadNotifications, useUnreadCount, useMarkAsRead } from "@/hooks/useNotifications";
-import { formatDistanceToNow } from "date-fns";
+import { formatDistanceToNow, format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -16,9 +23,21 @@ const NotificationDropdown = () => {
   const { data: unreadNotifications, isLoading } = useUnreadNotifications();
   const { data: unreadCount = 0 } = useUnreadCount();
   const markAsReadMutation = useMarkAsRead();
+  const [selectedNotification, setSelectedNotification] = useState<any>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const handleNotificationClick = (notificationId: string) => {
-    markAsReadMutation.mutate(notificationId);
+  const handleNotificationClick = (notification: any) => {
+    setSelectedNotification(notification);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    if (selectedNotification) {
+      // Marcar como lida quando fechar o modal
+      markAsReadMutation.mutate(selectedNotification.id);
+    }
+    setIsModalOpen(false);
+    setSelectedNotification(null);
   };
 
   return (
@@ -77,7 +96,7 @@ const NotificationDropdown = () => {
                 <div
                   key={notification.id}
                   className="group relative p-4 rounded-lg border bg-card hover:bg-muted/50 cursor-pointer transition-all duration-200 hover:shadow-md"
-                  onClick={() => handleNotificationClick(notification.id)}
+                  onClick={() => handleNotificationClick(notification)}
                 >
                   {/* Indicador de não lida */}
                   <div className="absolute left-2 top-1/2 -translate-y-1/2 h-2 w-2 bg-primary rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -140,6 +159,56 @@ const NotificationDropdown = () => {
           )}
         </ScrollArea>
       </DropdownMenuContent>
+
+      {/* Modal de Notificação */}
+      <Dialog open={isModalOpen} onOpenChange={handleCloseModal}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto font-roboto">
+          {selectedNotification && (
+            <>
+              <DialogHeader>
+                <DialogTitle className="text-xl font-roboto">
+                  {selectedNotification.title}
+                </DialogTitle>
+              </DialogHeader>
+              
+              <div className="space-y-4">
+                {selectedNotification.image_url && (
+                  <div className="overflow-hidden rounded-lg">
+                    <img
+                      src={selectedNotification.image_url}
+                      alt={selectedNotification.title}
+                      className="w-full h-auto max-h-96 object-cover"
+                    />
+                  </div>
+                )}
+                
+                <div className="prose prose-sm max-w-none">
+                  <p className="text-sm text-foreground leading-relaxed whitespace-pre-wrap font-roboto">
+                    {selectedNotification.content}
+                  </p>
+                </div>
+                
+                <div className="flex items-center gap-4 pt-4 border-t text-xs text-muted-foreground">
+                  <div className="flex items-center gap-1.5">
+                    <Clock className="h-4 w-4" />
+                    <span className="font-roboto">
+                      {format(new Date(selectedNotification.created_at), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}
+                    </span>
+                  </div>
+                  {selectedNotification.created_by_profile && (
+                    <div className="flex items-center gap-1.5">
+                      <User className="h-4 w-4" />
+                      <span className="font-roboto">
+                        Por {selectedNotification.created_by_profile.name}
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
     </DropdownMenu>
   );
 };
