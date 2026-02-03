@@ -1,8 +1,8 @@
 import AdminLayout from "@/layouts/AdminLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FileText, MessageSquare, Eye, TrendingUp, Calendar } from "lucide-react";
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from "recharts";
-import { useAllPosts } from "@/hooks/usePosts";
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import { useAllPosts, useMostViewedPosts } from "@/hooks/usePosts";
 import { useAllComments } from "@/hooks/useComments";
 import { useAllAds } from "@/hooks/useAds";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -28,6 +28,7 @@ const AdminDashboard = () => {
   const { data: allPosts, isLoading: isLoadingPosts } = useAllPosts();
   const { data: allComments, isLoading: isLoadingComments } = useAllComments();
   const { data: allAds, isLoading: isLoadingAds } = useAllAds();
+  const { data: mostViewedPosts, isLoading: isLoadingMostViewed } = useMostViewedPosts(5);
 
   // Estado para filtros de data
   const [dateFilter, setDateFilter] = useState<DateFilterType>('week');
@@ -121,43 +122,6 @@ const AdminDashboard = () => {
     return days;
   }, [allPosts, dateRange]);
 
-  // Calcular dados do gráfico de posts
-  const postsChartData = useMemo(() => {
-    if (!allPosts || allPosts.length === 0) {
-      return [];
-    }
-
-    const { start, end } = dateRange;
-    const days: { date: Date; name: string; published: number; drafts: number }[] = [];
-    
-    let currentDate = new Date(start);
-    currentDate.setHours(0, 0, 0, 0);
-    
-    while (currentDate <= end) {
-      const dayEnd = new Date(currentDate);
-      dayEnd.setHours(23, 59, 59, 999);
-      
-      const dayPosts = allPosts.filter(post => {
-        if (!post.created_at) return false;
-        const postDate = new Date(post.created_at);
-        return postDate >= currentDate && postDate <= dayEnd;
-      });
-      
-      const published = dayPosts.filter(p => p.is_published).length;
-      const drafts = dayPosts.filter(p => !p.is_published).length;
-      
-      days.push({
-        date: new Date(currentDate),
-        name: format(currentDate, 'dd/MM', { locale: ptBR }),
-        published,
-        drafts,
-      });
-      
-      currentDate.setDate(currentDate.getDate() + 1);
-    }
-    
-    return days;
-  }, [allPosts, dateRange]);
 
   // Posts recentes (últimos 5)
   const recentPosts = allPosts?.slice(0, 5) || [];
@@ -358,35 +322,54 @@ const AdminDashboard = () => {
             </CardContent>
           </Card>
 
-          {/* Posts Chart */}
+          {/* Posts Mais Vistos */}
           <Card className="w-full overflow-hidden">
             <CardHeader className="pb-2 p-3 sm:p-4 md:p-6">
-              <CardTitle className="text-sm sm:text-base md:text-lg">Posts por Dia</CardTitle>
+              <CardTitle className="text-sm sm:text-base md:text-lg">Posts Mais Vistos</CardTitle>
             </CardHeader>
             <CardContent className="p-3 sm:p-4 md:p-6 pt-0">
-              {postsChartData.length === 0 ? (
-                <div className="h-[180px] sm:h-[220px] md:h-[280px] lg:h-[320px] flex items-center justify-center text-muted-foreground">
-                  <p className="text-sm">Nenhum dado disponível</p>
+              {isLoadingMostViewed ? (
+                <div className="space-y-3">
+                  {[...Array(5)].map((_, i) => (
+                    <Skeleton key={i} className="h-16 w-full" />
+                  ))}
+                </div>
+              ) : mostViewedPosts && mostViewedPosts.length > 0 ? (
+                <div className="space-y-2 sm:space-y-3">
+                  {mostViewedPosts.map((post, index) => (
+                    <Link
+                      key={post.id}
+                      to={`/noticia/${generateSlug(post.title)}`}
+                      className="flex items-start gap-2 sm:gap-3 hover:bg-muted/50 p-2 rounded-lg transition-colors group"
+                    >
+                      <div className="flex-shrink-0 w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-xs sm:text-sm">
+                        {index + 1}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs sm:text-sm font-medium line-clamp-2 group-hover:text-primary transition-colors">
+                          {post.title}
+                        </p>
+                        <div className="flex items-center gap-2 mt-1 flex-wrap">
+                          <span className="text-[10px] sm:text-xs text-muted-foreground flex items-center gap-1">
+                            <Eye className="h-3 w-3" />
+                            {(post.views || 0).toLocaleString("pt-BR")}
+                          </span>
+                          {post.categories?.name && (
+                            <>
+                              <span className="text-[10px] text-muted-foreground">•</span>
+                              <span className="news-category-badge text-[10px]">
+                                {post.categories.name}
+                              </span>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    </Link>
+                  ))}
                 </div>
               ) : (
-                <div className="h-[180px] sm:h-[220px] md:h-[280px] lg:h-[320px] w-full">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={postsChartData} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--muted))" />
-                      <XAxis 
-                        dataKey="name" 
-                        tick={{ fontSize: 10 }}
-                        interval={postsChartData.length > 14 ? 1 : 0}
-                      />
-                      <YAxis 
-                        tick={{ fontSize: 10 }}
-                        width={35}
-                      />
-                      <Tooltip />
-                      <Bar dataKey="published" fill="hsl(var(--primary))" name="Publicados" />
-                      <Bar dataKey="drafts" fill="hsl(var(--muted-foreground) / 0.5)" name="Rascunhos" />
-                    </BarChart>
-                  </ResponsiveContainer>
+                <div className="h-[180px] sm:h-[220px] md:h-[280px] lg:h-[320px] flex items-center justify-center text-muted-foreground">
+                  <p className="text-sm">Nenhum post visualizado ainda</p>
                 </div>
               )}
             </CardContent>
