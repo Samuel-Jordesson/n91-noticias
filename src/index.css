@@ -280,6 +280,18 @@
   .admin-sidebar-link.active {
     @apply bg-white/20;
   }
+
+  /* Aplicar Roboto em todo o admin */
+  .font-roboto,
+  .font-roboto *,
+  .font-roboto h1,
+  .font-roboto h2,
+  .font-roboto h3,
+  .font-roboto h4,
+  .font-roboto h5,
+  .font-roboto h6 {
+    font-family: 'Roboto', sans-serif !important;
+  }
 }
 
 @layer utilities {
