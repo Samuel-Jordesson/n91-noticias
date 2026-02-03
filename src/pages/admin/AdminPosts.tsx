@@ -15,7 +15,7 @@ import { Plus, Pencil, Trash2, Search, Star } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { usePosts, useUpdatePost, useDeletePost } from "@/hooks/usePosts";
+import { useAllPosts, useUpdatePost, useDeletePost } from "@/hooks/usePosts";
 import { useCategories } from "@/hooks/useCategories";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -24,7 +24,7 @@ const AdminPosts = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterCategory, setFilterCategory] = useState("all");
 
-  const { data: posts, isLoading: isLoadingPosts } = usePosts();
+  const { data: posts, isLoading: isLoadingPosts } = useAllPosts();
   const { data: categories } = useCategories();
   const updatePostMutation = useUpdatePost();
   const deletePostMutation = useDeletePost();

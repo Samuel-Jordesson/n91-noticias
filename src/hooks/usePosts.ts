@@ -113,8 +113,14 @@ export const useDeletePost = () => {
   return useMutation({
     mutationFn: deletePost,
     onSuccess: () => {
+      // Invalidar todas as queries relacionadas a posts
       queryClient.invalidateQueries({ queryKey: ["posts"] });
       queryClient.invalidateQueries({ queryKey: ["posts", "all"] });
+      queryClient.invalidateQueries({ queryKey: ["posts", "featured"] });
+      queryClient.invalidateQueries({ queryKey: ["posts", "most-viewed"] });
+      queryClient.invalidateQueries({ queryKey: ["posts", "category"] });
+      // Invalidar também queries individuais de posts
+      queryClient.invalidateQueries({ queryKey: ["post"] });
     },
   });
 };
