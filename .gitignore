@@ -31,3 +31,6 @@ dist-ssr
 
 # aqui não vai a pasta MD
 MD
+
+# Arquivos HTML temporários
+siii.html
