@@ -100,7 +100,7 @@ const AdminLayout = ({ children, title }: AdminLayoutProps) => {
             >
               {sidebarOpen ? <X className="h-4 w-4 sm:h-5 sm:w-5" /> : <Menu className="h-4 w-4 sm:h-5 sm:w-5" />}
             </Button>
-            <h1 className="text-base sm:text-lg md:text-xl font-serif font-bold truncate min-w-0">{title}</h1>
+            <h1 className="text-base sm:text-lg md:text-xl font-roboto font-bold truncate min-w-0">{title}</h1>
           </div>
           
           <div className="flex items-center gap-1 sm:gap-2 md:gap-4 flex-shrink-0">

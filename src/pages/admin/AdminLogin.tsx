@@ -83,14 +83,14 @@ const AdminLogin = () => {
         {/* Logo */}
         <div className="text-center mb-8">
           <Link to="/">
-            <h1 className="text-4xl font-serif font-black text-primary">N91</h1>
+            <h1 className="text-4xl font-roboto font-black text-primary">N91</h1>
           </Link>
           <p className="text-muted-foreground mt-2">Área Administrativa</p>
         </div>
 
         {/* Login Card */}
         <div className="bg-card rounded-lg border border-border p-8 shadow-lg">
-          <h2 className="text-2xl font-serif font-bold text-center mb-6">
+          <h2 className="text-2xl font-roboto font-bold text-center mb-6">
             Entrar
           </h2>
 
