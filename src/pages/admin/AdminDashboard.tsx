@@ -1,7 +1,6 @@
 import AdminLayout from "@/layouts/AdminLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { FileText, MessageSquare, Eye, TrendingUp, Calendar } from "lucide-react";
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import { FileText, MessageSquare, Eye, TrendingUp, Calendar, ArrowUpRight, Megaphone } from "lucide-react";
 import { useAllPosts, useMostViewedPosts } from "@/hooks/usePosts";
 import { useAllComments } from "@/hooks/useComments";
 import { useAllAds } from "@/hooks/useAds";
@@ -123,42 +122,51 @@ const AdminDashboard = () => {
   }, [allPosts, dateRange]);
 
 
-  // Posts recentes (últimos 5)
-  const recentPosts = allPosts?.slice(0, 5) || [];
+  // Posts recentes (últimos 5, ordenados por data de criação)
+  const recentPosts = useMemo(() => {
+    if (!allPosts) return [];
+    return [...allPosts]
+      .sort((a, b) => {
+        const dateA = new Date(a.created_at || 0);
+        const dateB = new Date(b.created_at || 0);
+        return dateB.getTime() - dateA.getTime();
+      })
+      .slice(0, 5);
+  }, [allPosts]);
 
-  const stats = [
-    {
-      title: "Total de Posts",
+const stats = [
+  {
+    title: "Total de Posts",
       value: totalPosts,
-      icon: FileText,
+    icon: FileText,
       change: `${publishedPosts} publicados`,
       subtitle: `${totalPosts - publishedPosts} rascunhos`,
-    },
-    {
-      title: "Comentários",
+  },
+  {
+    title: "Comentários",
       value: totalComments,
-      icon: MessageSquare,
+    icon: MessageSquare,
       change: "Total",
       subtitle: "Todos os comentários",
-    },
-    {
+  },
+  {
       title: "Visualizações",
       value: totalViews.toLocaleString("pt-BR"),
-      icon: Eye,
+    icon: Eye,
       change: "Total",
       subtitle: "Todas as visualizações",
-    },
-    {
+  },
+  {
       title: "Anúncios",
       value: totalAds,
-      icon: TrendingUp,
+    icon: TrendingUp,
       change: `${activeAds} ativos`,
       subtitle: `${totalAds - activeAds} inativos`,
-    },
-  ];
+  },
+];
   if (isLoadingPosts || isLoadingComments || isLoadingAds) {
-    return (
-      <AdminLayout title="Dashboard">
+  return (
+    <AdminLayout title="Dashboard">
         <div className="space-y-3 sm:space-y-4 md:space-y-6">
           {/* Stats Grid Skeleton */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 md:gap-4 lg:gap-6">
@@ -166,29 +174,29 @@ const AdminDashboard = () => {
               <Card key={i}>
                 <CardHeader className="p-2 sm:p-3 md:p-4 lg:p-6">
                   <Skeleton className="h-3 sm:h-4 w-20 sm:w-24" />
-                </CardHeader>
+            </CardHeader>
                 <CardContent className="p-2 sm:p-3 md:p-4 lg:p-6 pt-0">
                   <Skeleton className="h-6 sm:h-8 md:h-10 w-12 sm:w-16 mb-2" />
                   <Skeleton className="h-3 w-24 sm:w-32" />
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
 
           {/* Charts Skeleton */}
           <div className="flex flex-col lg:grid lg:grid-cols-3 gap-3 sm:gap-4 md:gap-6">
             <Card className="w-full lg:col-span-2">
               <CardHeader className="p-3 sm:p-4 md:p-6">
                 <Skeleton className="h-4 sm:h-5 w-32 sm:w-40" />
-              </CardHeader>
+          </CardHeader>
               <CardContent className="p-3 sm:p-4 md:p-6 pt-0">
                 <Skeleton className="h-[180px] sm:h-[220px] md:h-[280px] w-full" />
-              </CardContent>
-            </Card>
+          </CardContent>
+        </Card>
             <Card className="w-full">
               <CardHeader className="p-3 sm:p-4 md:p-6">
                 <Skeleton className="h-4 sm:h-5 w-28 sm:w-32" />
-              </CardHeader>
+          </CardHeader>
               <CardContent className="p-3 sm:p-4 md:p-6 pt-0">
                 <div className="space-y-3">
                   {[...Array(3)].map((_, i) => (
@@ -208,295 +216,265 @@ const AdminDashboard = () => {
               <div className="space-y-2">
                 {[...Array(5)].map((_, i) => (
                   <Skeleton key={i} className="h-12 sm:h-16 w-full" />
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
       </AdminLayout>
     );
   }
 
+  const StatCard = ({ title, value, subtitle, icon: Icon, isSuccess }: any) => (
+    <div className="bg-white p-6 rounded-2xl border border-slate-100 hover:border-slate-200 transition-all group">
+      <div className="flex items-start justify-between mb-4">
+        <div className="flex flex-col">
+          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.1em] mb-1">{title}</span>
+          <span className="text-3xl font-bold text-[#21366B] tracking-tight">{value}</span>
+        </div>
+        <div className={`p-2.5 rounded-xl ${isSuccess ? 'bg-[#47B354]/10 text-[#47B354]' : 'bg-[#21366B]/5 text-[#21366B]'}`}>
+          <Icon size={18} />
+        </div>
+      </div>
+      <div className="flex items-center justify-between mt-2 pt-4 border-t border-slate-50">
+        <span className="text-[11px] text-slate-400 font-medium">{subtitle}</span>
+        <div className={`flex items-center gap-0.5 font-bold text-[10px] ${isSuccess ? 'text-[#47B354]' : 'text-indigo-500'}`}>
+          <ArrowUpRight size={12} />
+          {isSuccess ? 'CRESCIMENTO' : 'ESTÁVEL'}
+        </div>
+      </div>
+    </div>
+  );
+
+  const RankedPost = ({ rank, title, views, category }: any) => (
+    <div className="flex items-center gap-4 group p-3 hover:bg-slate-50 rounded-xl transition-all cursor-pointer border border-transparent hover:border-slate-100">
+      <div className="w-7 h-7 rounded bg-slate-50 flex items-center justify-center text-slate-400 font-bold text-[10px] group-hover:bg-[#21366B] group-hover:text-white transition-all shrink-0">
+        {rank}
+      </div>
+      <div className="flex flex-col min-w-0 flex-1">
+        <h4 className="text-[13px] font-semibold text-slate-700 truncate mb-1 group-hover:text-[#21366B] transition-colors">
+          {title}
+        </h4>
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1 text-[10px] text-slate-400 font-medium">
+            <Eye size={10} className="text-[#21366B]" />
+            {views} visualizações
+          </div>
+          <span className="px-1.5 py-0.5 rounded bg-[#47B354]/10 text-[#47B354] text-[9px] font-bold uppercase tracking-wider">
+            {category}
+                      </span>
+        </div>
+      </div>
+    </div>
+  );
+
   return (
-    <AdminLayout title="Dashboard">
-      <div className="space-y-3 sm:space-y-4 md:space-y-6">
+    <AdminLayout title="Painel de Controle">
+      <div className="flex flex-col gap-8 animate-in fade-in slide-in-from-bottom-2 duration-700">
         {/* Stats Grid */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 md:gap-4 lg:gap-6">
-          {stats.map((stat) => (
-            <Card key={stat.title} className="animate-fade-in overflow-hidden">
-              <CardHeader className="flex flex-row items-center justify-between pb-1 sm:pb-2 p-2 sm:p-3 md:p-4 lg:p-6">
-                <CardTitle className="text-[10px] sm:text-xs md:text-sm font-medium text-muted-foreground truncate pr-1 min-w-0">
-                  {stat.title}
-                </CardTitle>
-                <stat.icon className="h-3 w-3 sm:h-4 sm:w-4 md:h-5 md:w-5 text-muted-foreground flex-shrink-0" />
-              </CardHeader>
-              <CardContent className="p-2 sm:p-3 md:p-4 lg:p-6 pt-0">
-                <div className="text-sm sm:text-base md:text-lg lg:text-2xl font-bold truncate mb-1">{stat.value}</div>
-                <p className="text-[9px] sm:text-[10px] md:text-xs text-muted-foreground line-clamp-1">
-                  {stat.change}
-                </p>
-                {stat.subtitle && (
-                  <p className="text-[9px] sm:text-[10px] md:text-xs text-muted-foreground mt-0.5 line-clamp-1">
-                    {stat.subtitle}
-                  </p>
-                )}
-              </CardContent>
-            </Card>
-          ))}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <StatCard 
+            title="Total de Posts" 
+            value={totalPosts.toString()} 
+            subtitle="Conteúdo publicado" 
+            icon={FileText}
+          />
+          <StatCard 
+            title="Comentários" 
+            value={totalComments.toString()} 
+            subtitle="Interações do público" 
+            icon={MessageSquare}
+            isSuccess={totalComments > 0}
+          />
+          <StatCard 
+            title="Visualizações" 
+            value={totalViews.toLocaleString("pt-BR")} 
+            subtitle="Acessos no período" 
+            icon={Eye}
+          />
+          <StatCard 
+            title="Anúncios" 
+            value={totalAds.toString()} 
+            subtitle="Campanhas rodando" 
+            icon={Megaphone}
+            isSuccess={activeAds > 0}
+          />
         </div>
 
-        {/* Charts - Mobile: Stacked, Desktop: Side by side */}
-        <div className="flex flex-col lg:grid lg:grid-cols-3 gap-3 sm:gap-4 md:gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Chart Card */}
-          <Card className="w-full lg:col-span-2 overflow-hidden">
-            <CardHeader className="pb-2 p-3 sm:p-4 md:p-6">
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                <CardTitle className="text-sm sm:text-base md:text-lg">Visualizações por Dia</CardTitle>
-                <div className="flex flex-col sm:flex-row gap-2">
-                  <Select value={dateFilter} onValueChange={(value) => setDateFilter(value as DateFilterType)}>
-                    <SelectTrigger className="w-full sm:w-[140px]">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="week">Semana Atual</SelectItem>
-                      <SelectItem value="month">Mês Atual</SelectItem>
-                      <SelectItem value="year">Ano Atual</SelectItem>
-                      <SelectItem value="custom">Período Customizado</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  {dateFilter === 'custom' && (
-                    <div className="flex gap-2">
-                      <div className="flex-1">
-                        <Input
-                          type="date"
-                          value={customStartDate}
-                          onChange={(e) => setCustomStartDate(e.target.value)}
-                          placeholder="Data inicial"
-                          className="text-xs"
-                        />
-                      </div>
-                      <div className="flex-1">
-                        <Input
-                          type="date"
-                          value={customEndDate}
-                          onChange={(e) => setCustomEndDate(e.target.value)}
-                          placeholder="Data final"
-                          className="text-xs"
-                        />
-                      </div>
-                    </div>
-                  )}
-                </div>
+          <div className="lg:col-span-2 bg-white rounded-2xl border border-slate-100 p-8">
+            <div className="flex items-center justify-between mb-10">
+              <div className="flex flex-col">
+                <h3 className="text-base font-bold text-[#21366B] tracking-tight">Visualizações por Dia</h3>
+                <span className="text-xs text-slate-400">Análise de tráfego semanal</span>
               </div>
-            </CardHeader>
-            <CardContent className="p-3 sm:p-4 md:p-6 pt-0">
-              {chartData.length === 0 ? (
-                <div className="h-[180px] sm:h-[220px] md:h-[280px] lg:h-[320px] flex items-center justify-center text-muted-foreground">
-                  <p className="text-sm">Nenhum dado disponível para o período selecionado</p>
-                </div>
-              ) : (
-                <div className="h-[180px] sm:h-[220px] md:h-[280px] lg:h-[320px] w-full">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <AreaChart data={chartData} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--muted))" />
-                      <XAxis 
-                        dataKey="name" 
-                        tick={{ fontSize: 10 }}
-                        interval={chartData.length > 14 ? 1 : 0}
-                      />
-                      <YAxis 
-                        tick={{ fontSize: 10 }}
-                        width={35}
-                      />
-                      <Tooltip />
-                      <Area
-                        type="monotone"
-                        dataKey="views"
-                        stroke="hsl(var(--primary))"
-                        fill="hsl(var(--primary) / 0.2)"
-                      />
-                    </AreaChart>
-                  </ResponsiveContainer>
+              <Select value={dateFilter} onValueChange={(value) => setDateFilter(value as DateFilterType)}>
+                <SelectTrigger className="flex items-center gap-2 px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-semibold text-slate-600 hover:border-slate-300 transition-all w-auto">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="week">Esta Semana</SelectItem>
+                  <SelectItem value="month">Este Mês</SelectItem>
+                  <SelectItem value="year">Este Ano</SelectItem>
+                  <SelectItem value="custom">Período Customizado</SelectItem>
+                </SelectContent>
+              </Select>
+              {dateFilter === 'custom' && (
+                <div className="flex gap-2">
+                  <Input
+                    type="date"
+                    value={customStartDate}
+                    onChange={(e) => setCustomStartDate(e.target.value)}
+                    className="text-xs w-32"
+                  />
+                  <Input
+                    type="date"
+                    value={customEndDate}
+                    onChange={(e) => setCustomEndDate(e.target.value)}
+                    className="text-xs w-32"
+                  />
                 </div>
               )}
-            </CardContent>
-          </Card>
-
-          {/* Posts Mais Vistos */}
-          <Card className="w-full overflow-hidden">
-            <CardHeader className="pb-2 p-3 sm:p-4 md:p-6">
-              <CardTitle className="text-sm sm:text-base md:text-lg">Posts Mais Vistos</CardTitle>
-            </CardHeader>
-            <CardContent className="p-3 sm:p-4 md:p-6 pt-0">
-              {isLoadingMostViewed ? (
-                <div className="space-y-3">
-                  {[...Array(5)].map((_, i) => (
-                    <Skeleton key={i} className="h-16 w-full" />
-                  ))}
-                </div>
-              ) : mostViewedPosts && mostViewedPosts.length > 0 ? (
-                <div className="space-y-2 sm:space-y-3">
-                  {mostViewedPosts.map((post, index) => (
-                    <Link
-                      key={post.id}
-                      to={`/noticia/${generateSlug(post.title)}`}
-                      className="flex items-start gap-2 sm:gap-3 hover:bg-muted/50 p-2 rounded-lg transition-colors group"
-                    >
-                      <div className="flex-shrink-0 w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-xs sm:text-sm">
-                        {index + 1}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-xs sm:text-sm font-medium line-clamp-2 group-hover:text-primary transition-colors">
-                          {post.title}
-                        </p>
-                        <div className="flex items-center gap-2 mt-1 flex-wrap">
-                          <span className="text-[10px] sm:text-xs text-muted-foreground flex items-center gap-1">
-                            <Eye className="h-3 w-3" />
-                            {(post.views || 0).toLocaleString("pt-BR")}
-                          </span>
-                          {post.categories?.name && (
-                            <>
-                              <span className="text-[10px] text-muted-foreground">•</span>
-                              <span className="news-category-badge text-[10px]">
-                                {post.categories.name}
-                              </span>
-                            </>
-                          )}
+            </div>
+            
+            {chartData.length === 0 ? (
+              <div className="h-[280px] flex items-center justify-center text-slate-400">
+                <p className="text-sm">Nenhum dado disponível para o período selecionado</p>
+              </div>
+            ) : (
+              <div className="h-[280px] w-full flex flex-col justify-end">
+                <div className="flex items-end justify-around h-full px-2">
+                  {chartData.map((data, i) => {
+                    const maxViews = Math.max(...chartData.map(d => d.views));
+                    const height = maxViews > 0 ? (data.views / maxViews) * 100 : 0;
+                    return (
+                      <div key={i} className="w-10 relative group">
+                        <div 
+                          style={{ height: `${height}%` }} 
+                          className="w-full bg-[#21366B]/10 rounded-t-md group-hover:bg-[#21366B] transition-all duration-500 ease-out cursor-pointer relative"
+                        >
+                          <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-[#21366B] text-white text-[9px] font-bold px-1.5 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                            {data.views}
+                          </div>
                         </div>
                       </div>
-                    </Link>
+                    );
+                  })}
+                </div>
+                <div className="flex justify-around text-[10px] font-bold text-slate-300 border-t border-slate-50 pt-6 mt-2">
+                  {chartData.map((data, i) => (
+                    <span key={i}>{data.name}</span>
                   ))}
                 </div>
-              ) : (
-                <div className="h-[180px] sm:h-[220px] md:h-[280px] lg:h-[320px] flex items-center justify-center text-muted-foreground">
-                  <p className="text-sm">Nenhum post visualizado ainda</p>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </div>
+              </div>
+            )}
+          </div>
 
-        {/* Recent Activity */}
-        <Card className="w-full overflow-hidden">
-          <CardHeader className="pb-2 p-3 sm:p-4 md:p-6">
-            <CardTitle className="text-sm sm:text-base md:text-lg">Atividade Recente</CardTitle>
-          </CardHeader>
-            <CardContent className="p-3 sm:p-4 md:p-6 pt-0">
-            <div className="space-y-2 sm:space-y-3 md:space-y-4">
-              {recentPosts.length === 0 ? (
-                <p className="text-xs sm:text-sm text-muted-foreground text-center py-4">
-                  Nenhum post ainda
-                </p>
-              ) : (
-                recentPosts.map((post) => (
+          {/* Posts Mais Vistos */}
+          <div className="bg-white rounded-2xl border border-slate-100 p-8 flex flex-col">
+            <div className="flex items-center justify-between mb-8">
+              <h3 className="text-[11px] font-bold text-slate-400 uppercase tracking-[0.15em]">Conteúdo em Destaque</h3>
+              <TrendingUp size={16} className="text-[#47B354]" />
+            </div>
+            
+            {isLoadingMostViewed ? (
+              <div className="flex flex-col gap-1">
+                {[...Array(5)].map((_, i) => (
+                  <Skeleton key={i} className="h-16 w-full" />
+                ))}
+              </div>
+            ) : mostViewedPosts && mostViewedPosts.length > 0 ? (
+              <div className="flex flex-col gap-1">
+                {mostViewedPosts.map((post, index) => (
                   <Link
                     key={post.id}
                     to={`/noticia/${generateSlug(post.title)}`}
-                    className="flex items-start gap-2 sm:gap-3 hover:bg-muted/50 p-2 rounded-lg transition-colors"
                   >
-                    <div className="h-8 w-8 sm:h-10 sm:w-10 rounded bg-muted flex items-center justify-center flex-shrink-0">
-                      <FileText className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-xs sm:text-sm font-medium line-clamp-2">
-                        {post.title}
-                      </p>
-                      <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5 line-clamp-1">
-                        {post.categories?.name || "Sem categoria"} • {post.profiles?.name || "Desconhecido"}
-                      </p>
-                      <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5">
-                        {post.published_at
-                          ? format(new Date(post.published_at), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })
-                          : "Não publicado"}
-                      </p>
-                    </div>
+                    <RankedPost 
+                      rank={index + 1} 
+                      title={post.title} 
+                      views={(post.views || 0).toLocaleString("pt-BR")} 
+                      category={post.categories?.name || "Sem categoria"} 
+                    />
                   </Link>
-                ))
-              )}
-            </div>
-          </CardContent>
-        </Card>
+                ))}
+              </div>
+            ) : (
+              <div className="h-[280px] flex items-center justify-center text-slate-400">
+                <p className="text-sm">Nenhum post visualizado ainda</p>
+              </div>
+            )}
 
-        {/* Recent Posts Table */}
-        <Card className="overflow-hidden">
-          <CardHeader className="pb-2 p-3 sm:p-4 md:p-6">
-            <CardTitle className="text-sm sm:text-base md:text-lg">Posts Recentes</CardTitle>
-          </CardHeader>
-          <CardContent className="p-0 sm:p-3 md:p-6">
-            <div className="overflow-x-auto">
-              <table className="w-full min-w-[450px] sm:min-w-full">
-              <thead>
-                <tr className="border-b border-border">
-                  <th className="text-left py-2 sm:py-3 px-2 sm:px-4 text-xs sm:text-sm font-medium text-muted-foreground">
-                    Título
-                  </th>
-                  <th className="text-left py-2 sm:py-3 px-2 sm:px-4 text-xs sm:text-sm font-medium text-muted-foreground hidden sm:table-cell">
-                    Categoria
-                  </th>
-                  <th className="text-left py-2 sm:py-3 px-2 sm:px-4 text-xs sm:text-sm font-medium text-muted-foreground hidden md:table-cell">
-                    Autor
-                  </th>
-                  <th className="text-left py-2 sm:py-3 px-2 sm:px-4 text-xs sm:text-sm font-medium text-muted-foreground">
-                    Views
-                  </th>
-                  <th className="text-left py-2 sm:py-3 px-2 sm:px-4 text-xs sm:text-sm font-medium text-muted-foreground">
-                    Status
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {recentPosts.length === 0 ? (
-                  <tr>
-                    <td colSpan={5} className="py-8 text-center text-xs sm:text-sm text-muted-foreground">
-                      Nenhum post ainda
-                    </td>
-                  </tr>
-                ) : (
-                  recentPosts.map((post) => (
-                    <tr key={post.id} className="border-b border-border last:border-0 hover:bg-muted/30">
-                      <td className="py-2 sm:py-3 px-2 sm:px-4">
-                        <Link
-                          to={`/noticia/${generateSlug(post.title)}`}
-                          className="font-medium text-xs sm:text-sm line-clamp-2 max-w-xs hover:text-primary transition-colors"
-                        >
-                          {post.title}
-                        </Link>
-                        <div className="mt-1 sm:hidden">
-                          <span className="news-category-badge text-[10px]">
+            <button className="mt-8 w-full py-2.5 text-[11px] font-bold text-[#21366B] hover:bg-[#21366B] hover:text-white rounded-xl transition-all border border-[#21366B]/20">
+              Exportar Relatório
+            </button>
+          </div>
+        </div>
+
+        {/* Posts Recentes */}
+        <div className="bg-white rounded-2xl border border-slate-100 p-8 flex flex-col">
+          <div className="flex items-center justify-between mb-8">
+            <h3 className="text-[11px] font-bold text-slate-400 uppercase tracking-[0.15em]">Posts Recentes</h3>
+            <Calendar size={16} className="text-[#21366B]" />
+          </div>
+          
+          {isLoadingPosts ? (
+            <div className="flex flex-col gap-1">
+              {[...Array(5)].map((_, i) => (
+                <Skeleton key={i} className="h-16 w-full" />
+              ))}
+            </div>
+          ) : recentPosts && recentPosts.length > 0 ? (
+            <div className="flex flex-col gap-1">
+              {recentPosts.map((post, index) => (
+                <Link
+                  key={post.id}
+                  to={`/admin/editor/${post.id}`}
+                >
+                  <div className="flex items-center gap-4 group p-3 hover:bg-slate-50 rounded-xl transition-all cursor-pointer border border-transparent hover:border-slate-100">
+                    <div className="w-7 h-7 rounded bg-slate-50 flex items-center justify-center text-slate-400 font-bold text-[10px] group-hover:bg-[#21366B] group-hover:text-white transition-all shrink-0">
+                      {index + 1}
+                    </div>
+                    <div className="flex flex-col min-w-0 flex-1">
+                      <h4 className="text-[13px] font-semibold text-slate-700 truncate mb-1 group-hover:text-[#21366B] transition-colors">
+                        {post.title}
+                      </h4>
+                      <div className="flex items-center justify-between gap-3">
+                        <div className="flex items-center gap-3 flex-wrap">
+                          <div className="flex items-center gap-1 text-[10px] text-slate-400 font-medium">
+                            <Calendar size={10} className="text-[#21366B]" />
+                            {post.created_at ? format(new Date(post.created_at), "dd/MM/yyyy", { locale: ptBR }) : "Sem data"}
+                          </div>
+                          <span className="px-1.5 py-0.5 rounded bg-[#47B354]/10 text-[#47B354] text-[9px] font-bold uppercase tracking-wider">
                             {post.categories?.name || "Sem categoria"}
                           </span>
+                          {post.views && post.views > 0 && (
+                            <div className="flex items-center gap-1 text-[10px] text-slate-400 font-medium">
+                              <Eye size={10} className="text-[#21366B]" />
+                              {post.views.toLocaleString("pt-BR")} visualizações
+                            </div>
+                          )}
                         </div>
-                      </td>
-                      <td className="py-2 sm:py-3 px-2 sm:px-4 hidden sm:table-cell">
-                        <span className="news-category-badge text-xs">
-                          {post.categories?.name || "Sem categoria"}
+                        <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider flex-shrink-0 ${
+                          post.is_published 
+                            ? 'bg-[#47B354]/10 text-[#47B354]' 
+                            : 'bg-slate-100 text-slate-500'
+                        }`}>
+                          {post.is_published ? 'Publicado' : 'Rascunho'}
                         </span>
-                      </td>
-                      <td className="py-2 sm:py-3 px-2 sm:px-4 text-xs sm:text-sm hidden md:table-cell">
-                        {post.profiles?.name || "Desconhecido"}
-                      </td>
-                      <td className="py-2 sm:py-3 px-2 sm:px-4 text-xs sm:text-sm">
-                        {(post.views || 0).toLocaleString("pt-BR")}
-                      </td>
-                      <td className="py-2 sm:py-3 px-2 sm:px-4">
-                        {post.is_published ? (
-                          <span className="inline-flex items-center px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-medium bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300">
-                            Publicado
-                          </span>
-                        ) : (
-                          <span className="inline-flex items-center px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-medium bg-[#47B354]/20 text-[#47B354] dark:bg-[#47B354]/30 dark:text-[#47B354]">
-                            Rascunho
-                          </span>
-                        )}
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
-        </CardContent>
-      </Card>
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          ) : (
+            <div className="h-[280px] flex items-center justify-center text-slate-400">
+              <p className="text-sm">Nenhum post ainda</p>
+            </div>
+          )}
+        </div>
       </div>
     </AdminLayout>
   );

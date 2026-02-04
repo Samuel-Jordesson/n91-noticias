@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AdminLayout from "@/layouts/AdminLayout";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -11,7 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Plus, Pencil, Trash2, Search, Star } from "lucide-react";
+import { Plus, Pencil, Trash2, Search, Star, Eye, Calendar, User, Check } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -77,194 +76,209 @@ const AdminPosts = () => {
   return (
     <AdminLayout title="Gerenciar Posts">
       {/* Actions */}
-      <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 md:gap-4 mb-4 sm:mb-6">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            type="search"
-            placeholder="Buscar posts..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10"
-          />
-        </div>
-        <Select value={filterCategory} onValueChange={setFilterCategory}>
-          <SelectTrigger className="w-full sm:w-48">
-            <SelectValue placeholder="Filtrar por categoria" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Todas as categorias</SelectItem>
-            {categories?.map((cat) => (
-              <SelectItem key={cat.id} value={cat.slug}>
-                {cat.name}
+      <div className="bg-white rounded-2xl border border-slate-100 p-6 mb-6">
+        <div className="flex flex-col sm:flex-row gap-3">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+            <Input
+              type="search"
+              placeholder="Buscar posts..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10 bg-slate-50 border-transparent focus:bg-white focus:border-slate-200 rounded-xl h-10 text-sm"
+            />
+          </div>
+          <Select value={filterCategory} onValueChange={setFilterCategory}>
+            <SelectTrigger className="w-full sm:w-56 bg-slate-50 border-transparent focus:bg-white focus:border-slate-200 focus:outline-none focus:ring-0 rounded-xl h-10 text-sm font-medium text-slate-700 hover:bg-white transition-colors">
+              <SelectValue placeholder="Todas as categorias" />
+            </SelectTrigger>
+            <SelectContent className="rounded-xl border border-slate-100 bg-white shadow-lg p-1.5 min-w-[var(--radix-select-trigger-width)] [&_svg]:text-[#21366B]">
+              <SelectItem 
+                value="all" 
+                className="text-sm font-medium text-slate-700 rounded-lg px-3 py-2.5 cursor-pointer hover:bg-slate-50 hover:text-slate-700 focus:bg-slate-50 focus:text-slate-700 data-[highlighted]:bg-slate-50 data-[highlighted]:text-slate-700 data-[state=checked]:bg-[#21366B]/5 data-[state=checked]:text-[#21366B] pl-8"
+              >
+                Todas as categorias
               </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        <Button onClick={() => navigate("/admin/editor")}>
-          <Plus className="h-4 w-4 mr-2" />
-          Novo Post
-        </Button>
+              {categories?.map((cat) => (
+                <SelectItem 
+                  key={cat.id} 
+                  value={cat.slug} 
+                  className="text-sm font-medium text-slate-700 rounded-lg px-3 py-2.5 cursor-pointer hover:bg-slate-50 hover:text-slate-700 focus:bg-slate-50 focus:text-slate-700 data-[highlighted]:bg-slate-50 data-[highlighted]:text-slate-700 data-[state=checked]:bg-[#21366B]/5 data-[state=checked]:text-[#21366B] pl-8"
+                >
+                  {cat.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Button 
+            onClick={() => navigate("/admin/editor")}
+            className="bg-[#21366B] hover:bg-[#21366B]/90 text-white rounded-xl h-10 px-6 font-semibold"
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Novo Post
+          </Button>
+        </div>
       </div>
 
-      {/* Posts Table */}
-      <Card className="overflow-hidden">
-        <CardHeader className="pb-2 sm:pb-3 p-3 sm:p-6">
-          <CardTitle className="text-sm sm:text-base md:text-lg">
+      {/* Posts List */}
+      <div className="bg-white rounded-2xl border border-slate-100 p-8">
+        <div className="flex items-center justify-between mb-8">
+          <h3 className="text-[11px] font-bold text-slate-400 uppercase tracking-[0.15em]">
             Posts ({isLoadingPosts ? "..." : filteredPosts.length})
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="p-0 sm:p-6">
-          {isLoadingPosts ? (
-            <div className="space-y-3 sm:space-y-4 p-3 sm:p-0">
-              {[...Array(5)].map((_, i) => (
-                <Skeleton key={i} className="h-12 sm:h-16 w-full" />
+          </h3>
+        </div>
+
+        {isLoadingPosts ? (
+          <div className="space-y-2">
+            {[...Array(5)].map((_, i) => (
+              <Skeleton key={i} className="h-32 w-full rounded-xl" />
+            ))}
+          </div>
+        ) : filteredPosts.length === 0 ? (
+          <div className="py-12 text-center">
+            <p className="text-sm text-slate-400">Nenhum post encontrado</p>
+          </div>
+        ) : (
+          <>
+            {/* Header das Colunas */}
+            <div className="px-4 py-3 mb-2 border-b border-slate-100">
+              <div className="flex items-center gap-4">
+                <div className="w-20 flex-shrink-0"></div>
+                <div className="flex-1 min-w-0">
+                  <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Título</span>
+                </div>
+                <div className="flex-shrink-0">
+                  <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Categoria</span>
+                </div>
+                <div className="flex-shrink-0 w-32">
+                  <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Autor</span>
+                </div>
+                <div className="flex-shrink-0 w-24">
+                  <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Data</span>
+                </div>
+                <div className="flex-shrink-0 w-28">
+                  <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Views</span>
+                </div>
+                <div className="flex-shrink-0">
+                  <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Destaque</span>
+                </div>
+                <div className="flex-shrink-0">
+                  <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Ações</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Lista de Posts */}
+            <div className="space-y-2">
+              {filteredPosts.map((post) => (
+              <div
+                key={post.id}
+                className="group p-4 rounded-xl border border-transparent hover:border-slate-100 hover:bg-slate-50 transition-all duration-200"
+              >
+                <div className="flex items-center gap-4">
+                  {/* Imagem */}
+                  <div className="flex-shrink-0">
+                    {post.image_url ? (
+                      <img
+                        src={post.image_url}
+                        alt={post.title}
+                        className="w-20 h-16 object-cover rounded-lg"
+                      />
+                    ) : (
+                      <div className="w-20 h-16 bg-slate-100 rounded-lg flex items-center justify-center">
+                        <span className="text-[9px] text-slate-400">Sem img</span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Título */}
+                  <div className="flex-1 min-w-0">
+                    <h4 className="text-sm font-semibold text-slate-700 group-hover:text-[#21366B] leading-tight transition-colors line-clamp-2">
+                      {post.title}
+                    </h4>
+                  </div>
+
+                  {/* Categoria */}
+                  <div className="flex-shrink-0">
+                    <span className="px-1.5 py-0.5 rounded bg-[#47B354]/10 text-[#47B354] text-[10px] font-bold uppercase tracking-wider">
+                      {post.categories?.name || "Sem categoria"}
+                    </span>
+                  </div>
+
+                  {/* Autor */}
+                  <div className="flex-shrink-0 w-32">
+                    <div className="flex items-center gap-1 text-xs text-slate-400 font-medium">
+                      <User size={12} className="text-[#21366B]" />
+                      <span className="truncate">{post.profiles?.name || "Desconhecido"}</span>
+                    </div>
+                  </div>
+
+                  {/* Data */}
+                  <div className="flex-shrink-0 w-24">
+                    {post.published_at ? (
+                      <div className="flex items-center gap-1 text-xs text-slate-400 font-medium">
+                        <Calendar size={12} className="text-[#21366B]" />
+                        <span>
+                          {format(new Date(post.published_at), "dd/MM/yyyy", {
+                            locale: ptBR,
+                          })}
+                        </span>
+                      </div>
+                    ) : (
+                      <span className="text-xs text-slate-400">-</span>
+                    )}
+                  </div>
+
+                  {/* Views */}
+                  <div className="flex-shrink-0 w-28">
+                    <div className="flex items-center gap-1 text-xs text-slate-400 font-medium">
+                      <Eye size={12} className="text-[#21366B]" />
+                      <span>{post.views.toLocaleString("pt-BR")}</span>
+                    </div>
+                  </div>
+
+                  {/* Destaque */}
+                  <div className="flex-shrink-0">
+                    <button
+                      onClick={() => handleToggleFeatured(post)}
+                      className={`p-2 rounded-lg transition-colors ${
+                        post.is_featured 
+                          ? "text-[#47B354] bg-[#47B354]/10" 
+                          : "text-slate-400 hover:text-[#47B354] hover:bg-slate-100"
+                      }`}
+                      title={post.is_featured ? "Remover dos destaques" : "Adicionar aos destaques"}
+                    >
+                      <Star 
+                        size={16}
+                        className={post.is_featured ? "fill-current" : ""}
+                      />
+                    </button>
+                  </div>
+
+                  {/* Ações */}
+                  <div className="flex-shrink-0 flex items-center gap-1">
+                    <button
+                      onClick={() => handleEdit(post)}
+                      className="p-2 rounded-lg text-slate-400 hover:text-[#21366B] hover:bg-slate-100 transition-colors"
+                      title="Editar post"
+                    >
+                      <Pencil size={16} />
+                    </button>
+                    <button
+                      onClick={() => handleDelete(post.id)}
+                      className="p-2 rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50 transition-colors"
+                      title="Excluir post"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
+                </div>
+              </div>
               ))}
             </div>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full min-w-[700px] sm:min-w-[800px]">
-                <thead>
-                  <tr className="border-b border-border">
-                    <th className="text-left py-2 sm:py-3 px-2 sm:px-4 text-xs sm:text-sm font-medium text-muted-foreground">
-                      Título
-                    </th>
-                    <th className="text-left py-2 sm:py-3 px-2 sm:px-4 text-xs sm:text-sm font-medium text-muted-foreground hidden sm:table-cell">
-                      Categoria
-                    </th>
-                    <th className="text-left py-2 sm:py-3 px-2 sm:px-4 text-xs sm:text-sm font-medium text-muted-foreground hidden md:table-cell">
-                      Autor
-                    </th>
-                    <th className="text-left py-2 sm:py-3 px-2 sm:px-4 text-xs sm:text-sm font-medium text-muted-foreground hidden lg:table-cell">
-                      Data
-                    </th>
-                    <th className="text-left py-2 sm:py-3 px-2 sm:px-4 text-xs sm:text-sm font-medium text-muted-foreground">
-                      Views
-                    </th>
-                    <th className="text-center py-2 sm:py-3 px-2 sm:px-4 text-xs sm:text-sm font-medium text-muted-foreground">
-                      Destaque
-                    </th>
-                    <th className="text-right py-2 sm:py-3 px-2 sm:px-4 text-xs sm:text-sm font-medium text-muted-foreground">
-                      Ações
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredPosts.length === 0 ? (
-                    <tr>
-                      <td colSpan={7} className="py-8 text-center text-xs sm:text-sm text-muted-foreground">
-                        Nenhum post encontrado
-                      </td>
-                    </tr>
-                  ) : (
-                    filteredPosts.map((post) => (
-                      <tr
-                        key={post.id}
-                        className="border-b border-border last:border-0 hover:bg-muted/50"
-                      >
-                        <td className="py-2 sm:py-3 px-2 sm:px-4">
-                          <div className="flex items-center gap-2 sm:gap-3">
-                            {post.image_url ? (
-                              <img
-                                src={post.image_url}
-                                alt=""
-                                className="h-8 w-12 sm:h-10 sm:w-16 object-cover rounded flex-shrink-0"
-                              />
-                            ) : (
-                              <div className="h-8 w-12 sm:h-10 sm:w-16 bg-muted rounded flex items-center justify-center text-[10px] sm:text-xs text-muted-foreground flex-shrink-0">
-                                Sem img
-                              </div>
-                            )}
-                            <div className="min-w-0 flex-1">
-                              <p className="font-medium text-xs sm:text-sm line-clamp-2">
-                                {post.title}
-                              </p>
-                              <div className="flex items-center gap-2 mt-1 sm:hidden">
-                                <span className="news-category-badge text-[10px]">
-                                  {post.categories?.name || "Sem categoria"}
-                                </span>
-                                {post.is_breaking && (
-                                  <span className="text-[10px] text-accent font-medium">
-                                    Urgente
-                                  </span>
-                                )}
-                              </div>
-                              {post.is_breaking && (
-                                <span className="text-[10px] sm:text-xs text-accent font-medium hidden sm:inline-block mt-0.5">
-                                  Urgente
-                                </span>
-                              )}
-                            </div>
-                          </div>
-                        </td>
-                        <td className="py-2 sm:py-3 px-2 sm:px-4 hidden sm:table-cell">
-                          <span className="news-category-badge text-xs">
-                            {post.categories?.name || "Sem categoria"}
-                          </span>
-                        </td>
-                        <td className="py-2 sm:py-3 px-2 sm:px-4 text-xs sm:text-sm hidden md:table-cell">
-                          {post.profiles?.name || "Desconhecido"}
-                        </td>
-                        <td className="py-2 sm:py-3 px-2 sm:px-4 text-xs sm:text-sm text-muted-foreground hidden lg:table-cell">
-                          {post.published_at
-                            ? format(new Date(post.published_at), "dd/MM/yyyy", {
-                                locale: ptBR,
-                              })
-                            : "-"}
-                        </td>
-                        <td className="py-2 sm:py-3 px-2 sm:px-4 text-xs sm:text-sm">
-                          {post.views.toLocaleString("pt-BR")}
-                        </td>
-                        <td className="py-2 sm:py-3 px-2 sm:px-4">
-                          <div className="flex items-center justify-center">
-                            <button
-                              onClick={() => handleToggleFeatured(post)}
-                              className={`group transition-colors ${
-                                post.is_featured 
-                                  ? "text-[#47B354]" 
-                                  : "text-muted-foreground hover:text-[#47B354]"
-                              }`}
-                              title={post.is_featured ? "Remover dos destaques" : "Adicionar aos destaques"}
-                            >
-                              <Star 
-                                className={`h-4 w-4 sm:h-5 sm:w-5 transition-all ${
-                                  post.is_featured 
-                                    ? "fill-current" 
-                                    : "group-hover:fill-[#47B354]"
-                                }`}
-                              />
-                            </button>
-                          </div>
-                        </td>
-                        <td className="py-2 sm:py-3 px-2 sm:px-4">
-                          <div className="flex items-center justify-end gap-1 sm:gap-2">
-                            <Button 
-                              variant="ghost" 
-                              size="icon" 
-                              className="h-8 w-8 sm:h-10 sm:w-10"
-                              onClick={() => handleEdit(post)}
-                            >
-                              <Pencil className="h-3 w-3 sm:h-4 sm:w-4" />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="text-destructive hover:text-destructive h-8 w-8 sm:h-10 sm:w-10"
-                              onClick={() => handleDelete(post.id)}
-                            >
-                              <Trash2 className="h-3 w-3 sm:h-4 sm:w-4" />
-                            </Button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+          </>
+        )}
+      </div>
     </AdminLayout>
   );
 };

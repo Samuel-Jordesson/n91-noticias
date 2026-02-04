@@ -1,12 +1,13 @@
 import { ReactNode, useEffect, useState } from "react";
 import AdminSidebar from "@/components/admin/AdminSidebar";
 import NotificationDropdown from "@/components/admin/NotificationDropdown";
-import { Search, Menu, X } from "lucide-react";
+import { Search, Menu, X, ChevronDown } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useProfile } from "@/hooks/useAuth";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useQueryClient } from "@tanstack/react-query";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 interface AdminLayoutProps {
   children: ReactNode;
@@ -91,53 +92,65 @@ const AdminLayout = ({ children, title }: AdminLayoutProps) => {
         sidebarCollapsed ? 'lg:ml-0' : 'lg:ml-0'
       }`}>
         {/* Top bar */}
-        <header className="bg-card border-b border-border px-3 sm:px-4 md:px-6 py-2 sm:py-3 md:py-4 flex items-center justify-between gap-2 min-w-0">
-          <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+        <header className="h-16 border-b border-slate-100 bg-white px-8 flex items-center justify-between sticky top-0 z-20">
+          <div className="flex items-center gap-4">
             <Button
               variant="ghost"
               size="icon"
-              className="lg:hidden flex-shrink-0 h-9 w-9"
+              className="lg:hidden flex-shrink-0 h-9 w-9 hover:bg-slate-50"
               onClick={() => setSidebarOpen(!sidebarOpen)}
             >
-              {sidebarOpen ? <X className="h-4 w-4 sm:h-5 sm:w-5" /> : <Menu className="h-4 w-4 sm:h-5 sm:w-5" />}
+              {sidebarOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </Button>
-            <h1 className="text-base sm:text-lg md:text-xl font-roboto font-bold truncate min-w-0">{title}</h1>
+            <h2 className="text-lg font-bold text-[#21366B] tracking-tight">{title}</h2>
           </div>
-          
-          <div className="flex items-center gap-1 sm:gap-2 md:gap-4 flex-shrink-0">
-            <div className="relative hidden sm:block">
-              <Search className="absolute left-2 sm:left-3 top-1/2 -translate-y-1/2 h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
-              <Input
-                type="search"
-                placeholder="Buscar..."
-                className="pl-8 sm:pl-10 w-32 sm:w-40 md:w-64 h-8 sm:h-9 text-xs sm:text-sm"
+
+          <div className="flex-1 max-w-xl px-12 hidden md:block">
+            <div className="relative group">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-[#21366B] transition-colors" size={16} />
+              <input 
+                type="text" 
+                placeholder="O que você está procurando?" 
+                className="w-full bg-slate-50 border-transparent focus:bg-white focus:border-slate-200 focus:ring-0 rounded-xl py-2 pl-10 pr-4 text-sm transition-all placeholder:text-slate-400"
               />
             </div>
-            
+          </div>
+
+          <div className="flex items-center gap-2">
             <div className="hidden sm:block">
               <NotificationDropdown />
             </div>
             
-            <div className="flex items-center gap-1 sm:gap-2">
+            <div className="h-6 w-px bg-slate-100 mx-2" />
+            
+            <button className="flex items-center gap-3 p-1 pl-1 pr-3 hover:bg-slate-50 rounded-xl transition-all border border-transparent">
               {isLoading ? (
                 <>
-                  <Skeleton className="h-7 w-7 sm:h-8 sm:w-8 rounded-full" />
-                  <Skeleton className="h-3 w-16 sm:h-4 sm:w-20 hidden md:block" />
+                  <Skeleton className="h-8 w-8 rounded-lg" />
+                  <div className="hidden sm:flex flex-col items-start">
+                    <Skeleton className="h-4 w-24 mb-1" />
+                    <Skeleton className="h-3 w-12" />
+                  </div>
                 </>
               ) : (
                 <>
-                  <div className="h-7 w-7 sm:h-8 sm:w-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-semibold text-xs sm:text-sm flex-shrink-0">
-                    {userInitial}
+                  <Avatar className="w-8 h-8 rounded-lg">
+                    <AvatarImage src={profile?.avatar_url || undefined} alt={userName} />
+                    <AvatarFallback className="bg-[#21366B] text-white text-xs font-bold rounded-lg">
+                      {userInitial}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="flex flex-col items-start hidden sm:flex">
+                    <span className="text-sm font-semibold text-slate-700 leading-tight">{userName}</span>
                   </div>
-                  <span className="hidden md:block text-xs sm:text-sm font-medium truncate max-w-[100px] lg:max-w-[120px]">{userName}</span>
                 </>
               )}
-            </div>
+            </button>
           </div>
         </header>
 
         {/* Content */}
-        <main className="flex-1 p-3 sm:p-4 md:p-6 bg-muted/50 overflow-x-hidden">
+        <main className="flex-1 p-8 bg-slate-50 overflow-x-hidden">
           <div className="max-w-full overflow-x-hidden">
             {children}
           </div>

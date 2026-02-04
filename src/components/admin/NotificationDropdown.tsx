@@ -41,35 +41,44 @@ const NotificationDropdown = () => {
   };
 
   return (
-    <DropdownMenu>
+    <DropdownMenu modal={false}>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" className="relative h-8 w-8 sm:h-9 sm:w-9">
-          <Bell className="h-4 w-4 sm:h-5 sm:w-5" />
+        <button className="relative p-2 text-slate-400 hover:text-[#21366B] hover:bg-slate-50 rounded-lg transition-all">
+          <Bell size={18} />
           {unreadCount > 0 && (
-            <span className="absolute top-0.5 right-0.5 sm:top-1 sm:right-1 h-2 w-2 sm:h-2.5 sm:w-2.5 bg-red-500 rounded-full border-2 border-background animate-pulse" />
+            <span className="absolute top-2 right-2.5 w-1.5 h-1.5 bg-[#47B354] border-2 border-white rounded-full"></span>
           )}
-        </Button>
+        </button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-80 sm:w-96 p-0 font-roboto">
+      <DropdownMenuContent 
+        align="end" 
+        className="w-80 sm:w-96 p-0 font-roboto bg-white border border-slate-100 rounded-2xl shadow-lg"
+        sideOffset={8}
+        alignOffset={-4}
+        onOpenAutoFocus={(e) => e.preventDefault()}
+        onCloseAutoFocus={(e) => e.preventDefault()}
+        avoidCollisions={true}
+        collisionPadding={8}
+      >
         {/* Header */}
-        <div className="p-4 border-b bg-muted/30">
+        <div className="p-6 border-b border-slate-100">
           <div className="flex items-center justify-between">
-            <div>
-              <h3 className="font-semibold text-base font-roboto">Notificações</h3>
+            <div className="flex flex-col">
+              <h3 className="text-[11px] font-bold text-slate-400 uppercase tracking-[0.15em] mb-1">Notificações</h3>
               {unreadCount > 0 ? (
-                <p className="text-xs text-muted-foreground mt-0.5 font-roboto">
+                <p className="text-xs text-slate-500 font-medium">
                   {unreadCount} não {unreadCount === 1 ? "lida" : "lidas"}
                 </p>
               ) : (
-                <p className="text-xs text-muted-foreground mt-0.5 font-roboto">
+                <p className="text-xs text-slate-400 font-medium">
                   Todas as notificações foram lidas
                 </p>
               )}
             </div>
             {unreadCount > 0 && (
-              <Badge variant="destructive" className="font-roboto">
+              <div className="w-6 h-6 rounded-full bg-[#47B354] flex items-center justify-center text-white text-[10px] font-bold">
                 {unreadCount}
-              </Badge>
+              </div>
             )}
           </div>
         </div>
@@ -77,52 +86,50 @@ const NotificationDropdown = () => {
         {/* Content */}
         <ScrollArea className="h-[450px]">
           {isLoading ? (
-            <div className="p-4 space-y-4">
+            <div className="p-4 space-y-2">
               {[...Array(3)].map((_, i) => (
-                <div key={i} className="space-y-3 p-3 border rounded-lg">
-                  <Skeleton className="h-4 w-3/4" />
-                  <Skeleton className="h-3 w-full" />
+                <div key={i} className="p-3 border border-slate-100 rounded-xl">
+                  <Skeleton className="h-4 w-3/4 mb-2" />
+                  <Skeleton className="h-3 w-full mb-1" />
                   <Skeleton className="h-3 w-2/3" />
-                  <div className="flex gap-2">
-                    <Skeleton className="h-3 w-20" />
-                    <Skeleton className="h-3 w-24" />
-                  </div>
                 </div>
               ))}
             </div>
           ) : unreadNotifications && unreadNotifications.length > 0 ? (
-            <div className="p-3 space-y-2">
+            <div className="p-4 space-y-1">
               {unreadNotifications.map((notification) => (
                 <div
                   key={notification.id}
-                  className="group relative p-4 rounded-lg border bg-card hover:bg-muted/50 cursor-pointer transition-all duration-200 hover:shadow-md"
+                  className="group p-3 rounded-xl border border-transparent hover:border-slate-100 hover:bg-slate-50 cursor-pointer transition-all duration-200"
                   onClick={() => handleNotificationClick(notification)}
                 >
-                  {/* Indicador de não lida */}
-                  <div className="absolute left-2 top-1/2 -translate-y-1/2 h-2 w-2 bg-primary rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
-                  
                   {notification.image_url && (
-                    <div className="mb-3 overflow-hidden rounded-md">
+                    <div className="mb-3 overflow-hidden rounded-lg">
                       <img
                         src={notification.image_url}
                         alt={notification.title}
-                        className="w-full h-40 object-cover group-hover:scale-105 transition-transform duration-200"
+                        className="w-full h-32 object-cover"
                       />
                     </div>
                   )}
                   
                   <div className="space-y-2">
-                    <h4 className="font-semibold text-sm font-roboto leading-tight pr-6">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="px-1.5 py-0.5 rounded bg-[#47B354]/10 text-[#47B354] text-[9px] font-bold uppercase tracking-wider">
+                        Novidade
+                      </span>
+                    </div>
+                    <h4 className="text-[13px] font-semibold text-slate-700 leading-tight group-hover:text-[#21366B] transition-colors">
                       {notification.title}
                     </h4>
-                    <p className="text-xs text-muted-foreground line-clamp-3 font-roboto leading-relaxed">
+                    <p className="text-[11px] text-slate-400 line-clamp-2 leading-relaxed">
                       {notification.content}
                     </p>
                     
-                    <div className="flex items-center gap-3 pt-2 border-t text-xs text-muted-foreground">
-                      <div className="flex items-center gap-1.5">
-                        <Clock className="h-3 w-3" />
-                        <span className="font-roboto">
+                    <div className="flex items-center gap-3 pt-2 border-t border-slate-50">
+                      <div className="flex items-center gap-1 text-[10px] text-slate-400 font-medium">
+                        <Clock size={10} className="text-[#21366B]" />
+                        <span>
                           {formatDistanceToNow(new Date(notification.created_at), {
                             addSuffix: true,
                             locale: ptBR,
@@ -130,9 +137,9 @@ const NotificationDropdown = () => {
                         </span>
                       </div>
                       {notification.created_by_profile && (
-                        <div className="flex items-center gap-1.5">
-                          <User className="h-3 w-3" />
-                          <span className="font-roboto">{notification.created_by_profile.name}</span>
+                        <div className="flex items-center gap-1 text-[10px] text-slate-400 font-medium">
+                          <User size={10} className="text-[#21366B]" />
+                          <span>{notification.created_by_profile.name}</span>
                         </div>
                       )}
                     </div>
@@ -143,14 +150,14 @@ const NotificationDropdown = () => {
           ) : (
             <div className="p-12 text-center">
               <div className="flex flex-col items-center gap-3">
-                <div className="p-4 rounded-full bg-muted">
-                  <Bell className="h-8 w-8 text-muted-foreground" />
+                <div className="p-4 rounded-full bg-slate-50">
+                  <Bell className="h-8 w-8 text-slate-300" />
                 </div>
                 <div>
-                  <p className="text-sm font-medium font-roboto text-foreground mb-1">
+                  <p className="text-sm font-semibold text-slate-400 mb-1">
                     Nenhuma notificação nova
                   </p>
-                  <p className="text-xs text-muted-foreground font-roboto">
+                  <p className="text-xs text-slate-400">
                     Você está em dia com todas as notificações
                   </p>
                 </div>
@@ -162,18 +169,18 @@ const NotificationDropdown = () => {
 
       {/* Modal de Notificação */}
       <Dialog open={isModalOpen} onOpenChange={handleCloseModal}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto font-roboto">
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto font-roboto bg-white border border-slate-100 rounded-2xl">
           {selectedNotification && (
             <>
-              <DialogHeader>
-                <DialogTitle className="text-xl font-roboto">
+              <DialogHeader className="pb-4">
+                <DialogTitle className="text-lg font-bold text-[#21366B] tracking-tight">
                   {selectedNotification.title}
                 </DialogTitle>
               </DialogHeader>
               
-              <div className="space-y-4">
+              <div className="space-y-6">
                 {selectedNotification.image_url && (
-                  <div className="overflow-hidden rounded-lg">
+                  <div className="overflow-hidden rounded-xl">
                     <img
                       src={selectedNotification.image_url}
                       alt={selectedNotification.title}
@@ -183,22 +190,22 @@ const NotificationDropdown = () => {
                 )}
                 
                 <div className="prose prose-sm max-w-none">
-                  <p className="text-sm text-foreground leading-relaxed whitespace-pre-wrap font-roboto">
+                  <p className="text-sm text-slate-700 leading-relaxed whitespace-pre-wrap">
                     {selectedNotification.content}
                   </p>
                 </div>
                 
-                <div className="flex items-center gap-4 pt-4 border-t text-xs text-muted-foreground">
-                  <div className="flex items-center gap-1.5">
-                    <Clock className="h-4 w-4" />
-                    <span className="font-roboto">
+                <div className="flex items-center gap-4 pt-4 border-t border-slate-100">
+                  <div className="flex items-center gap-1.5 text-[11px] text-slate-400 font-medium">
+                    <Clock size={12} className="text-[#21366B]" />
+                    <span>
                       {format(new Date(selectedNotification.created_at), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}
                     </span>
                   </div>
                   {selectedNotification.created_by_profile && (
-                    <div className="flex items-center gap-1.5">
-                      <User className="h-4 w-4" />
-                      <span className="font-roboto">
+                    <div className="flex items-center gap-1.5 text-[11px] text-slate-400 font-medium">
+                      <User size={12} className="text-[#21366B]" />
+                      <span>
                         Por {selectedNotification.created_by_profile.name}
                       </span>
                     </div>

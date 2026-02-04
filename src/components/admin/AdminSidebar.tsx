@@ -12,6 +12,7 @@ import {
   FolderTree,
   ChevronLeft,
   ChevronRight,
+  Code,
 } from "lucide-react";
 import {
   Tooltip,
@@ -19,9 +20,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { useSetting } from "@/hooks/useSettings";
 import { useProfile } from "@/hooks/useAuth";
-import { Code } from "lucide-react";
 
 const menuItems = [
   { icon: LayoutDashboard, label: "Dashboard", path: "/admin/dashboard" },
@@ -47,7 +46,6 @@ interface AdminSidebarProps {
 
 const AdminSidebar = ({ onClose, collapsed = false, onToggleCollapse }: AdminSidebarProps) => {
   const location = useLocation();
-  const { data: logoUrl } = useSetting('site_logo');
   const { data: profile } = useProfile();
   const isDev = profile?.role === 'dev';
 
@@ -57,17 +55,28 @@ const AdminSidebar = ({ onClose, collapsed = false, onToggleCollapse }: AdminSid
     }
   };
 
-  const SidebarLink = ({ item, isActive }: { item: typeof menuItems[0]; isActive: boolean }) => {
+  const NavItem = ({ item, isActive }: { item: typeof menuItems[0]; isActive: boolean }) => {
     const linkContent = (
       <Link
         to={item.path}
         onClick={handleLinkClick}
-        className={`admin-sidebar-link ${isActive ? "active" : ""} ${
-          collapsed ? "justify-center px-2" : ""
-        }`}
+        className={`
+          flex items-center rounded-lg transition-all duration-200 group
+          ${collapsed ? 'justify-center px-2 py-2 w-full' : 'justify-between w-full px-4 py-2'}
+          ${isActive 
+            ? 'bg-[#21366B]/5 text-[#21366B] font-semibold' 
+            : 'text-slate-500 hover:text-[#21366B] hover:bg-slate-50'}
+        `}
       >
-        <item.icon className="h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0" />
-        {!collapsed && <span className="text-sm sm:text-base">{item.label}</span>}
+        <div className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3'}`}>
+          <item.icon 
+            size={18} 
+            strokeWidth={isActive ? 2.5 : 2} 
+            className={`flex-shrink-0 ${isActive ? 'text-[#21366B]' : 'text-slate-400 group-hover:text-[#21366B]'}`} 
+          />
+          {!collapsed && <span className="text-sm tracking-tight">{item.label}</span>}
+        </div>
+        {isActive && !collapsed && <div className="w-1.5 h-1.5 rounded-full bg-[#21366B] flex-shrink-0" />}
       </Link>
     );
 
@@ -89,72 +98,126 @@ const AdminSidebar = ({ onClose, collapsed = false, onToggleCollapse }: AdminSid
     return linkContent;
   };
 
+  const navigationItems = [
+    { icon: LayoutDashboard, label: "Dashboard", path: "/admin/dashboard" },
+    { icon: FileText, label: "Posts", path: "/admin/posts" },
+    { icon: Briefcase, label: "Empregos", path: "/admin/empregos" },
+    { icon: FolderTree, label: "Categorias", path: "/admin/categories" },
+    { icon: MessageSquare, label: "Comentários", path: "/admin/comments" },
+    { icon: Megaphone, label: "Anúncios", path: "/admin/ads" },
+    { icon: Users, label: "Usuários", path: "/admin/users" },
+  ];
+
+  const resourceItems = [
+    { icon: Bot, label: "Automação IA", path: "/admin/automation" },
+    { icon: Settings, label: "Configurações", path: "/admin/settings" },
+  ];
+
   return (
-    <aside className={`admin-sidebar flex flex-col h-full transition-all duration-300 overflow-hidden ${
-      collapsed ? "w-16 lg:w-16" : "w-64 lg:w-72"
+    <nav className={`bg-white flex flex-col border-r border-slate-100 shrink-0 transition-all duration-300 relative ${
+      collapsed ? "w-16 p-4" : "w-64 p-6"
     }`}>
-      {/* Logo e Botão Toggle */}
-      <div className={`border-b border-white/10 relative ${
-        collapsed ? "p-4" : "p-4 sm:p-6"
-      }`}>
-        <div className="flex items-center justify-between">
+      {/* Logo */}
+      <div className={`flex items-center mb-10 ${collapsed ? "justify-center mb-6" : "gap-3 px-2"}`}>
+        {collapsed ? (
           <Link to="/" className="inline-block" onClick={handleLinkClick}>
             <img 
-              src={logoUrl || "/imagens/Logo.png"} 
+              src="/imagens/Portal_Barcarena_h.png" 
               alt="Portal Barcarena" 
-              className={`object-contain ${
-                collapsed ? "h-8 w-auto mx-auto" : "h-10 w-auto"
-              }`}
+              className="h-8 w-auto object-contain"
             />
           </Link>
-          {onToggleCollapse && (
-            <button
-              onClick={onToggleCollapse}
-              className="hidden lg:flex p-1.5 rounded-full bg-white/10 hover:bg-white/20 transition-colors items-center justify-center flex-shrink-0"
-              aria-label={collapsed ? "Expandir menu" : "Colapsar menu"}
-            >
-              {collapsed ? (
-                <ChevronRight className="h-4 w-4 text-primary-foreground" />
-              ) : (
-                <ChevronLeft className="h-4 w-4 text-primary-foreground" />
-              )}
-            </button>
-          )}
-        </div>
-        {!collapsed && (
-          <p className="text-xs sm:text-sm text-primary-foreground/60 mt-1">Painel Admin</p>
+        ) : (
+          <Link to="/" className="flex items-center gap-3" onClick={handleLinkClick}>
+            <img 
+              src="/imagens/Portal_Barcarena_h.png" 
+              alt="Portal Barcarena" 
+              className="h-11 w-auto object-contain"
+            />
+          </Link>
         )}
       </div>
 
+      {onToggleCollapse && (
+        <button
+          onClick={onToggleCollapse}
+          className="hidden lg:flex absolute top-6 right-2 p-1.5 rounded-lg hover:bg-slate-50 transition-all items-center justify-center text-slate-400 hover:text-slate-600 z-10"
+          aria-label={collapsed ? "Expandir menu" : "Colapsar menu"}
+        >
+          {collapsed ? (
+            <ChevronRight size={16} />
+          ) : (
+            <ChevronLeft size={16} />
+          )}
+        </button>
+      )}
+
       {/* Navigation */}
-      <nav className="flex-1 py-4 overflow-y-auto">
-        {menuItems.map((item) => {
-          const isActive = location.pathname === item.path;
-          return (
-            <SidebarLink key={item.path} item={item} isActive={isActive} />
-          );
-        })}
-        {/* Menu de Desenvolvimento - apenas para devs */}
-        {isDev && devMenuItems.map((item) => {
-          const isActive = location.pathname === item.path;
-          return (
-            <SidebarLink key={item.path} item={item} isActive={isActive} />
-          );
-        })}
-      </nav>
+      {!collapsed && (
+        <>
+          <div className="text-[10px] font-bold text-slate-300 px-4 mb-4 uppercase tracking-[0.15em]">Navegação</div>
+          <div className="flex flex-col gap-1 mb-8">
+            {navigationItems.map((item) => {
+              const isActive = location.pathname === item.path;
+              return (
+                <NavItem key={item.path} item={item} isActive={isActive} />
+              );
+            })}
+          </div>
+
+          <div className="text-[10px] font-bold text-slate-300 px-4 mb-4 uppercase tracking-[0.15em]">Recursos</div>
+          <div className="flex flex-col gap-1 mb-8">
+            {resourceItems.map((item) => {
+              const isActive = location.pathname === item.path;
+              return (
+                <NavItem key={item.path} item={item} isActive={isActive} />
+              );
+            })}
+            {isDev && devMenuItems.map((item) => {
+              const isActive = location.pathname === item.path;
+              return (
+                <NavItem key={item.path} item={item} isActive={isActive} />
+              );
+            })}
+          </div>
+        </>
+      )}
+
+      {collapsed && (
+        <div className="flex flex-col gap-1">
+          {navigationItems.map((item) => {
+            const isActive = location.pathname === item.path;
+            return (
+              <NavItem key={item.path} item={item} isActive={isActive} />
+            );
+          })}
+          {resourceItems.map((item) => {
+            const isActive = location.pathname === item.path;
+            return (
+              <NavItem key={item.path} item={item} isActive={isActive} />
+            );
+          })}
+          {isDev && devMenuItems.map((item) => {
+            const isActive = location.pathname === item.path;
+            return (
+              <NavItem key={item.path} item={item} isActive={isActive} />
+            );
+          })}
+        </div>
+      )}
 
       {/* Logout */}
-      <div className="p-4 border-t border-white/10">
-        {collapsed ? (
+      {collapsed ? (
+        <div className="mt-auto pt-4 border-t border-slate-100">
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
                 <Link
                   to="/admin/login"
                   onClick={handleLinkClick}
-                  className="admin-sidebar-link text-primary-foreground/70 hover:text-primary-foreground justify-center px-2"
+                  className="flex items-center justify-center px-2 py-2 rounded-lg text-slate-500 hover:text-[#21366B] hover:bg-slate-50 transition-all"
                 >
-                  <LogOut className="h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0" />
+                  <LogOut size={18} />
                 </Link>
               </TooltipTrigger>
               <TooltipContent side="right">
@@ -162,18 +225,20 @@ const AdminSidebar = ({ onClose, collapsed = false, onToggleCollapse }: AdminSid
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
-        ) : (
+        </div>
+      ) : (
+        <div className="mt-4 pt-4 border-t border-slate-100">
           <Link
             to="/admin/login"
             onClick={handleLinkClick}
-            className="admin-sidebar-link text-primary-foreground/70 hover:text-primary-foreground"
+            className="flex items-center gap-3 px-4 py-2 rounded-lg text-slate-500 hover:text-[#21366B] hover:bg-slate-50 transition-all"
           >
-            <LogOut className="h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0" />
-            <span className="text-sm sm:text-base">Sair</span>
+            <LogOut size={18} />
+            <span className="text-sm">Sair</span>
           </Link>
-        )}
-      </div>
-    </aside>
+        </div>
+      )}
+    </nav>
   );
 };
 
